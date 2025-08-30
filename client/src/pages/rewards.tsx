@@ -18,11 +18,9 @@ export default function Rewards() {
   // Load rewards on component mount
   useEffect(() => {
     const loadRewards = async () => {
-      console.log('Loading rewards...');
       setIsLoading(true);
       try {
         const rewardsData = await supabaseHelpers.getRewards();
-        console.log('Rewards loaded:', rewardsData.length, 'rewards');
         setRewards(rewardsData);
       } catch (error) {
         console.error('Failed to load rewards:', error);

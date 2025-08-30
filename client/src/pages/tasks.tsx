@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useToast } from "@/hooks/use-toast";
 import { supabaseHelpers } from "@/lib/queryClient";
+import { surveyApiService } from "@/lib/surveyApi";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,34 +23,77 @@ export default function Tasks() {
   // Load tasks on component mount
   useEffect(() => {
     const loadTasks = async () => {
-      console.log('Loading tasks...');
+      if (!user?.id) return;
+      
       setIsLoading(true);
       try {
-        const tasksData = await supabaseHelpers.getTasks();
-        console.log('Tasks loaded:', tasksData.length, 'tasks');
-        console.log('Task types:', tasksData.map(t => t.type));
-        setTasks(tasksData);
+        // Get surveys from external APIs
+        const externalSurveys = await surveyApiService.getAllSurveys(user.id);
+        
+        // Convert to Task format
+        const surveyTasks = externalSurveys.map(survey => surveyApiService.convertToTask(survey));
+        
+        // Also get local tasks (ads, offers) from Supabase
+        const localTasks = await supabaseHelpers.getTasks();
+        const nonSurveyTasks = localTasks.filter(task => task.type !== 'survey');
+        
+        // Combine external surveys with local tasks
+        const allTasks = [...surveyTasks, ...nonSurveyTasks];
+        
+        setTasks(allTasks);
       } catch (error) {
         console.error('Failed to load tasks:', error);
+        // Fallback to local tasks only
+        try {
+          const localTasks = await supabaseHelpers.getTasks();
+          setTasks(localTasks);
+        } catch (fallbackError) {
+          console.error('Fallback load failed:', fallbackError);
+        }
       } finally {
         setIsLoading(false);
       }
     };
+    
     loadTasks();
-  }, []);
+  }, [user?.id]);
 
   const handleCompleteTask = async (taskId: string, points: number) => {
     if (!user?.id) return;
     setIsCompleting(true);
+    
     try {
-      await supabaseHelpers.completeTask(user.id, taskId, points);
-      toast({
-        title: "Task Completed!",
-        description: "Points have been added to your account.",
-      });
+      // Check if this is an external survey
+      const task = tasks.find(t => t.id === taskId);
+      const isExternalSurvey = taskId.startsWith('cpx_') || taskId.startsWith('theorem_') || taskId.startsWith('bitlabs_');
+      
+      if (isExternalSurvey && task) {
+        // For external surveys, open in new window and record completion
+        const provider = taskId.split('_')[0];
+        
+        // Open survey in new window
+        if ((task as any).external_url) {
+          window.open((task as any).external_url, '_blank');
+        }
+        
+        // Record completion with provider
+        await surveyApiService.completeSurvey(user.id, taskId, provider);
+        
+        toast({
+          title: "Survey Opened!",
+          description: `Complete the survey in the new window to earn ${points} points.`,
+        });
+      } else {
+        // Handle local tasks (ads, offers)
+        await supabaseHelpers.completeTask(user.id, taskId, points);
+        toast({
+          title: "Task Completed!",
+          description: "Points have been added to your account.",
+        });
+      }
     } catch (error) {
       toast({
-        title: "Error",
+        title: "Error", 
         description: error instanceof Error ? error.message : "Failed to complete task. Please try again.",
         variant: "destructive",
       });
@@ -62,7 +106,6 @@ export default function Tasks() {
   const ads = tasks.filter(task => task.type === "ad");
   const offers = tasks.filter(task => task.type === "offer");
 
-  console.log('Task counts:', { surveys: surveys.length, ads: ads.length, offers: offers.length });
 
   if (isLoading) {
     return (
