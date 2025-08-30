@@ -1,5 +1,6 @@
 // Survey Provider Configuration and API Key Management
 // Production-ready configuration for CPX Research, TheoremReach, BitLabs, and RapidoReach
+import { supabase } from './supabase';
 
 export interface SurveyProviderConfig {
   name: string;
@@ -25,38 +26,115 @@ export interface SurveyEnvironment {
 
 class SurveyConfigManager {
   private environment: 'development' | 'production';
+  private configCache: SurveyEnvironment | null = null;
+  private lastFetch: number = 0;
+  private cacheDuration = 5 * 60 * 1000; // 5 minutes
+  private isLoading = false;
   
   constructor() {
     this.environment = import.meta.env.PROD ? 'production' : 'development';
+    // Start loading configuration from database
+    this.loadConfigFromDatabase();
   }
 
-  // Get survey provider configuration
+  // Load configuration from database (background)
+  private async loadConfigFromDatabase(): Promise<void> {
+    if (this.isLoading) return;
+    this.isLoading = true;
+
+    try {
+      const { data: configs, error } = await supabase
+        .from('api_configurations')
+        .select('*')
+        .eq('is_enabled', true);
+
+      if (error) throw error;
+
+      this.configCache = this.buildConfigFromDatabase(configs || []);
+      this.lastFetch = Date.now();
+      console.log('✅ Survey provider configurations loaded from database');
+    } catch (error) {
+      console.warn('Failed to load configs from database:', error);
+      this.configCache = this.getFallbackConfig();
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  // Get survey provider configuration (sync)
   getProviderConfig(): SurveyEnvironment {
+    // Refresh if cache expired
+    if (!this.configCache || (Date.now() - this.lastFetch) > this.cacheDuration) {
+      this.loadConfigFromDatabase();
+    }
+
+    // Return cached config or fallback
+    return this.configCache || this.getFallbackConfig();
+  }
+
+  // Build config object from database records
+  private buildConfigFromDatabase(configs: any[]): SurveyEnvironment {
     const baseCallbackUrl = this.environment === 'production' 
       ? 'https://your-domain.replit.app/survey-callback'
       : `${window.location.origin}/survey-callback`;
 
-    return {
+    const configMap: { [key: string]: SurveyProviderConfig } = {};
+
+    // Build configuration for each provider from database
+    configs.forEach(config => {
+      configMap[config.provider_name] = {
+        name: this.getProviderDisplayName(config.provider_name),
+        apiKey: config.api_key,
+        appId: config.app_id,
+        secretKey: config.secret_key,
+        enabled: config.is_enabled,
+        sandboxMode: config.is_sandbox || this.environment === 'development',
+        callbackUrl: `${baseCallbackUrl}?provider=${config.provider_name}`,
+        endpoints: config.endpoints || {}
+      };
+    });
+
+    // Ensure all required providers are present
+    const result: SurveyEnvironment = {
+      cpx: configMap.cpx || this.getDefaultProviderConfig('cpx', baseCallbackUrl),
+      theoremreach: configMap.theoremreach || this.getDefaultProviderConfig('theoremreach', baseCallbackUrl),
+      bitlabs: configMap.bitlabs || this.getDefaultProviderConfig('bitlabs', baseCallbackUrl),
+      rapidoreach: configMap.rapidoreach || this.getDefaultProviderConfig('rapidoreach', baseCallbackUrl)
+    };
+
+    // Cache the result
+    this.configCache = result;
+    this.lastFetch = Date.now();
+
+    return result;
+  }
+
+  // Get provider display name
+  private getProviderDisplayName(providerName: string): string {
+    const names: { [key: string]: string } = {
+      cpx: 'CPX Research',
+      theoremreach: 'TheoremReach',
+      bitlabs: 'BitLabs',
+      rapidoreach: 'RapidoReach'
+    };
+    return names[providerName] || providerName;
+  }
+
+  // Get default configuration for a provider (fallback)
+  private getDefaultProviderConfig(provider: string, baseCallbackUrl: string): SurveyProviderConfig {
+    const defaults: { [key: string]: Partial<SurveyProviderConfig> } = {
       cpx: {
-        name: 'CPX Research',
-        apiKey: import.meta.env.VITE_CPX_RESEARCH_API_KEY || '7782a3da8da9d1f4f0d2a9f9b9c0c611',
-        appId: import.meta.env.VITE_CPX_RESEARCH_APP_ID || '28886',
-        secretKey: import.meta.env.VITE_CPX_RESEARCH_SECRET_KEY || 'demo_secret',
-        enabled: !!import.meta.env.VITE_CPX_RESEARCH_API_KEY || this.environment === 'development',
-        sandboxMode: this.environment === 'development',
-        callbackUrl: `${baseCallbackUrl}?provider=cpx`,
+        apiKey: '7782a3da8da9d1f4f0d2a9f9b9c0c611',
+        appId: '28886',
+        secretKey: 'demo_secret',
         endpoints: {
           offerwall: 'https://offers.cpx-research.com/index.php',
           postback: 'https://api.cpx-research.com/postback'
         }
       },
       theoremreach: {
-        name: 'TheoremReach',
-        apiKey: import.meta.env.VITE_THEOREMREACH_API_KEY || '9854ec5b04228779d58ac3e9d342',
-        secretKey: import.meta.env.VITE_THEOREMREACH_SECRET_KEY || 'demo_secret',
-        enabled: !!import.meta.env.VITE_THEOREMREACH_API_KEY || this.environment === 'development',
-        sandboxMode: this.environment === 'development',
-        callbackUrl: `${baseCallbackUrl}?provider=theoremreach`,
+        apiKey: '9854ec5b04228779d58ac3e9d342',
+        secretKey: 'demo_secret',
         endpoints: {
           surveys: this.environment === 'development' 
             ? 'https://surveys-sandbox.theoremreach.com/api/external/v1'
@@ -65,25 +143,17 @@ class SurveyConfigManager {
         }
       },
       bitlabs: {
-        name: 'BitLabs',
-        apiKey: import.meta.env.VITE_BITLABS_API_TOKEN || '665ef72d-bcf1-4a8d-b427-37c8b7142447',
-        secretKey: import.meta.env.VITE_BITLABS_SECRET_KEY || 'demo_secret',
-        enabled: !!import.meta.env.VITE_BITLABS_API_TOKEN || this.environment === 'development',
-        sandboxMode: this.environment === 'development',
-        callbackUrl: `${baseCallbackUrl}?provider=bitlabs`,
+        apiKey: '665ef72d-bcf1-4a8d-b427-37c8b7142447',
+        secretKey: 'demo_secret',
         endpoints: {
           offerwall: 'https://web.bitlabs.ai',
           surveys: 'https://api.bitlabs.ai'
         }
       },
       rapidoreach: {
-        name: 'RapidoReach',
-        apiKey: import.meta.env.VITE_RAPIDOREACH_API_KEY || 'ac9e857aa9e61eba980c0407e05688e3',
-        appId: import.meta.env.VITE_RAPIDOREACH_APP_ID || 'PIufj1sh6SL',
-        secretKey: import.meta.env.VITE_RAPIDOREACH_SECRET_KEY || 'demo_secret',
-        enabled: !!import.meta.env.VITE_RAPIDOREACH_API_KEY || this.environment === 'development',
-        sandboxMode: this.environment === 'development',
-        callbackUrl: `${baseCallbackUrl}?provider=rapidoreach`,
+        apiKey: 'ac9e857aa9e61eba980c0407e05688e3',
+        appId: 'PIufj1sh6SL',
+        secretKey: 'demo_secret',
         endpoints: {
           surveys: 'https://www.rapidoreach.com/getallsurveys-api',
           postback: 'https://www.rapidoreach.com/postback',
@@ -91,6 +161,45 @@ class SurveyConfigManager {
         }
       }
     };
+    
+    const defaultConfig = defaults[provider];
+    if (!defaultConfig) {
+      throw new Error(`Unknown provider: ${provider}`);
+    }
+
+    return {
+      name: this.getProviderDisplayName(provider),
+      apiKey: defaultConfig.apiKey || '',
+      appId: defaultConfig.appId,
+      secretKey: defaultConfig.secretKey,
+      enabled: false, // Disabled by default for fallback
+      sandboxMode: this.environment === 'development',
+      callbackUrl: `${baseCallbackUrl}?provider=${provider}`,
+      endpoints: defaultConfig.endpoints || {}
+    };
+  }
+
+  // Fallback configuration when database is unavailable
+  private getFallbackConfig(): SurveyEnvironment {
+    console.warn('Using fallback configuration - database unavailable');
+    const baseCallbackUrl = this.environment === 'production' 
+      ? 'https://your-domain.replit.app/survey-callback'
+      : `${window.location.origin}/survey-callback`;
+
+    return {
+      cpx: this.getDefaultProviderConfig('cpx', baseCallbackUrl),
+      theoremreach: this.getDefaultProviderConfig('theoremreach', baseCallbackUrl),
+      bitlabs: this.getDefaultProviderConfig('bitlabs', baseCallbackUrl),
+      rapidoreach: this.getDefaultProviderConfig('rapidoreach', baseCallbackUrl)
+    };
+  }
+
+  // Legacy sync method for backward compatibility
+  getProviderConfigSync(): SurveyEnvironment {
+    if (this.configCache) {
+      return this.configCache;
+    }
+    return this.getFallbackConfig();
   }
 
   // Check if all required API keys are configured
