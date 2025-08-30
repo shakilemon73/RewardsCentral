@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
@@ -16,21 +16,35 @@ import DesktopSidebar from "@/components/desktop-sidebar";
 function Router() {
   const { isAuthenticated, isLoading, user, session } = useAuth();
   const isMobile = useIsMobile();
+  const [location] = useLocation();
 
   // Debug logging
   console.log('Router state:', { isAuthenticated, isLoading, hasUser: !!user, hasSession: !!session });
 
-  // Always show landing page first to avoid auth errors
-  if (isLoading) {
-    console.log('Router: Still loading auth state');
+  // Check if we're on a protected route
+  const protectedRoutes = ["/tasks", "/rewards", "/profile"];
+  const isProtectedRoute = protectedRoutes.includes(location) || (location !== "/" && location !== "");
+
+  // If loading and on a protected route, show a loading state instead of redirecting
+  if (isLoading && isProtectedRoute) {
+    console.log('Router: Loading auth state for protected route:', location);
     return (
-      <Switch>
-        <Route path="/" component={Landing} />
-        <Route component={Landing} />
-      </Switch>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>Loading...</p>
+        </div>
+      </div>
     );
   }
 
+  // If loading and on landing page, show landing
+  if (isLoading) {
+    console.log('Router: Still loading auth state');
+    return <Landing />;
+  }
+
+  // If not authenticated, only show landing
   if (!isAuthenticated) {
     console.log('Router: Not authenticated, showing landing');
     return (
