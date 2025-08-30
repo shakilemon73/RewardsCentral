@@ -18,16 +18,12 @@ function Router() {
   const isMobile = useIsMobile();
   const [location] = useLocation();
 
-  // Debug logging
-  console.log('Router state:', { isAuthenticated, isLoading, hasUser: !!user, hasSession: !!session });
-
   // Check if we're on a protected route
   const protectedRoutes = ["/tasks", "/rewards", "/profile"];
   const isProtectedRoute = protectedRoutes.includes(location) || (location !== "/" && location !== "");
 
-  // If loading and on a protected route, show a loading state instead of redirecting
-  if (isLoading && isProtectedRoute) {
-    console.log('Router: Loading auth state for protected route:', location);
+  // Show loading state during authentication check
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -38,15 +34,8 @@ function Router() {
     );
   }
 
-  // If loading and on landing page, show landing
-  if (isLoading) {
-    console.log('Router: Still loading auth state');
-    return <Landing />;
-  }
-
   // If not authenticated, only show landing
   if (!isAuthenticated) {
-    console.log('Router: Not authenticated, showing landing');
     return (
       <Switch>
         <Route path="/" component={Landing} />
@@ -54,8 +43,6 @@ function Router() {
       </Switch>
     );
   }
-
-  console.log('Router: Authenticated, showing dashboard');
 
   return (
     <div className="min-h-screen bg-background">

@@ -12,9 +12,7 @@ export function useAuth() {
     // Get initial session
     const getSession = async () => {
       try {
-        console.log('Getting initial session...');
         const { data: { session } } = await supabase.auth.getSession();
-        console.log('Initial session:', session?.user?.id ? 'Found session' : 'No session');
         setSession(session);
         if (session?.user) {
           console.log('Fetching user data for:', session.user.id);
@@ -63,10 +61,8 @@ export function useAuth() {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session?.user?.id ? 'Has user' : 'No user');
       setSession(session);
       if (session?.user) {
-        console.log('Auth change: Fetching user data for:', session.user.id);
         // Try to get existing user or create new one
         let { data: userData, error } = await supabase
           .from('users')
@@ -74,11 +70,9 @@ export function useAuth() {
           .eq('id', session.user.id)
           .single();
         
-        console.log('Auth change: User lookup result:', userData ? 'Found' : 'Not found', error?.code);
         
         // If user doesn't exist, create them
         if (error && error.code === 'PGRST116') {
-          console.log('Auth change: Creating new user...');
           const { data: newUser } = await supabase
             .from('users')
             .insert({
@@ -94,14 +88,11 @@ export function useAuth() {
             .select()
             .single();
           userData = newUser;
-          console.log('Auth change: New user created:', userData?.id);
         }
         
         setUser(userData);
-        console.log('Auth change: User state updated:', userData?.id);
       } else {
         setUser(null);
-        console.log('Auth change: User cleared');
       }
     });
 
