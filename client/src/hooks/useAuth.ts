@@ -8,8 +8,13 @@ export function useAuth() {
   const { data: session, isLoading: sessionLoading } = useQuery({
     queryKey: ["session"],
     queryFn: async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      return session;
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        return session;
+      } catch (error) {
+        console.error("Session error:", error);
+        return null;
+      }
     },
     retry: false,
   });
@@ -19,17 +24,23 @@ export function useAuth() {
     queryFn: async () => {
       if (!session?.user?.id) return null;
       
-      const { data, error } = await supabase
-        .from("users")
-        .select("*")
-        .eq("id", session.user.id)
-        .single();
-      
-      if (error && error.code !== "PGRST116") {
-        throw error;
+      try {
+        const { data, error } = await supabase
+          .from("users")
+          .select("*")
+          .eq("id", session.user.id)
+          .single();
+        
+        if (error && error.code !== "PGRST116") {
+          console.error("User query error:", error);
+          return null;
+        }
+        
+        return data as User | null;
+      } catch (error) {
+        console.error("User fetch error:", error);
+        return null;
       }
-      
-      return data as User | null;
     },
     enabled: !!session?.user?.id,
     retry: false,
@@ -37,39 +48,63 @@ export function useAuth() {
 
   const signInMutation = useMutation({
     mutationFn: async ({ email, password }: { email: string; password: string }) => {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) throw error;
-      return data;
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) throw error;
+        return data;
+      } catch (error) {
+        console.error("Sign in error:", error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["session"] });
+    },
+    onError: (error) => {
+      console.error("Sign in mutation error:", error);
     },
   });
 
   const signUpMutation = useMutation({
     mutationFn: async ({ email, password }: { email: string; password: string }) => {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-      if (error) throw error;
-      return data;
+      try {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+        if (error) throw error;
+        return data;
+      } catch (error) {
+        console.error("Sign up error:", error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["session"] });
+    },
+    onError: (error) => {
+      console.error("Sign up mutation error:", error);
     },
   });
 
   const signOutMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      try {
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
+      } catch (error) {
+        console.error("Sign out error:", error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.clear();
+    },
+    onError: (error) => {
+      console.error("Sign out mutation error:", error);
     },
   });
 
