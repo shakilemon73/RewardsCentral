@@ -39,10 +39,10 @@ class SurveyConfigManager {
     return {
       cpx: {
         name: 'CPX Research',
-        apiKey: import.meta.env.VITE_CPX_RESEARCH_API_KEY || '',
-        appId: import.meta.env.VITE_CPX_RESEARCH_APP_ID || '',
-        secretKey: import.meta.env.VITE_CPX_RESEARCH_SECRET_KEY || '',
-        enabled: !!import.meta.env.VITE_CPX_RESEARCH_API_KEY,
+        apiKey: import.meta.env.VITE_CPX_RESEARCH_API_KEY || '7782a3da8da9d1f4f0d2a9f9b9c0c611',
+        appId: import.meta.env.VITE_CPX_RESEARCH_APP_ID || '28886',
+        secretKey: import.meta.env.VITE_CPX_RESEARCH_SECRET_KEY || 'demo_secret',
+        enabled: !!import.meta.env.VITE_CPX_RESEARCH_API_KEY || this.environment === 'development',
         sandboxMode: this.environment === 'development',
         callbackUrl: `${baseCallbackUrl}?provider=cpx`,
         endpoints: {
@@ -52,9 +52,9 @@ class SurveyConfigManager {
       },
       theoremreach: {
         name: 'TheoremReach',
-        apiKey: import.meta.env.VITE_THEOREMREACH_API_KEY || '',
-        secretKey: import.meta.env.VITE_THEOREMREACH_SECRET_KEY || '',
-        enabled: !!import.meta.env.VITE_THEOREMREACH_API_KEY,
+        apiKey: import.meta.env.VITE_THEOREMREACH_API_KEY || '9854ec5b04228779d58ac3e9d342',
+        secretKey: import.meta.env.VITE_THEOREMREACH_SECRET_KEY || 'demo_secret',
+        enabled: !!import.meta.env.VITE_THEOREMREACH_API_KEY || this.environment === 'development',
         sandboxMode: this.environment === 'development',
         callbackUrl: `${baseCallbackUrl}?provider=theoremreach`,
         endpoints: {
@@ -66,9 +66,9 @@ class SurveyConfigManager {
       },
       bitlabs: {
         name: 'BitLabs',
-        apiKey: import.meta.env.VITE_BITLABS_API_TOKEN || '',
-        secretKey: import.meta.env.VITE_BITLABS_SECRET_KEY || '',
-        enabled: !!import.meta.env.VITE_BITLABS_API_TOKEN,
+        apiKey: import.meta.env.VITE_BITLABS_API_TOKEN || '665ef72d-bcf1-4a8d-b427-37c8b7142447',
+        secretKey: import.meta.env.VITE_BITLABS_SECRET_KEY || 'demo_secret',
+        enabled: !!import.meta.env.VITE_BITLABS_API_TOKEN || this.environment === 'development',
         sandboxMode: this.environment === 'development',
         callbackUrl: `${baseCallbackUrl}?provider=bitlabs`,
         endpoints: {
@@ -78,10 +78,10 @@ class SurveyConfigManager {
       },
       rapidoreach: {
         name: 'RapidoReach',
-        apiKey: import.meta.env.VITE_RAPIDOREACH_API_KEY || '',
-        appId: import.meta.env.VITE_RAPIDOREACH_APP_ID || '',
-        secretKey: import.meta.env.VITE_RAPIDOREACH_SECRET_KEY || '',
-        enabled: !!import.meta.env.VITE_RAPIDOREACH_API_KEY,
+        apiKey: import.meta.env.VITE_RAPIDOREACH_API_KEY || 'ac9e857aa9e61eba980c0407e05688e3',
+        appId: import.meta.env.VITE_RAPIDOREACH_APP_ID || 'PIufj1sh6SL',
+        secretKey: import.meta.env.VITE_RAPIDOREACH_SECRET_KEY || 'demo_secret',
+        enabled: !!import.meta.env.VITE_RAPIDOREACH_API_KEY || this.environment === 'development',
         sandboxMode: this.environment === 'development',
         callbackUrl: `${baseCallbackUrl}?provider=rapidoreach`,
         endpoints: {
