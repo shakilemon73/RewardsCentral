@@ -1,14 +1,52 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import type { User } from "@/lib/supabase";
+import type { Session } from "@supabase/supabase-js";
 
 export function useAuth() {
-  const [session, setSession] = useState(null);
-  const [user, setUser] = useState(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Don't automatically fetch session on mount to avoid errors
+    // Get initial session
+    const getSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setSession(session);
+        if (session?.user) {
+          // Fetch user data from database
+          const { data: userData } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+          setUser(userData);
+        }
+      } catch (error) {
+        // Silent fail on connection errors
+        console.warn('Auth session fetch failed:', error);
+      }
+    };
+
+    getSession();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      setSession(session);
+      if (session?.user) {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+        setUser(userData);
+      } else {
+        setUser(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const signIn = async ({ email, password }: { email: string; password: string }) => {
@@ -95,7 +133,7 @@ export function useAuth() {
     user,
     session,
     isLoading,
-    isAuthenticated: false, // Always show landing page for now
+    isAuthenticated: !!session && !!user,
     signIn,
     signUp,
     signOut,

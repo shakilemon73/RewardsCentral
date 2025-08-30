@@ -10,12 +10,9 @@ export const queryClient = new QueryClient({
       refetchOnReconnect: false,
       staleTime: Infinity,
       retry: false,
-      suspense: false,
-      useErrorBoundary: false,
     },
     mutations: {
       retry: false,
-      useErrorBoundary: false,
     },
   },
 });

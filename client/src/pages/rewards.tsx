@@ -1,18 +1,35 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useToast } from "@/hooks/use-toast";
 import { supabaseHelpers } from "@/lib/queryClient";
 import { Card, CardContent } from "@/components/ui/card";
 import RewardCard from "@/components/reward-card";
+import type { Reward } from "@shared/schema";
 
 export default function Rewards() {
   const { user } = useAuth();
   const isMobile = useIsMobile();
   const { toast } = useToast();
-  const [rewards, setRewards] = useState([]);
+  const [rewards, setRewards] = useState<Reward[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isRedeeming, setIsRedeeming] = useState(false);
+
+  // Load rewards on component mount
+  useEffect(() => {
+    const loadRewards = async () => {
+      setIsLoading(true);
+      try {
+        const rewardsData = await supabaseHelpers.getRewards();
+        setRewards(rewardsData);
+      } catch (error) {
+        console.warn('Failed to load rewards:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadRewards();
+  }, []);
 
   const handleRedeem = async (rewardId: string, pointsCost: number) => {
     if ((user?.points || 0) < pointsCost) {
@@ -122,7 +139,7 @@ export default function Rewards() {
             reward={reward}
             userPoints={user?.points || 0}
             onRedeem={handleRedeem}
-            isRedeeming={redeemMutation.isPending}
+            isRedeeming={isRedeeming}
           />
         ))}
       </div>

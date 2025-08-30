@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useToast } from "@/hooks/use-toast";
@@ -8,16 +8,32 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import TaskCard from "@/components/task-card";
 import { FileText, Video, HandHeart, Star } from "lucide-react";
-import { useState } from "react";
+import type { Task } from "@shared/schema";
 
 export default function Tasks() {
   const { user } = useAuth();
   const isMobile = useIsMobile();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("surveys");
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
+
+  // Load tasks on component mount
+  useEffect(() => {
+    const loadTasks = async () => {
+      setIsLoading(true);
+      try {
+        const tasksData = await supabaseHelpers.getTasks();
+        setTasks(tasksData);
+      } catch (error) {
+        console.warn('Failed to load tasks:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadTasks();
+  }, []);
 
   const handleCompleteTask = async (taskId: string, points: number) => {
     if (!user?.id) return;
@@ -39,9 +55,9 @@ export default function Tasks() {
     }
   };
 
-  const surveys = tasks?.filter(task => task.type === "survey") || [];
-  const ads = tasks?.filter(task => task.type === "ad") || [];
-  const offers = tasks?.filter(task => task.type === "offer") || [];
+  const surveys = tasks.filter(task => task.type === "survey");
+  const ads = tasks.filter(task => task.type === "ad");
+  const offers = tasks.filter(task => task.type === "offer");
 
   if (isLoading) {
     return (

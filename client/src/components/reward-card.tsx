@@ -5,7 +5,7 @@ import type { Reward } from "@shared/schema";
 interface RewardCardProps {
   reward: Reward;
   userPoints: number;
-  onRedeem: (rewardId: string, pointsCost: number) => void;
+  onRedeem: (rewardId: string, points_cost: number) => void;
   isMobile?: boolean;
   isRedeeming?: boolean;
 }
@@ -17,8 +17,8 @@ export default function RewardCard({
   isMobile = false, 
   isRedeeming = false 
 }: RewardCardProps) {
-  const canAfford = userPoints >= reward.pointsCost;
-  const pointsNeeded = reward.pointsCost - userPoints;
+  const canAfford = userPoints >= reward.points_cost;
+  const pointsNeeded = reward.points_cost - userPoints;
 
   const getBrandGradient = () => {
     switch (reward.brand.toLowerCase()) {
@@ -69,14 +69,14 @@ export default function RewardCard({
                 ? "bg-primary hover:bg-primary/90 text-primary-foreground"
                 : "bg-gray-400 text-white cursor-not-allowed"
             }`}
-            onClick={() => canAfford && onRedeem(reward.id, reward.pointsCost)}
+            onClick={() => canAfford && onRedeem(reward.id, reward.points_cost)}
             disabled={!canAfford || isRedeeming}
             data-testid={`button-redeem-${reward.id}`}
           >
             {isRedeeming
               ? "Processing..."
               : canAfford
-              ? `${reward.pointsCost.toLocaleString()} pts`
+              ? `${reward.points_cost.toLocaleString()} pts`
               : `Need ${pointsNeeded} pts`
             }
           </Button>
@@ -96,7 +96,7 @@ export default function RewardCard({
         <div className="flex items-center justify-between mt-4">
           <div>
             <span className="text-lg font-bold text-foreground">{reward.value}</span>
-            <p className="text-muted-foreground text-sm">{reward.pointsCost.toLocaleString()} points</p>
+            <p className="text-muted-foreground text-sm">{reward.points_cost.toLocaleString()} points</p>
           </div>
           <Button
             className={
@@ -104,7 +104,7 @@ export default function RewardCard({
                 ? "bg-primary hover:bg-primary/90 text-primary-foreground"
                 : "bg-gray-400 text-white cursor-not-allowed"
             }
-            onClick={() => canAfford && onRedeem(reward.id, reward.pointsCost)}
+            onClick={() => canAfford && onRedeem(reward.id, reward.points_cost)}
             disabled={!canAfford || isRedeeming}
             data-testid={`button-redeem-${reward.id}`}
           >
