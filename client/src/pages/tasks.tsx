@@ -22,12 +22,15 @@ export default function Tasks() {
   // Load tasks on component mount
   useEffect(() => {
     const loadTasks = async () => {
+      console.log('Loading tasks...');
       setIsLoading(true);
       try {
         const tasksData = await supabaseHelpers.getTasks();
+        console.log('Tasks loaded:', tasksData.length, 'tasks');
+        console.log('Task types:', tasksData.map(t => t.type));
         setTasks(tasksData);
       } catch (error) {
-        console.warn('Failed to load tasks:', error);
+        console.error('Failed to load tasks:', error);
       } finally {
         setIsLoading(false);
       }
@@ -58,6 +61,8 @@ export default function Tasks() {
   const surveys = tasks.filter(task => task.type === "survey");
   const ads = tasks.filter(task => task.type === "ad");
   const offers = tasks.filter(task => task.type === "offer");
+
+  console.log('Task counts:', { surveys: surveys.length, ads: ads.length, offers: offers.length });
 
   if (isLoading) {
     return (

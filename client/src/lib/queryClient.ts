@@ -22,6 +22,7 @@ export const supabaseHelpers = {
   // Get all active tasks
   getTasks: async () => {
     try {
+      console.log('Supabase helper: Fetching tasks...');
       const { data, error } = await supabase
         .from("tasks")
         .select("*")
@@ -32,6 +33,7 @@ export const supabaseHelpers = {
         console.error("Tasks fetch error:", error);
         return [];
       }
+      console.log('Supabase helper: Tasks fetched successfully:', data?.length);
       return data || [];
     } catch (error) {
       console.error("Tasks fetch exception:", error);
