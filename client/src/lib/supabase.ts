@@ -1,12 +1,19 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://placeholder.supabase.co'
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'placeholder-key'
+// Hardcode the values since environment variables aren't loading properly
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://tzhbpfesfyhhlfpukwkb.supabase.co'
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR6aGJwZmVzZnloaGxmcHVrd2tiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY1NzEzNTAsImV4cCI6MjA3MjE0NzM1MH0.SmpcxbIGRFEJef4a4uJudjsI-B3qjJPSFl7sXYTnQnE'
 
-// Note: Using placeholder values for development. 
-// Add your real Supabase credentials via environment variables for full functionality.
+// Debug log to verify values are loaded
+console.log('Supabase URL:', supabaseUrl)
+console.log('Supabase Key length:', supabaseAnonKey.length)
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false,
+  }
+})
 
 // Database types
 export interface User {
