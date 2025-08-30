@@ -14,11 +14,15 @@ import DesktopHeader from "@/components/desktop-header";
 import DesktopSidebar from "@/components/desktop-sidebar";
 
 function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user, session } = useAuth();
   const isMobile = useIsMobile();
+
+  // Debug logging
+  console.log('Router state:', { isAuthenticated, isLoading, hasUser: !!user, hasSession: !!session });
 
   // Always show landing page first to avoid auth errors
   if (isLoading) {
+    console.log('Router: Still loading auth state');
     return (
       <Switch>
         <Route path="/" component={Landing} />
@@ -28,6 +32,7 @@ function Router() {
   }
 
   if (!isAuthenticated) {
+    console.log('Router: Not authenticated, showing landing');
     return (
       <Switch>
         <Route path="/" component={Landing} />
@@ -35,6 +40,8 @@ function Router() {
       </Switch>
     );
   }
+
+  console.log('Router: Authenticated, showing dashboard');
 
   return (
     <div className="min-h-screen bg-background">

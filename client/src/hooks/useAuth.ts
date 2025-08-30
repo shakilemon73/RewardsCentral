@@ -6,15 +6,18 @@ import type { Session } from "@supabase/supabase-js";
 export function useAuth() {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Get initial session
     const getSession = async () => {
       try {
+        console.log('Getting initial session...');
         const { data: { session } } = await supabase.auth.getSession();
+        console.log('Initial session:', session?.user?.id ? 'Found session' : 'No session');
         setSession(session);
         if (session?.user) {
+          console.log('Fetching user data for:', session.user.id);
           // Try to get existing user or create new one
           let { data: userData, error } = await supabase
             .from('users')
@@ -22,8 +25,11 @@ export function useAuth() {
             .eq('id', session.user.id)
             .single();
           
+          console.log('User fetch result:', userData ? 'Found user' : 'No user found', error?.code);
+          
           // If user doesn't exist, create them
           if (error && error.code === 'PGRST116') {
+            console.log('Creating new user record...');
             const { data: newUser } = await supabase
               .from('users')
               .insert({
@@ -39,13 +45,17 @@ export function useAuth() {
               .select()
               .single();
             userData = newUser;
+            console.log('New user created:', userData?.id);
           }
           
           setUser(userData);
+          console.log('User state set:', userData?.id);
         }
       } catch (error) {
         // Silent fail on connection errors
         console.warn('Auth session fetch failed:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -53,8 +63,10 @@ export function useAuth() {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.id ? 'Has user' : 'No user');
       setSession(session);
       if (session?.user) {
+        console.log('Auth change: Fetching user data for:', session.user.id);
         // Try to get existing user or create new one
         let { data: userData, error } = await supabase
           .from('users')
@@ -62,8 +74,11 @@ export function useAuth() {
           .eq('id', session.user.id)
           .single();
         
+        console.log('Auth change: User lookup result:', userData ? 'Found' : 'Not found', error?.code);
+        
         // If user doesn't exist, create them
         if (error && error.code === 'PGRST116') {
+          console.log('Auth change: Creating new user...');
           const { data: newUser } = await supabase
             .from('users')
             .insert({
@@ -79,11 +94,14 @@ export function useAuth() {
             .select()
             .single();
           userData = newUser;
+          console.log('Auth change: New user created:', userData?.id);
         }
         
         setUser(userData);
+        console.log('Auth change: User state updated:', userData?.id);
       } else {
         setUser(null);
+        console.log('Auth change: User cleared');
       }
     });
 
@@ -114,19 +132,25 @@ export function useAuth() {
         }
         throw new Error(error.message || 'Authentication failed');
       }
+      
+      console.log('Sign in successful, session:', data.session?.user?.id);
       setSession(data.session);
       
       // Auto-create user record if it doesn't exist
       if (data.session?.user) {
         try {
+          console.log('Checking for existing user...');
           let { data: userData, error: userError } = await supabase
             .from('users')
             .select('*')
             .eq('id', data.session.user.id)
             .single();
           
+          console.log('User lookup result:', userData ? 'Found' : 'Not found', userError?.code);
+          
           // If user doesn't exist, create them
           if (userError && userError.code === 'PGRST116') {
+            console.log('Creating new user...');
             const { data: newUser } = await supabase
               .from('users')
               .insert({
@@ -142,9 +166,11 @@ export function useAuth() {
               .select()
               .single();
             userData = newUser;
+            console.log('New user created:', userData?.id);
           }
           
           setUser(userData);
+          console.log('User set in sign in:', userData?.id);
         } catch (userCreateError) {
           console.warn('User creation failed:', userCreateError);
         }
