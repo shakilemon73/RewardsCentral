@@ -18,12 +18,22 @@ export function useAuth() {
         email,
         password,
       });
-      if (error) throw error;
+      if (error) {
+        // Handle specific Supabase auth errors
+        if (error.message?.includes('fetch')) {
+          throw new Error('Unable to connect to authentication service. Please check your internet connection.');
+        }
+        throw new Error(error.message || 'Authentication failed');
+      }
       setSession(data.session);
       return data;
     } catch (error) {
       console.error("Sign in error:", error);
-      throw error;
+      // Re-throw with user-friendly message
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Unable to sign in. Please check your internet connection and try again.');
     } finally {
       setIsLoading(false);
     }
@@ -36,11 +46,21 @@ export function useAuth() {
         email,
         password,
       });
-      if (error) throw error;
+      if (error) {
+        // Handle specific Supabase auth errors
+        if (error.message?.includes('fetch')) {
+          throw new Error('Unable to connect to authentication service. Please check your internet connection.');
+        }
+        throw new Error(error.message || 'Sign up failed');
+      }
       return data;
     } catch (error) {
       console.error("Sign up error:", error);
-      throw error;
+      // Re-throw with user-friendly message
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Unable to sign up. Please check your internet connection and try again.');
     } finally {
       setIsLoading(false);
     }

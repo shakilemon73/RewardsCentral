@@ -32,11 +32,7 @@ export default defineConfig({
     port: 5000,
     strictPort: true,
     allowedHosts: ["localhost", ".replit.dev", ".replit.app", ".replit.co"],
-    hmr: {
-      port: 5000,
-      clientPort: 443,
-      host: "localhost",
-    },
+    hmr: false, // Disable HMR completely to stop fetch errors
     fs: {
       strict: true,
       deny: ["**/.*"],
