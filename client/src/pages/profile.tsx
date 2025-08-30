@@ -6,9 +6,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { User, Edit, Users, ChevronRight, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { surveyMatchingService } from "@/lib/surveyMatching";
+import { Progress } from "@/components/ui/progress";
+import { AlertCircle, CheckCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function Profile() {
   const { user } = useAuth();
@@ -161,7 +167,85 @@ export default function Profile() {
                   data-testid="input-email"
                 />
               </div>
-              <Button data-testid="button-update-profile">
+              
+              <Separator className="my-4" />
+              
+              {/* Demographics for Survey Targeting */}
+              <div className="space-y-4">
+                <Label className="text-base font-semibold">Survey Preferences (Optional)</Label>
+                <p className="text-sm text-muted-foreground">Help us find better-paying surveys for you</p>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="birthday">Birthday</Label>
+                    <Input
+                      id="birthday"
+                      type="date"
+                      defaultValue={user?.birthday || ''}
+                      data-testid="input-birthday"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="gender">Gender</Label>
+                    <Select defaultValue={user?.gender || ''}>
+                      <SelectTrigger data-testid="select-gender">
+                        <SelectValue placeholder="Select gender" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="male">Male</SelectItem>
+                        <SelectItem value="female">Female</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                        <SelectItem value="prefer_not_to_say">Prefer not to say</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="countryCode">Country</Label>
+                    <Select defaultValue={user?.country_code || ''}>
+                      <SelectTrigger data-testid="select-country">
+                        <SelectValue placeholder="Select country" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="US">United States</SelectItem>
+                        <SelectItem value="CA">Canada</SelectItem>
+                        <SelectItem value="GB">United Kingdom</SelectItem>
+                        <SelectItem value="AU">Australia</SelectItem>
+                        <SelectItem value="DE">Germany</SelectItem>
+                        <SelectItem value="FR">France</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="zipCode">ZIP/Postal Code</Label>
+                    <Input
+                      id="zipCode"
+                      defaultValue={user?.zip_code || ''}
+                      placeholder="12345"
+                      data-testid="input-zip-code"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <Label htmlFor="surveyLength">Preferred Survey Length</Label>
+                  <Select defaultValue={user?.preferred_survey_length || 'any'}>
+                    <SelectTrigger data-testid="select-survey-length">
+                      <SelectValue placeholder="Any length" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="short">Short (5-10 min)</SelectItem>
+                      <SelectItem value="medium">Medium (10-20 min)</SelectItem>
+                      <SelectItem value="long">Long (20+ min)</SelectItem>
+                      <SelectItem value="any">Any length</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              <Button data-testid="button-update-profile" className="w-full">
                 Update Profile
               </Button>
             </CardContent>
@@ -200,6 +284,46 @@ export default function Profile() {
 
         {/* Stats Sidebar */}
         <div className="space-y-6">
+          {/* Profile Completeness */}
+          <Card data-testid="card-profile-completeness">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                {(() => {
+                  const completeness = surveyMatchingService.getProfileCompleteness(user || {} as any);
+                  return completeness.score >= 80 ? (
+                    <><CheckCircle className="h-5 w-5 text-green-500" />Profile Complete</>
+                  ) : (
+                    <><AlertCircle className="h-5 w-5 text-yellow-500" />Complete Your Profile</>
+                  );
+                })()}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {(() => {
+                const completeness = surveyMatchingService.getProfileCompleteness(user || {} as any);
+                return (
+                  <>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Profile Completeness</span>
+                        <span className="font-medium">{completeness.score}%</span>
+                      </div>
+                      <Progress value={completeness.score} className="h-2" />
+                    </div>
+                    
+                    {completeness.recommendations.length > 0 && (
+                      <Alert>
+                        <AlertDescription className="text-sm">
+                          <strong>Get better surveys:</strong><br/>
+                          {completeness.recommendations.slice(0, 2).join(', ')}
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                  </>
+                );
+              })()}
+            </CardContent>
+          </Card>
           {/* Account Stats */}
           <Card data-testid="card-account-stats">
             <CardHeader>

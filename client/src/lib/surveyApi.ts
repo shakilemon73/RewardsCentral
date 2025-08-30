@@ -35,8 +35,45 @@ class SurveyApiService {
     return Math.abs(hash).toString(16);
   }
 
-  // Get survey providers with direct iframe integration
-  getSurveyProviders(userId: string): SurveyProvider[] {
+  // Build demographic parameters for CPX Research Smart Match
+  buildDemographicParams(demographics?: {
+    birthday?: string;
+    gender?: string;
+    country_code?: string;
+    zip_code?: string;
+  }): string {
+    if (!demographics) return '';
+    
+    let params = '';
+    
+    if (demographics.birthday) {
+      const date = new Date(demographics.birthday);
+      params += `&birthday_day=${date.getDate()}&birthday_month=${date.getMonth() + 1}&birthday_year=${date.getFullYear()}`;
+    }
+    
+    if (demographics.gender) {
+      const genderMap = { 'male': '1', 'female': '2', 'other': '3', 'prefer_not_to_say': '0' };
+      params += `&gender=${genderMap[demographics.gender as keyof typeof genderMap] || '0'}`;
+    }
+    
+    if (demographics.country_code) {
+      params += `&user_country_code=${demographics.country_code}`;
+    }
+    
+    if (demographics.zip_code) {
+      params += `&zip_code=${demographics.zip_code}`;
+    }
+    
+    return params;
+  }
+
+  // Get survey providers with enhanced demographic targeting
+  getSurveyProviders(userId: string, userDemographics?: {
+    birthday?: string;
+    gender?: string;
+    country_code?: string;
+    zip_code?: string;
+  }): SurveyProvider[] {
     return [
       {
         id: 'cpx_offerwall',
@@ -48,7 +85,7 @@ class SurveyApiService {
         timeRange: '5-20 minutes',
         category: 'Market Research',
         rating: 87,
-        url: `https://offers.cpx-research.com/index.php?app_id=${CPX_APP_ID}&ext_user_id=${userId}&secure_hash=${this.generateSimpleHash(userId, CPX_API_KEY)}`,
+        url: `https://offers.cpx-research.com/index.php?app_id=${CPX_APP_ID}&ext_user_id=${userId}&secure_hash=${this.generateSimpleHash(userId, CPX_API_KEY)}${this.buildDemographicParams(userDemographics)}`,
         isIframe: true
       },
       {
@@ -109,15 +146,101 @@ class SurveyApiService {
     window.open(provider.url, '_blank', 'width=1000,height=700,scrollbars=yes,resizable=yes');
   }
 
-  // Get all available survey tasks
-  async getAllSurveyTasks(userId: string): Promise<Task[]> {
+  // Get all available survey tasks with enhanced targeting
+  async getAllSurveyTasks(userId: string, userDemographics?: {
+    birthday?: string;
+    gender?: string;
+    country_code?: string;
+    zip_code?: string;
+  }): Promise<Task[]> {
     try {
-      const providers = this.getSurveyProviders(userId);
+      const providers = this.getSurveyProviders(userId, userDemographics);
       return providers.map(provider => this.convertProviderToTask(provider));
     } catch (error) {
       console.error('Failed to get survey providers:', error);
       return [];
     }
+  }
+
+  // Enhanced fallback mechanism for survey providers
+  async getSurveysWithFallback(userId: string, userDemographics?: {
+    birthday?: string;
+    gender?: string;
+    country_code?: string;
+    zip_code?: string;
+  }, maxRetries: number = 3): Promise<Task[]> {
+    const providers = ['cpx', 'bitlabs', 'theoremreach'];
+    
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      for (const provider of providers) {
+        try {
+          console.log(`Attempting to load surveys from ${provider} (attempt ${attempt + 1})`);
+          
+          // Try to get surveys from this provider
+          const surveys = await this.getAllSurveyTasks(userId, userDemographics);
+          const providerSurveys = surveys.filter(s => s.id.startsWith(provider));
+          
+          if (providerSurveys.length > 0) {
+            console.log(`Successfully loaded ${providerSurveys.length} surveys from ${provider}`);
+            return surveys; // Return all surveys if any provider succeeds
+          }
+        } catch (error) {
+          console.warn(`${provider} failed (attempt ${attempt + 1}):`, error);
+          continue; // Try next provider
+        }
+      }
+      
+      // Wait before retry
+      if (attempt < maxRetries - 1) {
+        await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+      }
+    }
+    
+    console.warn('All survey providers failed, returning empty array');
+    return [];
+  }
+
+  // Check survey availability without loading full wall
+  async checkSurveyAvailability(userId: string): Promise<{
+    cpx: boolean;
+    bitlabs: boolean;
+    theoremreach: boolean;
+  }> {
+    const results = {
+      cpx: false,
+      bitlabs: false,
+      theoremreach: false
+    };
+    
+    try {
+      // Quick check for each provider
+      const providers = this.getSurveyProviders(userId);
+      
+      for (const provider of providers) {
+        try {
+          // Simple fetch test to provider URL
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 3000);
+          
+          const response = await fetch(provider.url, {
+            method: 'HEAD',
+            signal: controller.signal
+          });
+          
+          clearTimeout(timeoutId);
+          
+          if (response.ok || response.status === 404) {
+            results[provider.provider] = true;
+          }
+        } catch (error) {
+          console.warn(`${provider.provider} availability check failed:`, error);
+        }
+      }
+    } catch (error) {
+      console.error('Availability check error:', error);
+    }
+    
+    return results;
   }
 }
 

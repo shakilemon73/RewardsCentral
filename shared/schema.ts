@@ -23,6 +23,15 @@ export interface User {
   tasks_completed: number;
   created_at?: string;
   updated_at?: string;
+  // Demographics for survey targeting
+  birthday?: string; // YYYY-MM-DD format
+  gender?: 'male' | 'female' | 'other' | 'prefer_not_to_say';
+  country_code?: string; // ISO 3166-1 alpha-2 (US, CA, GB, etc.)
+  zip_code?: string;
+  phone_number?: string;
+  // Survey provider preferences
+  preferred_survey_length?: 'short' | 'medium' | 'long' | 'any';
+  interests?: string[]; // For better survey matching
 }
 
 export interface UserTaskCompletion {

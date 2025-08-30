@@ -4,6 +4,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useToast } from "@/hooks/use-toast";
 import { supabaseHelpers } from "@/lib/queryClient";
 import { surveyApiService } from "@/lib/surveyApi";
+import { surveyPostbackService } from "@/lib/surveyPostback";
+import { surveyMatchingService } from "@/lib/surveyMatching";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +22,27 @@ export default function Tasks() {
   const [isLoading, setIsLoading] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
 
+  // Initialize survey postback listener
+  useEffect(() => {
+    surveyPostbackService.initializePostbackListener();
+    
+    // Listen for survey completion events
+    const handleSurveyCompletion = (event: any) => {
+      const { detail } = event;
+      toast({
+        title: "Survey Completed!",
+        description: `Earned ${detail.points} points from ${detail.provider.toUpperCase()}`,
+        duration: 5000,
+      });
+      
+      // Reload tasks to refresh user data
+      window.location.reload();
+    };
+    
+    window.addEventListener('survey-completed', handleSurveyCompletion);
+    return () => window.removeEventListener('survey-completed', handleSurveyCompletion);
+  }, [toast]);
+
   // Load tasks on component mount
   useEffect(() => {
     const loadTasks = async () => {
@@ -27,8 +50,16 @@ export default function Tasks() {
       
       setIsLoading(true);
       try {
-        // Get survey providers (CPX, TheoremReach, Bitlabs)
-        const surveyTasks = await surveyApiService.getAllSurveyTasks(user.id);
+        // Get survey providers with user demographics for better targeting
+        const userDemographics = {
+          birthday: user.birthday,
+          gender: user.gender,
+          country_code: user.country_code,
+          zip_code: user.zip_code
+        };
+        // Get best matched surveys using enhanced targeting
+        const bestMatches = await surveyMatchingService.getBestMatchedSurveys(user, 6);
+        const surveyTasks = bestMatches.map(match => surveyApiService.convertProviderToTask(match.provider));
         
         // Get local tasks (ads, offers) from Supabase
         const localTasks = await supabaseHelpers.getTasks();
