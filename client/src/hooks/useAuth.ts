@@ -9,14 +9,20 @@ export function useAuth() {
     queryKey: ["session"],
     queryFn: async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error("Session error:", error);
+          return null;
+        }
         return session;
       } catch (error) {
-        console.error("Session error:", error);
+        console.error("Session fetch error:", error);
         return null;
       }
     },
     retry: false,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
   const { data: user, isLoading: userLoading } = useQuery({
@@ -31,7 +37,29 @@ export function useAuth() {
           .eq("id", session.user.id)
           .single();
         
-        if (error && error.code !== "PGRST116") {
+        if (error) {
+          if (error.code === "PGRST116") {
+            // User doesn't exist, create new user
+            const newUser = {
+              id: session.user.id,
+              email: session.user.email,
+              points: 0,
+              total_earned: 0,
+              tasks_completed: 0,
+            };
+            
+            const { data: createdUser, error: createError } = await supabase
+              .from("users")
+              .insert(newUser)
+              .select()
+              .single();
+              
+            if (createError) {
+              console.error("User creation error:", createError);
+              return null;
+            }
+            return createdUser as User;
+          }
           console.error("User query error:", error);
           return null;
         }
@@ -44,6 +72,8 @@ export function useAuth() {
     },
     enabled: !!session?.user?.id,
     retry: false,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
   const signInMutation = useMutation({

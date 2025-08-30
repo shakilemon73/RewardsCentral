@@ -19,26 +19,42 @@ export const queryClient = new QueryClient({
 export const supabaseHelpers = {
   // Get all active tasks
   getTasks: async () => {
-    const { data, error } = await supabase
-      .from("tasks")
-      .select("*")
-      .eq("is_active", true)
-      .order("created_at", { ascending: false });
-    
-    if (error) throw error;
-    return data;
+    try {
+      const { data, error } = await supabase
+        .from("tasks")
+        .select("*")
+        .eq("is_active", true)
+        .order("created_at", { ascending: false });
+      
+      if (error) {
+        console.error("Tasks fetch error:", error);
+        return [];
+      }
+      return data || [];
+    } catch (error) {
+      console.error("Tasks fetch exception:", error);
+      return [];
+    }
   },
 
   // Get all active rewards
   getRewards: async () => {
-    const { data, error } = await supabase
-      .from("rewards")
-      .select("*")
-      .eq("is_active", true)
-      .order("points_cost", { ascending: true });
-    
-    if (error) throw error;
-    return data;
+    try {
+      const { data, error } = await supabase
+        .from("rewards")
+        .select("*")
+        .eq("is_active", true)
+        .order("points_cost", { ascending: true });
+      
+      if (error) {
+        console.error("Rewards fetch error:", error);
+        return [];
+      }
+      return data || [];
+    } catch (error) {
+      console.error("Rewards fetch exception:", error);
+      return [];
+    }
   },
 
   // Get user task completions
