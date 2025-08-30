@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { supabaseHelpers } from "@/lib/queryClient";
@@ -22,8 +22,27 @@ export default function Profile() {
   const isMobile = useIsMobile();
   const { toast } = useToast();
 
-  const [redemptions, setRedemptions] = useState([]);
-  const [activities, setActivities] = useState([]);
+  const [redemptions, setRedemptions] = useState<any[]>([]);
+  const [activities, setActivities] = useState<any[]>([]);
+
+  // Load user data
+  useEffect(() => {
+    const loadUserData = async () => {
+      if (!user?.id) return;
+      try {
+        // Load redemptions
+        const redemptionsData = await supabaseHelpers.getUserRewardRedemptions(user.id);
+        setRedemptions(redemptionsData);
+        
+        // Load activities
+        const activitiesData = await supabaseHelpers.getUserTaskCompletions(user.id);
+        setActivities(activitiesData);
+      } catch (error) {
+        console.error('Failed to load user data:', error);
+      }
+    };
+    loadUserData();
+  }, [user?.id]);
   const [isUpdating, setIsUpdating] = useState(false);
 
   const { signOut } = useAuth();
@@ -264,7 +283,7 @@ export default function Profile() {
                     
                     if (!user?.id) return;
                     
-                    // Update user profile in Supabase
+                    // Update user profile with all demographic data
                     const { error } = await supabase
                       .from('users')
                       .update({

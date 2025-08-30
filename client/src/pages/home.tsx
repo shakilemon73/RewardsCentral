@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { supabaseHelpers } from "@/lib/queryClient";
@@ -15,7 +15,30 @@ export default function Home() {
   const { user } = useAuth();
   const isMobile = useIsMobile();
 
-  const [activities, setActivities] = useState([]);
+  const [activities, setActivities] = useState<any[]>([]);
+
+  // Load recent activities
+  useEffect(() => {
+    const loadActivities = async () => {
+      if (!user?.id) return;
+      try {
+        const completions = await supabaseHelpers.getUserTaskCompletions(user.id);
+        // Transform to Activity format
+        const activityData = completions.slice(0, 5).map((completion: any) => ({
+          id: completion.id,
+          type: 'task_completion',
+          title: completion.task?.title || 'Task Completed',
+          taskType: completion.task?.type || 'survey',
+          pointsEarned: completion.points_earned,
+          createdAt: completion.completed_at
+        }));
+        setActivities(activityData);
+      } catch (error) {
+        console.error('Failed to load activities:', error);
+      }
+    };
+    loadActivities();
+  }, [user?.id]);
 
   if (isMobile) {
     return (
@@ -72,14 +95,14 @@ export default function Home() {
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-semibold text-foreground">Next Milestone</h3>
               <span className="text-muted-foreground text-sm">
-                {Math.max(0, 3000 - (user?.points || 0))} pts to go
+                {Math.max(0, 1000 - (user?.total_earned || 0))} pts to go
               </span>
             </div>
             <Progress 
-              value={Math.min(100, ((user?.points || 0) / 3000) * 100)} 
+              value={Math.min(100, ((user?.total_earned || 0) / 1000) * 100)} 
               className="mb-2"
             />
-            <p className="text-muted-foreground text-sm">3,000 Points Club</p>
+            <p className="text-muted-foreground text-sm">1,000 Points Club</p>
           </CardContent>
         </Card>
 
@@ -127,8 +150,8 @@ export default function Home() {
       />
       
       <ProgressSection 
-        currentPoints={user?.points || 0}
-        nextMilestone={3000}
+        currentPoints={user?.total_earned || 0}
+        nextMilestone={user?.total_earned && user.total_earned >= 5000 ? 10000 : user?.total_earned && user.total_earned >= 1000 ? 5000 : 1000}
       />
       
       <RecentActivities activities={activities || []} />

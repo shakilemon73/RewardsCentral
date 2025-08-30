@@ -158,6 +158,13 @@ export const supabaseHelpers = {
     first_name: string;
     last_name: string;
     profile_image_url: string;
+    birthday: string;
+    gender: string;
+    country_code: string;
+    zip_code: string;
+    phone_number: string;
+    preferred_survey_length: string;
+    interests: string[];
   }>) => {
     const { data, error } = await supabase
       .from("users")

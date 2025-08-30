@@ -18,13 +18,13 @@ export default function ProgressSection({ currentPoints, nextMilestone }: Progre
       name: "First 1000 Points",
       icon: Star,
       unlocked: currentPoints >= 1000,
-      variant: "success" as const,
+      variant: "default" as const,
     },
     {
       id: "survey-master",
       name: "Survey Master",
       icon: Trophy,
-      unlocked: currentPoints >= 500, // Assuming they've done surveys
+      unlocked: currentPoints >= 500,
       variant: "default" as const,
     },
     {
@@ -69,9 +69,7 @@ export default function ProgressSection({ currentPoints, nextMilestone }: Progre
                   variant={achievement.unlocked ? achievement.variant : "outline"}
                   className={`px-3 py-2 ${
                     achievement.unlocked
-                      ? achievement.variant === "success"
-                        ? "bg-success/10 text-success"
-                        : achievement.variant === "default"
+                      ? achievement.variant === "default"
                         ? "bg-primary/10 text-primary"
                         : "bg-secondary"
                       : "bg-secondary text-muted-foreground"
