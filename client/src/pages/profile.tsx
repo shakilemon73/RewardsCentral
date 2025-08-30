@@ -15,6 +15,7 @@ import { surveyMatchingService } from "@/lib/surveyMatching";
 import { Progress } from "@/components/ui/progress";
 import { AlertCircle, CheckCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { supabase } from "@/lib/supabase";
 
 export default function Profile() {
   const { user } = useAuth();
@@ -23,6 +24,7 @@ export default function Profile() {
 
   const [redemptions, setRedemptions] = useState([]);
   const [activities, setActivities] = useState([]);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const { signOut } = useAuth();
   
@@ -245,8 +247,60 @@ export default function Profile() {
                 </div>
               </div>
               
-              <Button data-testid="button-update-profile" className="w-full">
-                Update Profile
+              <Button 
+                data-testid="button-update-profile" 
+                className="w-full"
+                onClick={async () => {
+                  setIsUpdating(true);
+                  try {
+                    // Get form data
+                    const form = document.querySelector('form') || document;
+                    const birthday = (form.querySelector('#birthday') as HTMLInputElement)?.value;
+                    const gender = (form.querySelector('[data-testid="select-gender"] input') as HTMLInputElement)?.value;
+                    const countryCode = (form.querySelector('[data-testid="select-country"] input') as HTMLInputElement)?.value;
+                    const zipCode = (form.querySelector('#zipCode') as HTMLInputElement)?.value;
+                    const firstName = (form.querySelector('#firstName') as HTMLInputElement)?.value;
+                    const lastName = (form.querySelector('#lastName') as HTMLInputElement)?.value;
+                    
+                    if (!user?.id) return;
+                    
+                    // Update user profile in Supabase
+                    const { error } = await supabase
+                      .from('users')
+                      .update({
+                        first_name: firstName,
+                        last_name: lastName,
+                        birthday,
+                        gender,
+                        country_code: countryCode,
+                        zip_code: zipCode,
+                        updated_at: new Date().toISOString()
+                      })
+                      .eq('id', user?.id);
+                    
+                    if (error) throw error;
+                    
+                    toast({
+                      title: "Profile Updated!",
+                      description: "Your survey targeting has been improved with better demographic matching.",
+                    });
+                    
+                    // Refresh page to load updated user data
+                    window.location.reload();
+                  } catch (error) {
+                    console.error('Profile update error:', error);
+                    toast({
+                      title: "Update Failed",
+                      description: "Could not update profile. Please try again.",
+                      variant: "destructive"
+                    });
+                  } finally {
+                    setIsUpdating(false);
+                  }
+                }}
+                disabled={isUpdating}
+              >
+                {isUpdating ? 'Updating...' : 'Update Profile'}
               </Button>
             </CardContent>
           </Card>

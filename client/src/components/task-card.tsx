@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, FileText, Video, HandHeart } from "lucide-react";
+import { Star, FileText, Video, HandHeart, TrendingUp } from "lucide-react";
 import type { Task } from "@shared/schema";
 
 interface ExternalSurvey {

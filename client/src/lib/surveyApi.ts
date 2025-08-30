@@ -17,6 +17,8 @@ export interface SurveyProvider {
   timeRange: string;
   category: string;
   rating: number;
+  userRating: number;
+  averageReward: number;
   url: string;
   isIframe: boolean;
 }
@@ -85,6 +87,8 @@ class SurveyApiService {
         timeRange: '5-20 minutes',
         category: 'Market Research',
         rating: 87,
+        userRating: 4.4,
+        averageReward: 150,
         url: `https://offers.cpx-research.com/index.php?app_id=${CPX_APP_ID}&ext_user_id=${userId}&secure_hash=${this.generateSimpleHash(userId, CPX_API_KEY)}${this.buildDemographicParams(userDemographics)}`,
         isIframe: true
       },
@@ -98,6 +102,8 @@ class SurveyApiService {
         timeRange: '8-15 minutes',
         category: 'Product Research',
         rating: 83,
+        userRating: 4.2,
+        averageReward: 120,
         url: `https://theoremreach.com/reward_center?user_id=${userId}&api_key=${THEOREMREACH_API_KEY}`,
         isIframe: true
       },
@@ -111,24 +117,22 @@ class SurveyApiService {
         timeRange: '7-18 minutes',
         category: 'Lifestyle',
         rating: 89,
+        userRating: 4.5,
+        averageReward: 140,
         url: `https://web.bitlabs.ai/?uid=${userId}&token=${BITLABS_API_TOKEN}`,
         isIframe: true
       }
     ];
   }
 
-  // Convert provider to Task format for display
+  // Convert provider to Task format for display (enhanced with demographics)
   convertProviderToTask(provider: SurveyProvider): Task {
-    const estimatedPoints = provider.estimatedEarnings.includes('$0.50') ? 50 : 
-                           provider.estimatedEarnings.includes('$0.75') ? 75 :
-                           provider.estimatedEarnings.includes('$0.60') ? 60 : 100;
-    
     return {
       id: provider.id,
       type: 'survey',
       title: provider.title,
       description: provider.description,
-      points: estimatedPoints,
+      points: provider.averageReward,
       duration: provider.timeRange,
       category: provider.category,
       rating: provider.rating,

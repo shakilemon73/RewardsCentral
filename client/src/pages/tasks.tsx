@@ -96,18 +96,32 @@ export default function Tasks() {
       const isExternalSurvey = taskId.startsWith('cpx_') || taskId.startsWith('theorem_') || taskId.startsWith('bitlabs_');
       
       if (isExternalSurvey && task) {
-        // For external survey providers, open survey wall
+        // For external survey providers, use enhanced targeting URL
         const provider = taskId.split('_')[0];
+        const userDemographics = {
+          birthday: user.birthday,
+          gender: user.gender,
+          country_code: user.country_code,
+          zip_code: user.zip_code
+        };
         
-        // Open survey provider wall in new window
-        if ((task as any).external_url) {
-          window.open((task as any).external_url, '_blank', 'width=1000,height=700,scrollbars=yes,resizable=yes');
+        // Get optimized provider URL with demographics
+        const providers = surveyApiService.getSurveyProviders(user.id, userDemographics);
+        const matchedProvider = providers.find(p => p.provider === provider);
+        
+        if (matchedProvider) {
+          window.open(matchedProvider.url, '_blank', 'width=1000,height=700,scrollbars=yes,resizable=yes');
+          
+          // Get match details for better user feedback
+          const matchInfo = await surveyMatchingService.getBestMatchedSurveys(user, 3);
+          const currentMatch = matchInfo.find(m => m.provider.provider === provider);
+          
+          toast({
+            title: "Survey Platform Opened!",
+            description: `${matchedProvider.name} loaded with ${currentMatch?.estimatedCompletionRate ? Math.round(currentMatch.estimatedCompletionRate * 100) : 70}% estimated completion rate. Complete surveys to earn points automatically.`,
+            duration: 6000,
+          });
         }
-        
-        toast({
-          title: "Survey Platform Opened!",
-          description: `Complete surveys in the new window to earn points. Points will be credited automatically.`,
-        });
       } else {
         // Handle local tasks (ads, offers)
         await supabaseHelpers.completeTask(user.id, taskId, points);
