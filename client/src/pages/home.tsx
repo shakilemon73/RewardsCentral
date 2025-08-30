@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { supabaseHelpers } from "@/lib/queryClient";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -15,7 +16,9 @@ export default function Home() {
   const isMobile = useIsMobile();
 
   const { data: activities } = useQuery({
-    queryKey: ["/api/activities"],
+    queryKey: ["user-task-completions", user?.id],
+    queryFn: () => user?.id ? supabaseHelpers.getUserTaskCompletions(user.id) : [],
+    enabled: !!user?.id,
   });
 
   if (isMobile) {
@@ -59,7 +62,7 @@ export default function Home() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-muted-foreground text-xs">Tasks Done</p>
-                  <p className="text-lg font-bold text-foreground">{user?.tasksCompleted || 0}</p>
+                  <p className="text-lg font-bold text-foreground">{user?.tasks_completed || 0}</p>
                 </div>
                 <ArrowUp className="h-4 w-4 text-success" />
               </div>
@@ -122,9 +125,9 @@ export default function Home() {
       <h1 className="text-3xl font-bold text-foreground mb-6">Dashboard</h1>
       
       <StatsCards 
-        totalPoints={user?.totalEarned || 0}
-        tasksCompleted={user?.tasksCompleted || 0}
-        rewardsEarned={(user?.totalEarned || 0) / 100}
+        totalPoints={user?.total_earned || 0}
+        tasksCompleted={user?.tasks_completed || 0}
+        rewardsEarned={(user?.total_earned || 0) / 100}
       />
       
       <ProgressSection 

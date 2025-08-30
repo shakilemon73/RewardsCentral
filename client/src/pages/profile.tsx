@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { supabaseHelpers } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,15 +16,21 @@ export default function Profile() {
   const { toast } = useToast();
 
   const { data: redemptions } = useQuery({
-    queryKey: ["/api/redemptions"],
+    queryKey: ["user-reward-redemptions", user?.id],
+    queryFn: () => user?.id ? supabaseHelpers.getUserRewardRedemptions(user.id) : [],
+    enabled: !!user?.id,
   });
 
   const { data: activities } = useQuery({
-    queryKey: ["/api/activities"],
+    queryKey: ["user-task-completions", user?.id],
+    queryFn: () => user?.id ? supabaseHelpers.getUserTaskCompletions(user.id) : [],
+    enabled: !!user?.id,
   });
 
+  const { signOut } = useAuth();
+  
   const handleLogout = () => {
-    window.location.href = "/api/logout";
+    signOut();
   };
 
   const handleCopyReferral = () => {
@@ -55,8 +62,8 @@ export default function Profile() {
               <User className="h-8 w-8 text-primary" />
             </div>
             <h3 className="font-semibold text-foreground">
-              {user?.firstName || user?.lastName 
-                ? `${user.firstName || ''} ${user.lastName || ''}`.trim()
+              {user?.first_name || user?.last_name 
+                ? `${user.first_name || ''} ${user.last_name || ''}`.trim()
                 : 'User'
               }
             </h3>
@@ -69,14 +76,14 @@ export default function Profile() {
           <Card data-testid="card-total-earned">
             <CardContent className="p-4 text-center">
               <p className="text-2xl font-bold text-foreground">
-                ${((user?.totalEarned || 0) / 100).toFixed(2)}
+                ${((user?.total_earned || 0) / 100).toFixed(2)}
               </p>
               <p className="text-muted-foreground text-sm">Total Earned</p>
             </CardContent>
           </Card>
           <Card data-testid="card-tasks-completed">
             <CardContent className="p-4 text-center">
-              <p className="text-2xl font-bold text-foreground">{user?.tasksCompleted || 0}</p>
+              <p className="text-2xl font-bold text-foreground">{user?.tasks_completed || 0}</p>
               <p className="text-muted-foreground text-sm">Tasks Done</p>
             </CardContent>
           </Card>
@@ -141,7 +148,7 @@ export default function Profile() {
                   <Label htmlFor="firstName">First Name</Label>
                   <Input
                     id="firstName"
-                    defaultValue={user?.firstName || ''}
+                    defaultValue={user?.first_name || ''}
                     data-testid="input-first-name"
                   />
                 </div>
@@ -149,7 +156,7 @@ export default function Profile() {
                   <Label htmlFor="lastName">Last Name</Label>
                   <Input
                     id="lastName"
-                    defaultValue={user?.lastName || ''}
+                    defaultValue={user?.last_name || ''}
                     data-testid="input-last-name"
                   />
                 </div>
@@ -211,18 +218,18 @@ export default function Profile() {
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Member Since</span>
                 <span className="text-foreground font-medium">
-                  {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown'}
+                  {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'Unknown'}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Total Earned</span>
                 <span className="text-foreground font-medium">
-                  ${((user?.totalEarned || 0) / 100).toFixed(2)}
+                  ${((user?.total_earned || 0) / 100).toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Tasks Completed</span>
-                <span className="text-foreground font-medium">{user?.tasksCompleted || 0}</span>
+                <span className="text-foreground font-medium">{user?.tasks_completed || 0}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Current Points</span>

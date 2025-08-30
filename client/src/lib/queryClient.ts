@@ -1,53 +1,12 @@
-import { QueryClient, QueryFunction } from "@tanstack/react-query";
-
-async function throwIfResNotOk(res: Response) {
-  if (!res.ok) {
-    const text = (await res.text()) || res.statusText;
-    throw new Error(`${res.status}: ${text}`);
-  }
-}
-
-export async function apiRequest(
-  method: string,
-  url: string,
-  data?: unknown | undefined,
-): Promise<Response> {
-  const res = await fetch(url, {
-    method,
-    headers: data ? { "Content-Type": "application/json" } : {},
-    body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
-  });
-
-  await throwIfResNotOk(res);
-  return res;
-}
-
-type UnauthorizedBehavior = "returnNull" | "throw";
-export const getQueryFn: <T>(options: {
-  on401: UnauthorizedBehavior;
-}) => QueryFunction<T> =
-  ({ on401: unauthorizedBehavior }) =>
-  async ({ queryKey }) => {
-    const res = await fetch(queryKey.join("/") as string, {
-      credentials: "include",
-    });
-
-    if (unauthorizedBehavior === "returnNull" && res.status === 401) {
-      return null;
-    }
-
-    await throwIfResNotOk(res);
-    return await res.json();
-  };
+import { QueryClient } from "@tanstack/react-query";
+import { supabase } from "./supabase";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
       refetchOnWindowFocus: false,
-      staleTime: Infinity,
+      staleTime: 5 * 60 * 1000, // 5 minutes
       retry: false,
     },
     mutations: {
@@ -55,3 +14,144 @@ export const queryClient = new QueryClient({
     },
   },
 });
+
+// Supabase helpers for common operations
+export const supabaseHelpers = {
+  // Get all active tasks
+  getTasks: async () => {
+    const { data, error } = await supabase
+      .from("tasks")
+      .select("*")
+      .eq("is_active", true)
+      .order("created_at", { ascending: false });
+    
+    if (error) throw error;
+    return data;
+  },
+
+  // Get all active rewards
+  getRewards: async () => {
+    const { data, error } = await supabase
+      .from("rewards")
+      .select("*")
+      .eq("is_active", true)
+      .order("points_cost", { ascending: true });
+    
+    if (error) throw error;
+    return data;
+  },
+
+  // Get user task completions
+  getUserTaskCompletions: async (userId: string) => {
+    const { data, error } = await supabase
+      .from("user_task_completions")
+      .select(`
+        *,
+        task:tasks(*)
+      `)
+      .eq("user_id", userId)
+      .order("completed_at", { ascending: false });
+    
+    if (error) throw error;
+    return data;
+  },
+
+  // Get user reward redemptions
+  getUserRewardRedemptions: async (userId: string) => {
+    const { data, error } = await supabase
+      .from("user_reward_redemptions")
+      .select(`
+        *,
+        reward:rewards(*)
+      `)
+      .eq("user_id", userId)
+      .order("redeemed_at", { ascending: false });
+    
+    if (error) throw error;
+    return data;
+  },
+
+  // Complete a task
+  completeTask: async (userId: string, taskId: string, pointsEarned: number) => {
+    // Start a transaction
+    const { data: completion, error: completionError } = await supabase
+      .from("user_task_completions")
+      .insert({
+        user_id: userId,
+        task_id: taskId,
+        points_earned: pointsEarned,
+      })
+      .select()
+      .single();
+
+    if (completionError) throw completionError;
+
+    // Update user points and tasks completed
+    const { error: userError } = await supabase.rpc("update_user_after_task_completion", {
+      user_id: userId,
+      points_to_add: pointsEarned,
+    });
+
+    if (userError) throw userError;
+    return completion;
+  },
+
+  // Redeem a reward
+  redeemReward: async (userId: string, rewardId: string, pointsCost: number) => {
+    // Check if user has enough points first
+    const { data: user, error: userError } = await supabase
+      .from("users")
+      .select("points")
+      .eq("id", userId)
+      .single();
+
+    if (userError) throw userError;
+    if (!user || user.points < pointsCost) {
+      throw new Error("Insufficient points");
+    }
+
+    // Insert redemption record
+    const { data: redemption, error: redemptionError } = await supabase
+      .from("user_reward_redemptions")
+      .insert({
+        user_id: userId,
+        reward_id: rewardId,
+        points_spent: pointsCost,
+        status: "pending",
+      })
+      .select()
+      .single();
+
+    if (redemptionError) throw redemptionError;
+
+    // Update user points
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ points: user.points - pointsCost })
+      .eq("id", userId);
+
+    if (updateError) throw updateError;
+    return redemption;
+  },
+
+  // Update user profile
+  updateUserProfile: async (userId: string, updates: Partial<{
+    email: string;
+    first_name: string;
+    last_name: string;
+    profile_image_url: string;
+  }>) => {
+    const { data, error } = await supabase
+      .from("users")
+      .update({
+        ...updates,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", userId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+};

@@ -2,8 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
-import { isUnauthorizedError } from "@/lib/authUtils";
+import { supabaseHelpers } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,36 +18,27 @@ export default function Tasks() {
   const [activeTab, setActiveTab] = useState("surveys");
 
   const { data: tasks, isLoading } = useQuery({
-    queryKey: ["/api/tasks"],
+    queryKey: ["tasks"],
+    queryFn: supabaseHelpers.getTasks,
   });
 
   const completeTaskMutation = useMutation({
     mutationFn: async (data: { taskId: string; pointsEarned: number }) => {
-      await apiRequest("POST", "/api/tasks/complete", data);
+      if (!user?.id) throw new Error("User not authenticated");
+      return supabaseHelpers.completeTask(user.id, data.taskId, data.pointsEarned);
     },
     onSuccess: () => {
       toast({
         title: "Task Completed!",
         description: "Points have been added to your account.",
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/activities"] });
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({ queryKey: ["user-task-completions"] });
     },
     onError: (error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
       toast({
         title: "Error",
-        description: "Failed to complete task. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to complete task. Please try again.",
         variant: "destructive",
       });
     },

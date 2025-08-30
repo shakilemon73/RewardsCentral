@@ -1,152 +1,233 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Gift, Star, Award, CheckCircle } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
+import { Gift, Star, Award, CheckCircle, Loader2 } from "lucide-react";
 
 export default function Landing() {
-  const handleLogin = () => {
-    window.location.href = "/api/login";
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { signIn, signUp, isSigningIn, isSigningUp } = useAuth();
+  const { toast } = useToast();
+
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await signIn({ email, password });
+      toast({
+        title: "Welcome back!",
+        description: "Successfully signed in to your account.",
+      });
+    } catch (error) {
+      toast({
+        title: "Sign In Failed",
+        description: error instanceof Error ? error.message : "Failed to sign in. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await signUp({ email, password });
+      toast({
+        title: "Account Created!",
+        description: "Please check your email to verify your account.",
+      });
+    } catch (error) {
+      toast({
+        title: "Sign Up Failed", 
+        description: error instanceof Error ? error.message : "Failed to create account. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b border-border bg-card">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-center">
           <div className="gradient-bg text-white px-4 py-2 rounded-lg font-bold text-xl">
             RewardsPay
           </div>
-          <Button onClick={handleLogin} data-testid="button-login">
-            Sign In
-          </Button>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-            Earn Points,
-            <br />
-            <span className="bg-gradient-to-r from-primary to-success bg-clip-text text-transparent">
-              Redeem Rewards
-            </span>
-          </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Complete surveys, watch ads, and claim offers to earn points. 
-            Redeem them for gift cards and PayPal cash.
-          </p>
-          <Button 
-            size="lg" 
-            onClick={handleLogin}
-            className="text-lg px-8 py-4"
-            data-testid="button-get-started"
-          >
-            Get Started
-          </Button>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="py-16 px-4 bg-secondary/50">
-        <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-center text-foreground mb-12">
-            How It Works
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card data-testid="card-feature-surveys">
-              <CardHeader>
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Hero Content */}
+          <div>
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+              Earn Points,
+              <br />
+              <span className="bg-gradient-to-r from-primary to-success bg-clip-text text-transparent">
+                Redeem Rewards
+              </span>
+            </h1>
+            <p className="text-xl text-muted-foreground mb-8">
+              Complete surveys, watch ads, and claim offers to earn points. 
+              Redeem them for gift cards and PayPal cash.
+            </p>
+            
+            {/* Features Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
                   <CheckCircle className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle>Complete Tasks</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Take surveys, watch ads, and complete offers to earn points.
-                  Each task has different point values.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card data-testid="card-feature-points">
-              <CardHeader>
-                <div className="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center mb-4">
+                <h3 className="font-semibold text-foreground mb-2">Complete Tasks</h3>
+                <p className="text-sm text-muted-foreground">Surveys, ads & offers</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center mx-auto mb-3">
                   <Star className="h-6 w-6 text-success" />
                 </div>
-                <CardTitle>Earn Points</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Collect points for every completed task. Surveys earn 50-200 points,
-                  ads earn 10 points each.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card data-testid="card-feature-rewards">
-              <CardHeader>
-                <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mb-4">
+                <h3 className="font-semibold text-foreground mb-2">Earn Points</h3>
+                <p className="text-sm text-muted-foreground">50-200 per survey</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mx-auto mb-3">
                   <Gift className="h-6 w-6 text-accent" />
                 </div>
-                <CardTitle>Redeem Rewards</CardTitle>
+                <h3 className="font-semibold text-foreground mb-2">Get Rewards</h3>
+                <p className="text-sm text-muted-foreground">Gift cards & cash</p>
+              </div>
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">10,000+</div>
+                <div className="text-xs text-muted-foreground">Active Users</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-success">$50,000+</div>
+                <div className="text-xs text-muted-foreground">Rewards Paid</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-accent">4.8★</div>
+                <div className="text-xs text-muted-foreground">User Rating</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Authentication Card */}
+          <div>
+            <Card className="w-full max-w-md mx-auto">
+              <CardHeader>
+                <CardTitle className="text-center">Get Started Today</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">
-                  Exchange your points for gift cards or PayPal cash.
-                  1,000 points = $10 in rewards.
-                </p>
+                <Tabs defaultValue="signin" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="signin">Sign In</TabsTrigger>
+                    <TabsTrigger value="signup">Sign Up</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="signin">
+                    <form onSubmit={handleSignIn} className="space-y-4">
+                      <div>
+                        <Label htmlFor="signin-email">Email</Label>
+                        <Input
+                          id="signin-email"
+                          type="email"
+                          placeholder="Enter your email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                          data-testid="input-signin-email"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="signin-password">Password</Label>
+                        <Input
+                          id="signin-password"
+                          type="password"
+                          placeholder="Enter your password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          required
+                          data-testid="input-signin-password"
+                        />
+                      </div>
+                      <Button 
+                        type="submit" 
+                        className="w-full" 
+                        disabled={isSigningIn}
+                        data-testid="button-signin"
+                      >
+                        {isSigningIn ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Signing In...
+                          </>
+                        ) : (
+                          "Sign In"
+                        )}
+                      </Button>
+                    </form>
+                  </TabsContent>
+                  
+                  <TabsContent value="signup">
+                    <form onSubmit={handleSignUp} className="space-y-4">
+                      <div>
+                        <Label htmlFor="signup-email">Email</Label>
+                        <Input
+                          id="signup-email"
+                          type="email"
+                          placeholder="Enter your email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                          data-testid="input-signup-email"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="signup-password">Password</Label>
+                        <Input
+                          id="signup-password"
+                          type="password"
+                          placeholder="Create a password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          required
+                          data-testid="input-signup-password"
+                        />
+                      </div>
+                      <Button 
+                        type="submit" 
+                        className="w-full" 
+                        disabled={isSigningUp}
+                        data-testid="button-signup"
+                      >
+                        {isSigningUp ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Creating Account...
+                          </>
+                        ) : (
+                          "Create Account"
+                        )}
+                      </Button>
+                    </form>
+                  </TabsContent>
+                </Tabs>
               </CardContent>
             </Card>
           </div>
         </div>
-      </section>
-
-      {/* Stats */}
-      <section className="py-16 px-4">
-        <div className="container mx-auto text-center">
-          <h2 className="text-3xl font-bold text-foreground mb-12">
-            Join Thousands of Earners
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div data-testid="stat-users">
-              <div className="text-4xl font-bold text-primary mb-2">10,000+</div>
-              <div className="text-muted-foreground">Active Users</div>
-            </div>
-            <div data-testid="stat-rewards">
-              <div className="text-4xl font-bold text-success mb-2">$50,000+</div>
-              <div className="text-muted-foreground">Rewards Paid</div>
-            </div>
-            <div data-testid="stat-satisfaction">
-              <div className="text-4xl font-bold text-accent mb-2">4.8★</div>
-              <div className="text-muted-foreground">User Rating</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-20 px-4 gradient-bg text-white">
-        <div className="container mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-6">
-            Ready to Start Earning?
-          </h2>
-          <p className="text-xl opacity-90 mb-8">
-            Sign up now and get started with your first task.
-          </p>
-          <Button 
-            size="lg" 
-            variant="secondary"
-            onClick={handleLogin}
-            className="text-lg px-8 py-4"
-            data-testid="button-cta-signup"
-          >
-            Sign Up Now
-          </Button>
-        </div>
-      </section>
+      </div>
 
       {/* Footer */}
-      <footer className="border-t border-border bg-card py-8 px-4">
+      <footer className="border-t border-border bg-card py-8 px-4 mt-12">
         <div className="container mx-auto text-center">
           <div className="gradient-bg text-white px-4 py-2 rounded-lg font-bold text-lg inline-block mb-4">
             RewardsPay

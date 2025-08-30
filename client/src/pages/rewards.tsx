@@ -2,8 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
-import { isUnauthorizedError } from "@/lib/authUtils";
+import { supabaseHelpers } from "@/lib/queryClient";
 import { Card, CardContent } from "@/components/ui/card";
 import RewardCard from "@/components/reward-card";
 
@@ -14,35 +13,27 @@ export default function Rewards() {
   const queryClient = useQueryClient();
 
   const { data: rewards, isLoading } = useQuery({
-    queryKey: ["/api/rewards"],
+    queryKey: ["rewards"],
+    queryFn: supabaseHelpers.getRewards,
   });
 
   const redeemMutation = useMutation({
     mutationFn: async (data: { rewardId: string; pointsSpent: number }) => {
-      await apiRequest("POST", "/api/rewards/redeem", data);
+      if (!user?.id) throw new Error("User not authenticated");
+      return supabaseHelpers.redeemReward(user.id, data.rewardId, data.pointsSpent);
     },
     onSuccess: () => {
       toast({
         title: "Reward Redeemed!",
         description: "Your reward will be processed within 24 hours.",
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({ queryKey: ["user-reward-redemptions"] });
     },
     onError: (error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
       toast({
         title: "Error",
-        description: "Failed to redeem reward. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to redeem reward. Please try again.",
         variant: "destructive",
       });
     },
