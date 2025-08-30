@@ -2,6 +2,7 @@
 import type { Task } from "@shared/schema";
 import { surveyResilienceManager } from "./surveyResilience";
 import { surveyConfigManager } from "./surveyConfig";
+import { supabase } from "./supabase";
 import CryptoJS from 'crypto-js';
 
 // API credentials managed through configuration system
@@ -126,7 +127,7 @@ class SurveyApiService {
     }
   }
 
-  // Fetch CPX Research surveys directly
+  // Fetch CPX Research surveys via backend proxy (avoids CORS)
   async fetchCPXSurveys(userId: string, userDemographics?: {
     birthday?: string;
     gender?: string;
@@ -136,52 +137,18 @@ class SurveyApiService {
     return await surveyResilienceManager.executeWithCircuitBreaker(
       'cpx',
       async () => {
-        const config = getProviderConfig().cpx;
-        const ipAddress = await this.getUserIP();
-        
-        // CPX API endpoint for getting surveys
-        const apiUrl = `https://offers.cpx-research.com/api/v1/surveys`;
-        const secureHash = this.generateCPXSecureHash(userId, ipAddress);
-        
-        const params = new URLSearchParams({
-          app_id: config.appId || '',
-          ext_user_id: userId,
-          ip: ipAddress,
-          secure_hash: secureHash,
-          format: 'json'
+        // Call our backend function to avoid CORS issues
+        const { data, error } = await supabase.rpc('fetch_provider_surveys', {
+          p_provider_name: 'cpx',
+          p_user_id: userId,
+          p_user_demographics: userDemographics || {}
         });
         
-        // Add demographic parameters for better targeting
-        if (userDemographics?.birthday) {
-          const date = new Date(userDemographics.birthday);
-          params.append('birthday_day', date.getDate().toString());
-          params.append('birthday_month', (date.getMonth() + 1).toString());
-          params.append('birthday_year', date.getFullYear().toString());
+        if (error) {
+          throw new Error(`CPX backend error: ${error.message}`);
         }
         
-        if (userDemographics?.gender) {
-          const genderMap = { 'male': '1', 'female': '2', 'other': '3' };
-          params.append('gender', genderMap[userDemographics.gender as keyof typeof genderMap] || '0');
-        }
-        
-        if (userDemographics?.country_code) {
-          params.append('country', userDemographics.country_code);
-        }
-
-        const response = await fetch(`${apiUrl}?${params.toString()}`, {
-          method: 'GET',
-          headers: {
-            'User-Agent': 'RewardsPay/1.0',
-            'Accept': 'application/json'
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error(`CPX API error: ${response.status}`);
-        }
-
-        const data = await response.json();
-        const surveys: CPXSurvey[] = data.surveys || [];
+        const surveys: CPXSurvey[] = data?.surveys || [];
         
         // Cache successful response
         surveyResilienceManager.setCachedResponse(`cpx_surveys_${userId}`, surveys, 300000);
@@ -196,7 +163,7 @@ class SurveyApiService {
     );
   }
 
-  // Fetch TheoremReach surveys directly
+  // Fetch TheoremReach surveys via backend proxy (avoids CORS)
   async fetchTheoremReachSurveys(userId: string, userDemographics?: {
     birthday?: string;
     gender?: string;
@@ -206,40 +173,18 @@ class SurveyApiService {
     return await surveyResilienceManager.executeWithCircuitBreaker(
       'theoremreach',
       async () => {
-        const config = getProviderConfig().theoremreach;
-        
-        // TheoremReach API endpoint
-        const apiUrl = 'https://theoremreach.com/api/external/v1/surveys';
-        
-        const requestBody = {
-          user_id: userId,
-          api_key: config.apiKey,
-          ...(userDemographics?.birthday && { dob: userDemographics.birthday }),
-          ...(userDemographics?.gender && { gender: userDemographics.gender }),
-          ...(userDemographics?.country_code && { country: userDemographics.country_code }),
-          ...(userDemographics?.zip_code && { postal_code: userDemographics.zip_code })
-        };
-        
-        // Generate secure hash for TheoremReach
-        const requestUrl = apiUrl;
-        const jsonBody = JSON.stringify(requestBody);
-        const secureHash = this.generateTheoremReachHash(requestUrl, jsonBody, config.secretKey || '');
-
-        const response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-TR-Hash': secureHash
-          },
-          body: jsonBody
+        // Call our backend function to avoid CORS issues
+        const { data, error } = await supabase.rpc('fetch_provider_surveys', {
+          p_provider_name: 'theoremreach',
+          p_user_id: userId,
+          p_user_demographics: userDemographics || {}
         });
-
-        if (!response.ok) {
-          throw new Error(`TheoremReach API error: ${response.status}`);
+        
+        if (error) {
+          throw new Error(`TheoremReach backend error: ${error.message}`);
         }
-
-        const data = await response.json();
-        const surveys: TheoremReachSurvey[] = data.surveys || [];
+        
+        const surveys: TheoremReachSurvey[] = data?.surveys || [];
         
         // Cache successful response
         surveyResilienceManager.setCachedResponse(`theoremreach_surveys_${userId}`, surveys, 300000);
@@ -254,7 +199,7 @@ class SurveyApiService {
     );
   }
 
-  // Fetch BitLabs surveys directly
+  // Fetch BitLabs surveys via backend proxy (avoids CORS)
   async fetchBitLabsSurveys(userId: string, userDemographics?: {
     birthday?: string;
     gender?: string;
@@ -264,36 +209,18 @@ class SurveyApiService {
     return await surveyResilienceManager.executeWithCircuitBreaker(
       'bitlabs',
       async () => {
-        const config = getProviderConfig().bitlabs;
-        
-        // BitLabs API endpoint
-        const apiUrl = 'https://api.bitlabs.ai/v1/surveys';
-        
-        const params = new URLSearchParams({
-          uid: userId,
-          token: config.apiKey,
-          ...(userDemographics?.country_code && { country: userDemographics.country_code }),
-          ...(userDemographics?.gender && { gender: userDemographics.gender }),
+        // Call our backend function to avoid CORS issues
+        const { data, error } = await supabase.rpc('fetch_provider_surveys', {
+          p_provider_name: 'bitlabs',
+          p_user_id: userId,
+          p_user_demographics: userDemographics || {}
         });
         
-        if (userDemographics?.birthday) {
-          const age = Math.floor((Date.now() - new Date(userDemographics.birthday).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
-          params.append('age', age.toString());
+        if (error) {
+          throw new Error(`BitLabs backend error: ${error.message}`);
         }
-
-        const response = await fetch(`${apiUrl}?${params.toString()}`, {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json'
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error(`BitLabs API error: ${response.status}`);
-        }
-
-        const data = await response.json();
-        const surveys: BitLabsSurvey[] = data.surveys || [];
+        
+        const surveys: BitLabsSurvey[] = data?.surveys || [];
         
         // Cache successful response
         surveyResilienceManager.setCachedResponse(`bitlabs_surveys_${userId}`, surveys, 300000);
@@ -308,7 +235,7 @@ class SurveyApiService {
     );
   }
 
-  // Fetch RapidoReach surveys with resilience
+  // Fetch RapidoReach surveys via backend proxy (avoids CORS)
   async fetchRapidoReachSurveys(userId: string, userDemographics?: {
     birthday?: string;
     gender?: string;
@@ -318,55 +245,25 @@ class SurveyApiService {
     return await surveyResilienceManager.executeWithCircuitBreaker(
       'rapidoreach',
       async () => {
-        const ipAddress = await this.getUserIP();
-        const city = await this.getUserCity();
-        
-        // Map country code to language code (default to ENG-US)
-        const countryLanguageMap: { [key: string]: string } = {
-          'US': 'ENG-US',
-          'CA': 'ENG-CA',
-          'GB': 'ENG-GB',
-          'AU': 'ENG-AU',
-          'IN': 'ENG-IN'
-        };
-        const countryLanguageCode = countryLanguageMap[userDemographics?.country_code || 'US'] || 'ENG-US';
-
-        const config = getProviderConfig().rapidoreach;
-        const requestBody = {
-          UserId: userId,
-          AppId: config.appId,
-          IpAddress: ipAddress,
-          City: city,
-          CountryLanguageCode: countryLanguageCode,
-          ...(userDemographics?.birthday && { DateOfBirth: userDemographics.birthday }),
-          ...(userDemographics?.gender && { 
-            Gender: userDemographics.gender === 'male' ? 'M' : userDemographics.gender === 'female' ? 'F' : 'M' 
-          }),
-          ...(userDemographics?.zip_code && { ZipCode: userDemographics.zip_code })
-        };
-
-        const response = await fetch(config.endpoints.surveys || 'https://www.rapidoreach.com/getallsurveys-api/', {
-          method: 'POST',
-          headers: {
-            'X-RapidoReach-Api-Key': config.apiKey,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(requestBody)
+        // Call our backend function to avoid CORS issues
+        const { data, error } = await supabase.rpc('fetch_provider_surveys', {
+          p_provider_name: 'rapidoreach',
+          p_user_id: userId,
+          p_user_demographics: userDemographics || {}
         });
-
-        if (!response.ok) {
-          throw new Error(`RapidoReach API error: ${response.status}`);
+        
+        if (error) {
+          throw new Error(`RapidoReach backend error: ${error.message}`);
         }
-
-        const surveys: RapidoReachSurvey[] = await response.json();
-        const result = Array.isArray(surveys) ? surveys : [];
+        
+        const surveys: RapidoReachSurvey[] = data?.surveys || [];
         
         // Cache successful response
-        surveyResilienceManager.setCachedResponse(`rapidoreach_surveys_${userId}`, result, 300000);
+        surveyResilienceManager.setCachedResponse(`rapidoreach_surveys_${userId}`, surveys, 300000);
         
-        return result;
+        return surveys;
       },
-      // Fallback to cached data or empty array
+      // Fallback to cached data
       async () => {
         console.warn('Using fallback for RapidoReach surveys');
         return [];
