@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { supabaseHelpers } from "@/lib/queryClient";
@@ -15,17 +15,8 @@ export default function Profile() {
   const isMobile = useIsMobile();
   const { toast } = useToast();
 
-  const { data: redemptions } = useQuery({
-    queryKey: ["user-reward-redemptions", user?.id],
-    queryFn: () => user?.id ? supabaseHelpers.getUserRewardRedemptions(user.id) : [],
-    enabled: !!user?.id,
-  });
-
-  const { data: activities } = useQuery({
-    queryKey: ["user-task-completions", user?.id],
-    queryFn: () => user?.id ? supabaseHelpers.getUserTaskCompletions(user.id) : [],
-    enabled: !!user?.id,
-  });
+  const [redemptions, setRedemptions] = useState([]);
+  const [activities, setActivities] = useState([]);
 
   const { signOut } = useAuth();
   

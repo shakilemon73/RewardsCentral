@@ -6,11 +6,16 @@ export const queryClient = new QueryClient({
     queries: {
       refetchInterval: false,
       refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+      staleTime: Infinity,
       retry: false,
+      suspense: false,
+      useErrorBoundary: false,
     },
     mutations: {
       retry: false,
+      useErrorBoundary: false,
     },
   },
 });

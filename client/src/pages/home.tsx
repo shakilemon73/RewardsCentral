@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { supabaseHelpers } from "@/lib/queryClient";
@@ -15,11 +15,7 @@ export default function Home() {
   const { user } = useAuth();
   const isMobile = useIsMobile();
 
-  const { data: activities } = useQuery({
-    queryKey: ["user-task-completions", user?.id],
-    queryFn: () => user?.id ? supabaseHelpers.getUserTaskCompletions(user.id) : [],
-    enabled: !!user?.id,
-  });
+  const [activities, setActivities] = useState([]);
 
   if (isMobile) {
     return (

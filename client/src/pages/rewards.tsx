@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useToast } from "@/hooks/use-toast";
@@ -10,36 +10,11 @@ export default function Rewards() {
   const { user } = useAuth();
   const isMobile = useIsMobile();
   const { toast } = useToast();
-  const queryClient = useQueryClient();
+  const [rewards, setRewards] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isRedeeming, setIsRedeeming] = useState(false);
 
-  const { data: rewards, isLoading } = useQuery({
-    queryKey: ["rewards"],
-    queryFn: supabaseHelpers.getRewards,
-  });
-
-  const redeemMutation = useMutation({
-    mutationFn: async (data: { rewardId: string; pointsSpent: number }) => {
-      if (!user?.id) throw new Error("User not authenticated");
-      return supabaseHelpers.redeemReward(user.id, data.rewardId, data.pointsSpent);
-    },
-    onSuccess: () => {
-      toast({
-        title: "Reward Redeemed!",
-        description: "Your reward will be processed within 24 hours.",
-      });
-      queryClient.invalidateQueries({ queryKey: ["user"] });
-      queryClient.invalidateQueries({ queryKey: ["user-reward-redemptions"] });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to redeem reward. Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const handleRedeem = (rewardId: string, pointsCost: number) => {
+  const handleRedeem = async (rewardId: string, pointsCost: number) => {
     if ((user?.points || 0) < pointsCost) {
       toast({
         title: "Insufficient Points",
@@ -48,8 +23,24 @@ export default function Rewards() {
       });
       return;
     }
-
-    redeemMutation.mutate({ rewardId, pointsSpent: pointsCost });
+    
+    if (!user?.id) return;
+    setIsRedeeming(true);
+    try {
+      await supabaseHelpers.redeemReward(user.id, rewardId, pointsCost);
+      toast({
+        title: "Reward Redeemed!",
+        description: "Your reward will be processed within 24 hours.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to redeem reward. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsRedeeming(false);
+    }
   };
 
   if (isLoading) {
@@ -94,7 +85,7 @@ export default function Rewards() {
               userPoints={user?.points || 0}
               onRedeem={handleRedeem}
               isMobile={true}
-              isRedeeming={redeemMutation.isPending}
+              isRedeeming={isRedeeming}
             />
           ))}
         </div>

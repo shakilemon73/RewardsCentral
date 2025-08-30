@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useToast } from "@/hooks/use-toast";
@@ -14,38 +14,29 @@ export default function Tasks() {
   const { user } = useAuth();
   const isMobile = useIsMobile();
   const { toast } = useToast();
-  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("surveys");
+  const [tasks, setTasks] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isCompleting, setIsCompleting] = useState(false);
 
-  const { data: tasks, isLoading } = useQuery({
-    queryKey: ["tasks"],
-    queryFn: supabaseHelpers.getTasks,
-  });
-
-  const completeTaskMutation = useMutation({
-    mutationFn: async (data: { taskId: string; pointsEarned: number }) => {
-      if (!user?.id) throw new Error("User not authenticated");
-      return supabaseHelpers.completeTask(user.id, data.taskId, data.pointsEarned);
-    },
-    onSuccess: () => {
+  const handleCompleteTask = async (taskId: string, points: number) => {
+    if (!user?.id) return;
+    setIsCompleting(true);
+    try {
+      await supabaseHelpers.completeTask(user.id, taskId, points);
       toast({
         title: "Task Completed!",
         description: "Points have been added to your account.",
       });
-      queryClient.invalidateQueries({ queryKey: ["user"] });
-      queryClient.invalidateQueries({ queryKey: ["user-task-completions"] });
-    },
-    onError: (error) => {
+    } catch (error) {
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to complete task. Please try again.",
         variant: "destructive",
       });
-    },
-  });
-
-  const handleCompleteTask = (taskId: string, points: number) => {
-    completeTaskMutation.mutate({ taskId, pointsEarned: points });
+    } finally {
+      setIsCompleting(false);
+    }
   };
 
   const surveys = tasks?.filter(task => task.type === "survey") || [];
@@ -112,7 +103,7 @@ export default function Tasks() {
               task={task}
               onComplete={handleCompleteTask}
               isMobile={true}
-              isCompleting={completeTaskMutation.isPending}
+              isCompleting={isCompleting}
             />
           ))}
           {activeTab === "ads" && ads.map(task => (
@@ -121,7 +112,7 @@ export default function Tasks() {
               task={task}
               onComplete={handleCompleteTask}
               isMobile={true}
-              isCompleting={completeTaskMutation.isPending}
+              isCompleting={isCompleting}
             />
           ))}
           {activeTab === "offers" && offers.map(task => (
@@ -130,7 +121,7 @@ export default function Tasks() {
               task={task}
               onComplete={handleCompleteTask}
               isMobile={true}
-              isCompleting={completeTaskMutation.isPending}
+              isCompleting={isCompleting}
             />
           ))}
         </div>
@@ -162,7 +153,7 @@ export default function Tasks() {
                 key={task.id}
                 task={task}
                 onComplete={handleCompleteTask}
-                isCompleting={completeTaskMutation.isPending}
+                isCompleting={isCompleting}
               />
             ))}
           </CardContent>
@@ -187,7 +178,7 @@ export default function Tasks() {
                 key={task.id}
                 task={task}
                 onComplete={handleCompleteTask}
-                isCompleting={completeTaskMutation.isPending}
+                isCompleting={isCompleting}
               />
             ))}
             <div className="text-center py-4">
@@ -215,7 +206,7 @@ export default function Tasks() {
                 key={task.id}
                 task={task}
                 onComplete={handleCompleteTask}
-                isCompleting={completeTaskMutation.isPending}
+                isCompleting={isCompleting}
               />
             ))}
           </CardContent>
