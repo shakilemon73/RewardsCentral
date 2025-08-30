@@ -1,5 +1,6 @@
 // Survey monetization integration for CPX Research, TheoremReach, and Bitlabs
 import type { Task } from "@shared/schema";
+import { surveyResilienceManager } from "./surveyResilience";
 
 // API credentials from environment variables
 const CPX_API_KEY = import.meta.env.VITE_CPX_RESEARCH_API_KEY || '7782a3da8da9d1f4f0d2a9f9b9c0c611';
@@ -77,59 +78,69 @@ class SurveyApiService {
     }
   }
 
-  // Fetch RapidoReach surveys
+  // Fetch RapidoReach surveys with resilience
   async fetchRapidoReachSurveys(userId: string, userDemographics?: {
     birthday?: string;
     gender?: string;
     country_code?: string;
     zip_code?: string;
   }): Promise<RapidoReachSurvey[]> {
-    try {
-      const ipAddress = await this.getUserIP();
-      const city = await this.getUserCity();
-      
-      // Map country code to language code (default to ENG-US)
-      const countryLanguageMap: { [key: string]: string } = {
-        'US': 'ENG-US',
-        'CA': 'ENG-CA',
-        'GB': 'ENG-GB',
-        'AU': 'ENG-AU',
-        'IN': 'ENG-IN'
-      };
-      const countryLanguageCode = countryLanguageMap[userDemographics?.country_code || 'US'] || 'ENG-US';
+    return await surveyResilienceManager.executeWithCircuitBreaker(
+      'rapidoreach',
+      async () => {
+        const ipAddress = await this.getUserIP();
+        const city = await this.getUserCity();
+        
+        // Map country code to language code (default to ENG-US)
+        const countryLanguageMap: { [key: string]: string } = {
+          'US': 'ENG-US',
+          'CA': 'ENG-CA',
+          'GB': 'ENG-GB',
+          'AU': 'ENG-AU',
+          'IN': 'ENG-IN'
+        };
+        const countryLanguageCode = countryLanguageMap[userDemographics?.country_code || 'US'] || 'ENG-US';
 
-      const requestBody = {
-        UserId: userId,
-        AppId: RAPIDOREACH_APP_ID,
-        IpAddress: ipAddress,
-        City: city,
-        CountryLanguageCode: countryLanguageCode,
-        ...(userDemographics?.birthday && { DateOfBirth: userDemographics.birthday }),
-        ...(userDemographics?.gender && { 
-          Gender: userDemographics.gender === 'male' ? 'M' : userDemographics.gender === 'female' ? 'F' : 'M' 
-        }),
-        ...(userDemographics?.zip_code && { ZipCode: userDemographics.zip_code })
-      };
+        const requestBody = {
+          UserId: userId,
+          AppId: RAPIDOREACH_APP_ID,
+          IpAddress: ipAddress,
+          City: city,
+          CountryLanguageCode: countryLanguageCode,
+          ...(userDemographics?.birthday && { DateOfBirth: userDemographics.birthday }),
+          ...(userDemographics?.gender && { 
+            Gender: userDemographics.gender === 'male' ? 'M' : userDemographics.gender === 'female' ? 'F' : 'M' 
+          }),
+          ...(userDemographics?.zip_code && { ZipCode: userDemographics.zip_code })
+        };
 
-      const response = await fetch('https://www.rapidoreach.com/getallsurveys-api/', {
-        method: 'POST',
-        headers: {
-          'X-RapidoReach-Api-Key': RAPIDOREACH_API_KEY,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestBody)
-      });
+        const response = await fetch('https://www.rapidoreach.com/getallsurveys-api/', {
+          method: 'POST',
+          headers: {
+            'X-RapidoReach-Api-Key': RAPIDOREACH_API_KEY,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(requestBody)
+        });
 
-      if (!response.ok) {
-        throw new Error(`RapidoReach API error: ${response.status}`);
+        if (!response.ok) {
+          throw new Error(`RapidoReach API error: ${response.status}`);
+        }
+
+        const surveys: RapidoReachSurvey[] = await response.json();
+        const result = Array.isArray(surveys) ? surveys : [];
+        
+        // Cache successful response
+        surveyResilienceManager.setCachedResponse(`rapidoreach_surveys_${userId}`, result, 300000);
+        
+        return result;
+      },
+      // Fallback to cached data or empty array
+      async () => {
+        console.warn('Using fallback for RapidoReach surveys');
+        return [];
       }
-
-      const surveys: RapidoReachSurvey[] = await response.json();
-      return Array.isArray(surveys) ? surveys : [];
-    } catch (error) {
-      console.warn('RapidoReach fetch failed:', error);
-      return [];
-    }
+    );
   }
 
   // Build demographic parameters for CPX Research Smart Match
@@ -276,53 +287,63 @@ class SurveyApiService {
     }
   }
 
-  // Enhanced fallback mechanism for survey providers
+  // Enhanced fallback mechanism with world-class resilience
   async getSurveysWithFallback(userId: string, userDemographics?: {
     birthday?: string;
     gender?: string;
     country_code?: string;
     zip_code?: string;
-  }, maxRetries: number = 3): Promise<Task[]> {
-    const providers = ['rapidoreach', 'cpx', 'bitlabs', 'theoremreach'];
-    
-    for (let attempt = 0; attempt < maxRetries; attempt++) {
-      for (const provider of providers) {
-        try {
-          console.log(`Attempting to load surveys from ${provider} (attempt ${attempt + 1})`);
-          
-          if (provider === 'rapidoreach') {
-            // Special handling for RapidoReach API
-            const rapidoSurveys = await this.fetchRapidoReachSurveys(userId, userDemographics);
-            if (rapidoSurveys.length > 0) {
-              console.log(`Successfully loaded ${rapidoSurveys.length} surveys from RapidoReach`);
-              const rapidoTasks = rapidoSurveys.map(survey => this.convertRapidoReachToTask(survey));
-              const allSurveys = await this.getAllSurveyTasks(userId, userDemographics);
-              return [...rapidoTasks, ...allSurveys];
+  }): Promise<Task[]> {
+    return await surveyResilienceManager.executeWithCircuitBreaker(
+      'survey_aggregation',
+      async () => {
+        const providers = ['rapidoreach', 'cpx', 'bitlabs', 'theoremreach'];
+        const allTasks: Task[] = [];
+        
+        // Try each provider with its own circuit breaker
+        const providerPromises = providers.map(async provider => {
+          try {
+            if (provider === 'rapidoreach') {
+              const rapidoSurveys = await this.fetchRapidoReachSurveys(userId, userDemographics);
+              return rapidoSurveys.map(survey => this.convertRapidoReachToTask(survey));
+            } else {
+              // For other providers, use basic tasks (they have their own URLs)
+              const basicTasks = await this.getAllSurveyTasks(userId, userDemographics);
+              return basicTasks.filter(task => task.id.startsWith(provider));
             }
-          } else {
-            // Try to get surveys from other providers
-            const surveys = await this.getAllSurveyTasks(userId, userDemographics);
-            const providerSurveys = surveys.filter(s => s.id.startsWith(provider));
-            
-            if (providerSurveys.length > 0) {
-              console.log(`Successfully loaded ${providerSurveys.length} surveys from ${provider}`);
-              return surveys; // Return all surveys if any provider succeeds
-            }
+          } catch (error) {
+            console.warn(`Provider ${provider} failed:`, error);
+            return [];
           }
-        } catch (error) {
-          console.warn(`${provider} failed (attempt ${attempt + 1}):`, error);
-          continue; // Try next provider
+        });
+
+        // Wait for all providers and combine results
+        const results = await Promise.allSettled(providerPromises);
+        results.forEach((result, index) => {
+          if (result.status === 'fulfilled') {
+            allTasks.push(...result.value);
+          } else {
+            console.warn(`Provider ${providers[index]} promise failed:`, result.reason);
+          }
+        });
+
+        // Cache the combined result
+        surveyResilienceManager.setCachedResponse(`all_surveys_${userId}`, allTasks, 180000); // 3 minutes cache
+        
+        return allTasks;
+      },
+      // Fallback to cached surveys or minimal set
+      async () => {
+        const cached = surveyResilienceManager.getCachedResponse<Task[]>(`all_surveys_${userId}`);
+        if (cached && cached.length > 0) {
+          console.info('Using cached surveys as fallback');
+          return cached;
         }
+        
+        console.warn('Using basic survey providers as last resort');
+        return await this.getAllSurveyTasks(userId, userDemographics);
       }
-      
-      // Wait before retry
-      if (attempt < maxRetries - 1) {
-        await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
-      }
-    }
-    
-    console.warn('All survey providers failed, returning empty array');
-    return [];
+    );
   }
 
   // Convert RapidoReach survey to Task format
@@ -344,49 +365,32 @@ class SurveyApiService {
     } as any;
   }
 
-  // Check survey availability without loading full wall
+  // Enhanced survey availability check with health monitoring
   async checkSurveyAvailability(userId: string): Promise<{
     cpx: boolean;
     bitlabs: boolean;
     theoremreach: boolean;
     rapidoreach: boolean;
   }> {
-    const results = {
-      cpx: false,
-      bitlabs: false,
-      theoremreach: false,
-      rapidoreach: false
+    // Get real-time health status from resilience manager
+    const healthStatus = surveyResilienceManager.getProviderHealth();
+    
+    return {
+      cpx: healthStatus.cpx !== 'unhealthy',
+      bitlabs: healthStatus.bitlabs !== 'unhealthy',
+      theoremreach: healthStatus.theoremreach !== 'unhealthy',
+      rapidoreach: healthStatus.rapidoreach !== 'unhealthy'
     };
-    
-    try {
-      // Quick check for each provider
-      const providers = this.getSurveyProviders(userId);
-      
-      for (const provider of providers) {
-        try {
-          // Simple fetch test to provider URL
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 3000);
-          
-          const response = await fetch(provider.url, {
-            method: 'HEAD',
-            signal: controller.signal
-          });
-          
-          clearTimeout(timeoutId);
-          
-          if (response.ok || response.status === 404) {
-            results[provider.provider] = true;
-          }
-        } catch (error) {
-          console.warn(`${provider.provider} availability check failed:`, error);
-        }
-      }
-    } catch (error) {
-      console.error('Availability check error:', error);
-    }
-    
-    return results;
+  }
+
+  // Get detailed provider metrics for debugging
+  getProviderMetrics() {
+    return surveyResilienceManager.getProviderMetrics();
+  }
+
+  // Get provider health status
+  getProviderHealth() {
+    return surveyResilienceManager.getProviderHealth();
   }
 }
 
