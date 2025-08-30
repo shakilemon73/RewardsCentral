@@ -1,0 +1,86 @@
+"Build a mobile-first rewards app using React Native for iOS and Android. The app should let users earn points by completing tasks like taking surveys, watching ads, and signing up for offers, then redeem points for gift cards or PayPal cash. Include these features:
+
+User Interface: A clean, modern dashboard with sections for 'Tasks' (surveys, ads, offers), 'Points Balance', and 'Redeem Rewards'. Use a vibrant color scheme (blue, green, white) with a bottom navigation bar for Home, Tasks, Rewards, and Profile.
+Tasks:
+
+Surveys: Integrate Pollfish SDK (use their latest React Native SDK from https://www.pollfish.com/docs/react-native) to show a survey offerwall. Users earn 50–200 points per survey completion.
+Ads: Add a button to watch rewarded video ads (use AdMob React Native SDK, https://developers.google.com/admob/react-native). Award 10 points per ad view.
+Offers: Include a placeholder API for affiliate offers (e.g., sign up for a service), awarding 100 points per offer.
+
+
+Rewards System: Track user points in a Firebase Firestore database. Create a 'Redeem' page listing gift cards (e.g., Amazon, Starbucks) and PayPal cash (use Tango API for rewards, https://www.tangocard.com/). Example: 1,000 points = $10 gift card.
+User Auth: Add email/password login and signup with Firebase Authentication.
+Backend: Use Node.js with Express for API endpoints to handle user points, task completions, and redemption requests. Store data in Firebase Firestore.
+Gamification: Show a progress bar for points and a badge for milestones (e.g., '1000 Points Earned').
+Sample Data: Include 3 dummy surveys, 2 ad placeholders, and 5 gift card options for testing.
+Deploy the app to a Replit-hosted URL. Ensure it’s responsive for mobile screens (iPhone 14, Samsung Galaxy S23). Provide a live preview and checkpoint the project after each major feature."
+
+Why This Prompt Works
+Based on Replit’s prompting principles (,,):
+
+Clarity & Specificity: Defines the app type (rewards), tech stack (React Native, Node.js, Firebase), and features (surveys, ads, rewards) with clear examples and APIs.
+Context: Includes specific SDKs (Pollfish, AdMob, Tango) and sample data to reduce ambiguity.
+Iterative Tasks: Breaks features into manageable parts (UI, tasks, rewards, auth) for Replit Agent to handle step-by-step.
+Outcome-Oriented: Focuses on results (mobile-first, deployed app) rather than vague instructions.
+Tier 1 Focus: Prioritizes a polished UX for USA users, with vibrant colors and gamification to boost engagement.
+
+How to Use the Prompt in Replit
+
+Set Up Replit:
+
+Sign up at https://replit.com/ and get the Replit Core plan ($10/month annually) for AI Agent access (free plan lacks Agent).
+From the dashboard, click “Create Repl” and select “Start with AI Agent.”
+
+
+Enter the Prompt:
+
+Paste the prompt above into the Replit Agent text area.
+Optionally, attach a mockup image (e.g., a Figma sketch of the dashboard) to clarify the UI layout.
+Click “Start Building.” Replit Agent will summarize the plan, suggest additions (e.g., push notifications), and let you approve before coding.
+
+
+Review & Refine:
+
+Agent will set up the React Native project, install dependencies (e.g., Pollfish, AdMob SDKs), and generate files (e.g., App.js, server.js). Monitor progress in the workspace.
+Use checkpoints to save progress after each feature (e.g., after surveys are integrated). If errors occur, rollback via Replit’s interface.
+Refine with follow-up prompts, e.g., “Add a referral system where users earn 50 points per friend invited.”
+
+
+Test & Deploy:
+
+Test the app in Replit’s preview pane (mobile view for iPhone/Samsung).
+Deploy via Replit’s “Deploy” button, choosing a replit.app URL or custom domain. Agent handles hosting setup.
+Check survey fill rates (aim for 80%+ in USA) via Pollfish’s dashboard.
+
+
+Debugging:
+
+If Agent’s code fails (e.g., Pollfish SDK errors), prompt: “Debug the Pollfish integration in Tasks.js. Error: [paste error].” Include file names and error messages for accuracy.
+Use Replit Assistant (ChatGPT-based) for extra debugging if needed.
+
+
+
+Expected Outcome
+
+Timeline: Agent builds a basic app in 5–15 minutes, with full features (surveys, ads, rewards) in 30–60 minutes, depending on complexity.
+Features: A functional React Native app with Pollfish surveys, AdMob ads, Firebase auth/database, and Tango rewards, deployed to a live URL.
+Monetization: Earn $0.50–$2 per survey completion (Pollfish), $0.01–$0.05 per ad view (AdMob) in Tier 1 markets. Scale to 1,000 daily users for ~$500–$2,000/day (before platform cuts).
+Cost: Replit Core ($10/month), Firebase free tier (~$0 initially), Pollfish/AdMob/Tango (free signup, revenue-sharing).
+
+Tips for Success
+
+Break Tasks: If Agent struggles, split the prompt, e.g., “First, build the auth system with Firebase,” then “Add Pollfish surveys.”
+Provide Examples: Attach sample JSON for points data or a screenshot of a Swagbucks-like dashboard to clarify expectations.
+Monitor Limits: Replit Agent has usage quotas (effort-based pricing). Check progress to avoid hitting limits; simplify prompts if needed.
+Security: Store API keys (Pollfish, AdMob, Tango) in Replit’s secret storage to avoid leaks.
+
+Example Refinement Prompt
+If the survey integration needs tweaking:
+“Fix the Pollfish offerwall in Tasks.js. It’s not loading surveys for USA users. Ensure demographic profiling is enabled per Pollfish docs. Test with 3 dummy surveys, each awarding 100 points.”
+Notes
+
+Replit’s Strengths: Ideal for rapid prototyping and deployment without manual setup. Non-technical users can build this app with minimal coding.,
+Limitations: Complex integrations (e.g., Pollfish SDK) may need manual tweaks if Agent misconfigures. Check generated code for accuracy.
+Next Steps: After launch, use Firebase Analytics to track user engagement (e.g., survey completions) and optimize for higher fill rates.
+
+If you want a different app feature, specific UI mockup, or help with Replit setup (e.g., code snippets for Pollfish integration), let me know your preferences (e.g., colors, additional tasks like referrals) or share a mockup image! I can also provide a follow-up prompt for adding features or debugging.,
