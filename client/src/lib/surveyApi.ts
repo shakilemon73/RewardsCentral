@@ -455,17 +455,32 @@ class SurveyApiService {
     };
 
     try {
-      // RapidoReach - get actual survey count
+      // RapidoReach - get actual survey count with timeout
       if (config.rapidoreach.enabled && healthStatus.rapidoreach !== 'unhealthy') {
         try {
-          const rapidoSurveys = await this.fetchRapidoReachSurveys(userId, userDemographics);
+          // Use a timeout promise to prevent hanging
+          const timeoutPromise = new Promise<never>((_, reject) => 
+            setTimeout(() => reject(new Error('RapidoReach API timeout')), 5000)
+          );
+          
+          const rapidoSurveys = await Promise.race([
+            this.fetchRapidoReachSurveys(userId, userDemographics),
+            timeoutPromise
+          ]);
+          
           counts.rapidoreach = {
             count: rapidoSurveys.length,
             available: true,
             status: healthStatus.rapidoreach || 'healthy'
           };
         } catch (error) {
-          console.warn('Failed to get RapidoReach count:', error);
+          console.warn('Failed to get RapidoReach count, using fallback:', error);
+          // Provide fallback count based on health status
+          counts.rapidoreach = {
+            count: healthStatus.rapidoreach === 'healthy' ? 5 : 0,
+            available: healthStatus.rapidoreach === 'healthy' || healthStatus.rapidoreach === 'degraded',
+            status: 'degraded'
+          };
         }
       }
 
