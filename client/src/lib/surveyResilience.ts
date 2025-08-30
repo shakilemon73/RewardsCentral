@@ -207,9 +207,21 @@ class SurveyResilienceManager {
 
   // Provider Health Check System
   private startHealthCheck(): void {
+    // Perform initial health check after a short delay
+    setTimeout(() => {
+      this.performHealthChecks().catch(error => {
+        console.warn('Initial health check failed:', error);
+      });
+    }, 2000);
+    
+    // Then check every 30 seconds
     setInterval(async () => {
-      await this.performHealthChecks();
-    }, 30000); // Check every 30 seconds
+      try {
+        await this.performHealthChecks();
+      } catch (error) {
+        console.warn('Health check interval failed:', error);
+      }
+    }, 30000);
   }
 
   private async performHealthChecks(): Promise<void> {
@@ -246,30 +258,43 @@ class SurveyResilienceManager {
   }
 
   private async healthCheckProvider(provider: string): Promise<void> {
-    const healthEndpoints = {
-      cpx: 'https://offers.cpx-research.com/status',
-      theoremreach: 'https://theoremreach.com/health',
-      bitlabs: 'https://web.bitlabs.ai/health',
-      rapidoreach: 'https://www.rapidoreach.com/health'
-    };
+    // Simulate health check based on circuit breaker metrics instead of external calls
+    // This avoids CORS issues and provides meaningful health status
+    const metrics = this.providerMetrics.get(provider);
+    if (!metrics) return;
 
-    const endpoint = healthEndpoints[provider as keyof typeof healthEndpoints];
-    if (!endpoint) return;
-
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-    try {
-      const response = await fetch(endpoint, {
-        method: 'HEAD',
-        signal: controller.signal
-      });
-      
-      if (!response.ok && response.status !== 404) {
-        throw new Error(`Health check failed with status ${response.status}`);
+    // Consider provider healthy if:
+    // 1. Circuit is not open
+    // 2. Success rate is above 50% (if we have data)
+    // 3. No recent failures (within last 5 minutes)
+    
+    const now = Date.now();
+    const recentFailureThreshold = 5 * 60 * 1000; // 5 minutes
+    
+    // If we have recent failures within threshold, consider degraded
+    if (metrics.lastFailureTime && (now - metrics.lastFailureTime) < recentFailureThreshold) {
+      const timeSinceFailure = now - metrics.lastFailureTime;
+      if (timeSinceFailure < 30000) { // Less than 30 seconds ago
+        // Recent failure, don't change circuit state yet
+        return;
       }
-    } finally {
-      clearTimeout(timeoutId);
+    }
+    
+    // Gradually recover circuit state based on time since last failure
+    if (metrics.circuitState === 'OPEN' && metrics.lastFailureTime) {
+      const timeSinceFailure = now - metrics.lastFailureTime;
+      if (timeSinceFailure > 60000) { // 1 minute recovery period
+        metrics.circuitState = 'HALF_OPEN';
+        console.info(`Circuit breaker transitioning to HALF_OPEN for ${provider} after recovery period`);
+      }
+    }
+    
+    if (metrics.circuitState === 'HALF_OPEN' && metrics.successCount > 0) {
+      const successRate = metrics.successCount / metrics.totalCalls;
+      if (successRate > 0.5) { // 50% success rate
+        metrics.circuitState = 'CLOSED';
+        console.info(`Circuit breaker CLOSED for ${provider} - health restored`);
+      }
     }
   }
 
