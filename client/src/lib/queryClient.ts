@@ -154,4 +154,43 @@ export const supabaseHelpers = {
     if (error) throw error;
     return data;
   },
+
+  // Get app statistics for landing page
+  getAppStats: async () => {
+    // Get user count
+    const { count: userCount, error: userError } = await supabase
+      .from("users")
+      .select("*", { count: "exact", head: true });
+
+    if (userError) throw userError;
+
+    // Get total rewards paid (sum of points_spent converted to dollars)
+    const { data: redemptionsData, error: redemptionsError } = await supabase
+      .from("user_reward_redemptions")
+      .select("points_spent")
+      .eq("status", "processed");
+
+    if (redemptionsError) throw redemptionsError;
+
+    const totalRewardsPaid = redemptionsData?.reduce((sum, redemption) => 
+      sum + (redemption.points_spent / 100), 0) || 0;
+
+    // Get average task rating
+    const { data: tasksData, error: tasksError } = await supabase
+      .from("tasks")
+      .select("rating")
+      .eq("is_active", true);
+
+    if (tasksError) throw tasksError;
+
+    const averageRating = tasksData && tasksData.length > 0 
+      ? tasksData.reduce((sum, task) => sum + (task.rating / 10), 0) / tasksData.length
+      : 4.8;
+
+    return {
+      activeUsers: userCount || 0,
+      totalRewardsPaid,
+      averageRating: Math.round(averageRating * 10) / 10
+    };
+  },
 };
