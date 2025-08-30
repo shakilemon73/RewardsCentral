@@ -6,6 +6,7 @@ import { supabaseHelpers } from "@/lib/queryClient";
 import { surveyApiService } from "@/lib/surveyApi";
 import { surveyPostbackService } from "@/lib/surveyPostback";
 import { surveyMatchingService } from "@/lib/surveyMatching";
+import { getSurveyProviderStatus, isSurveySystemReady } from "@/lib/surveyConfig";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +22,7 @@ export default function Tasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
+  const [configStatus, setConfigStatus] = useState(getSurveyProviderStatus());
 
   // Initialize survey postback listener
   useEffect(() => {
@@ -49,17 +51,26 @@ export default function Tasks() {
       if (!user?.id) return;
       
       setIsLoading(true);
+      
+      // Update configuration status
+      setConfigStatus(getSurveyProviderStatus());
+      
       try {
-        // Get survey providers with user demographics for better targeting
-        const userDemographics = {
-          birthday: user.birthday,
-          gender: user.gender,
-          country_code: user.country_code,
-          zip_code: user.zip_code
-        };
-        // Get best matched surveys using enhanced targeting
-        const bestMatches = await surveyMatchingService.getBestMatchedSurveys(user, 6);
-        const surveyTasks = bestMatches.map(match => surveyApiService.convertProviderToTask(match.provider));
+        let surveyTasks: Task[] = [];
+        
+        // Only load survey tasks if survey system is properly configured
+        if (isSurveySystemReady()) {
+          const userDemographics = {
+            birthday: user.birthday,
+            gender: user.gender,
+            country_code: user.country_code,
+            zip_code: user.zip_code
+          };
+          
+          // Get best matched surveys using enhanced targeting
+          const bestMatches = await surveyMatchingService.getBestMatchedSurveys(user, 6);
+          surveyTasks = bestMatches.map(match => surveyApiService.convertProviderToTask(match.provider));
+        }
         
         // Get local tasks (ads, offers) from Supabase
         const localTasks = await supabaseHelpers.getTasks();

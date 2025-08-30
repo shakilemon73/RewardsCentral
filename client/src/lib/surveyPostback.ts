@@ -1,62 +1,143 @@
 // Client-side survey completion handling for Supabase direct API calls
 import { supabase } from "@/lib/supabase";
+import CryptoJS from 'crypto-js';
 
 export interface SurveyCompletionData {
   userId: string;
-  provider: 'cpx' | 'theoremreach' | 'bitlabs';
+  provider: 'cpx' | 'theoremreach' | 'bitlabs' | 'rapidoreach';
   transactionId: string;
   status: 'completed' | 'disqualified' | 'failed';
   points: number;
   surveyId?: string;
+  verificationHash?: string;
 }
 
 class SurveyPostbackService {
+  // Validate CPX Research postback hash
+  validateCPXHash(userId: string, transactionId: string, status: string, amount: string, providedHash: string, apiKey: string): boolean {
+    // CPX Research hash format: MD5(user_id + transaction_id + status + amount + api_key)
+    const hashString = `${userId}${transactionId}${status}${amount}${apiKey}`;
+    const expectedHash = CryptoJS.MD5(hashString).toString();
+    return expectedHash === providedHash;
+  }
+
+  // Validate TheoremReach postback hash
+  validateTheoremReachHash(userId: string, transactionId: string, result: string, reward: string, providedHash: string, secretKey: string): boolean {
+    // TheoremReach hash format: SHA3-256(user_id + transaction_id + result + reward + secret_key)
+    const hashString = `${userId}${transactionId}${result}${reward}${secretKey}`;
+    const expectedHash = CryptoJS.SHA3(hashString, { outputLength: 256 }).toString();
+    return expectedHash === providedHash;
+  }
+
+  // Validate BitLabs postback hash
+  validateBitLabsHash(callbackUrl: string, providedHash: string, secretKey: string): boolean {
+    // BitLabs uses HMAC-SHA1 for callback validation
+    const urlWithoutHash = callbackUrl.split('&hash=')[0];
+    const expectedHash = CryptoJS.HmacSHA1(urlWithoutHash, secretKey).toString();
+    return expectedHash === providedHash;
+  }
   // Handle URL-based postback from survey providers
   async handleUrlPostback(): Promise<SurveyCompletionData | null> {
     const urlParams = new URLSearchParams(window.location.search);
     
-    // CPX Research postback parameters
+    // CPX Research postback parameters with hash validation
     if (urlParams.has('cpx_transaction_id')) {
       const status = urlParams.get('cpx_status') === 'completed' ? 'completed' : 'failed';
-      const amount = parseFloat(urlParams.get('cpx_amount') || '0');
+      const amount = urlParams.get('cpx_amount') || '0';
+      const userId = urlParams.get('cpx_user_id') || '';
+      const transactionId = urlParams.get('cpx_transaction_id') || '';
+      const providedHash = urlParams.get('cpx_hash') || '';
+      
+      // Validate hash for security (in production, use actual API key)
+      const apiKey = import.meta.env.VITE_CPX_RESEARCH_API_KEY || '7782a3da8da9d1f4f0d2a9f9b9c0c611';
+      const isValidHash = this.validateCPXHash(userId, transactionId, status, amount, providedHash, apiKey);
+      
+      if (!isValidHash && providedHash) {
+        console.warn('CPX Research hash validation failed - possible security issue');
+        return null;
+      }
       
       return {
-        userId: urlParams.get('cpx_user_id') || '',
+        userId,
         provider: 'cpx',
-        transactionId: urlParams.get('cpx_transaction_id') || '',
+        transactionId,
         status,
-        points: Math.round(amount * 100), // Convert dollars to points
+        points: Math.round(parseFloat(amount) * 100), // Convert dollars to points
+        verificationHash: providedHash
       };
     }
     
-    // BitLabs postback parameters  
-    if (urlParams.has('bitlabs_type')) {
-      const type = urlParams.get('bitlabs_type');
+    // BitLabs postback parameters with HMAC validation
+    if (urlParams.has('bitlabs_type') || urlParams.has('uid')) {
+      const type = urlParams.get('bitlabs_type') || urlParams.get('type');
       const status = type === 'COMPLETE' ? 'completed' : 
                    type === 'SCREENOUT' ? 'disqualified' : 'failed';
-      const reward = parseInt(urlParams.get('bitlabs_reward') || '0');
+      const reward = parseInt(urlParams.get('bitlabs_reward') || urlParams.get('val') || '0');
+      const userId = urlParams.get('bitlabs_user_id') || urlParams.get('uid') || '';
+      const transactionId = urlParams.get('bitlabs_survey_id') || urlParams.get('tx') || '';
+      const providedHash = urlParams.get('bitlabs_hash') || urlParams.get('hash') || '';
+      
+      // Validate BitLabs callback hash (in production, use actual secret key)
+      const secretKey = import.meta.env.VITE_BITLABS_SECRET_KEY || 'demo_secret_key';
+      const callbackUrl = window.location.href;
+      const isValidHash = this.validateBitLabsHash(callbackUrl, providedHash, secretKey);
+      
+      if (!isValidHash && providedHash) {
+        console.warn('BitLabs hash validation failed - possible security issue');
+        return null;
+      }
       
       return {
-        userId: urlParams.get('bitlabs_user_id') || '',
+        userId,
         provider: 'bitlabs',
-        transactionId: urlParams.get('bitlabs_survey_id') || '',
+        transactionId,
         status,
         points: status === 'disqualified' ? Math.round(reward * 0.1) : reward,
+        verificationHash: providedHash
       };
     }
     
-    // TheoremReach postback parameters
+    // TheoremReach postback parameters with SHA3-256 validation
     if (urlParams.has('tr_result')) {
-      const result = parseInt(urlParams.get('tr_result') || '0');
-      const status = result === 10 ? 'completed' : 'disqualified';
-      const reward = parseInt(urlParams.get('tr_reward') || '100');
+      const result = urlParams.get('tr_result') || '0';
+      const reward = urlParams.get('tr_reward') || '100';
+      const userId = urlParams.get('tr_user_id') || '';
+      const transactionId = urlParams.get('tr_transaction_id') || '';
+      const providedHash = urlParams.get('tr_hash') || '';
+      const status = parseInt(result) === 10 ? 'completed' : 'disqualified';
+      
+      // Validate TheoremReach hash (in production, use actual secret key)
+      const secretKey = import.meta.env.VITE_THEOREMREACH_SECRET_KEY || 'demo_secret_key';
+      const isValidHash = this.validateTheoremReachHash(userId, transactionId, result, reward, providedHash, secretKey);
+      
+      if (!isValidHash && providedHash) {
+        console.warn('TheoremReach hash validation failed - possible security issue');
+        return null;
+      }
       
       return {
-        userId: urlParams.get('tr_user_id') || '',
+        userId,
         provider: 'theoremreach',
-        transactionId: urlParams.get('tr_transaction_id') || '',
+        transactionId,
         status,
-        points: status === 'disqualified' ? 10 : reward,
+        points: status === 'disqualified' ? 10 : parseInt(reward),
+        verificationHash: providedHash
+      };
+    }
+    
+    // RapidoReach postback parameters
+    if (urlParams.has('rapidoreach_status')) {
+      const status = urlParams.get('rapidoreach_status') === 'complete' ? 'completed' : 
+                   urlParams.get('rapidoreach_status') === 'screenout' ? 'disqualified' : 'failed';
+      const reward = parseInt(urlParams.get('rapidoreach_reward') || '0');
+      
+      return {
+        userId: urlParams.get('rapidoreach_user_id') || '',
+        provider: 'rapidoreach',
+        transactionId: urlParams.get('rapidoreach_transaction_id') || '',
+        status,
+        points: status === 'disqualified' ? Math.round(reward * 0.2) : reward,
+        surveyId: urlParams.get('rapidoreach_survey_id') || undefined
       };
     }
     

@@ -9,6 +9,7 @@ import Home from "@/pages/home";
 import Tasks from "@/pages/tasks";
 import Rewards from "@/pages/rewards";
 import Profile from "@/pages/profile";
+import SurveyCallback from "@/pages/survey-callback";
 import MobileNav from "@/components/mobile-nav";
 import DesktopHeader from "@/components/desktop-header";
 import DesktopSidebar from "@/components/desktop-sidebar";
@@ -19,7 +20,7 @@ function Router() {
   const [location] = useLocation();
 
   // Check if we're on a protected route
-  const protectedRoutes = ["/tasks", "/rewards", "/profile"];
+  const protectedRoutes = ["/tasks", "/rewards", "/profile", "/survey-callback"];
   const isProtectedRoute = protectedRoutes.includes(location) || (location !== "/" && location !== "");
 
   // Show loading state during authentication check
@@ -57,6 +58,7 @@ function Router() {
               <Route path="/tasks" component={Tasks} />
               <Route path="/rewards" component={Rewards} />
               <Route path="/profile" component={Profile} />
+              <Route path="/survey-callback" component={SurveyCallback} />
               <Route component={NotFound} />
             </Switch>
           </main>
@@ -71,6 +73,7 @@ function Router() {
             <Route path="/tasks" component={Tasks} />
             <Route path="/rewards" component={Rewards} />
             <Route path="/profile" component={Profile} />
+            <Route path="/survey-callback" component={SurveyCallback} />
             <Route component={NotFound} />
           </Switch>
         </main>

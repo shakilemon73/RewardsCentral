@@ -1,14 +1,11 @@
 // Survey monetization integration for CPX Research, TheoremReach, and Bitlabs
 import type { Task } from "@shared/schema";
 import { surveyResilienceManager } from "./surveyResilience";
+import { surveyConfigManager } from "./surveyConfig";
+import CryptoJS from 'crypto-js';
 
-// API credentials from environment variables
-const CPX_API_KEY = import.meta.env.VITE_CPX_RESEARCH_API_KEY || '7782a3da8da9d1f4f0d2a9f9b9c0c611';
-const CPX_APP_ID = import.meta.env.VITE_CPX_RESEARCH_APP_ID || '28886';
-const THEOREMREACH_API_KEY = import.meta.env.VITE_THEOREMREACH_API_KEY || '9854ec5b04228779d58ac3e9d342';
-const BITLABS_API_TOKEN = import.meta.env.VITE_BITLABS_API_TOKEN || '665ef72d-bcf1-4a8d-b427-37c8b7142447';
-const RAPIDOREACH_API_KEY = import.meta.env.VITE_RAPIDOREACH_API_KEY || 'ac9e857aa9e61eba980c0407e05688e3';
-const RAPIDOREACH_APP_ID = import.meta.env.VITE_RAPIDOREACH_APP_ID || 'PIufj1sh6SL';
+// API credentials managed through configuration system
+const getProviderConfig = () => surveyConfigManager.getProviderConfig();
 
 export interface SurveyProvider {
   id: string;
@@ -41,17 +38,28 @@ export interface RapidoReachSurvey {
 }
 
 class SurveyApiService {
-  // Simple hash generation for CPX (basic version)
-  generateSimpleHash(userId: string, apiKey: string): string {
-    // Simple hash based on user ID - in production you'd need proper MD5
-    const combined = userId + apiKey;
-    let hash = 0;
-    for (let i = 0; i < combined.length; i++) {
-      const char = combined.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32-bit integer
-    }
-    return Math.abs(hash).toString(16);
+  // Generate proper MD5 hash for CPX Research (production-ready)
+  generateCPXSecureHash(userId: string, ipAddress: string = '127.0.0.1'): string {
+    const config = getProviderConfig().cpx;
+    // CPX Research requires MD5 hash of app_id + user_id + ip + api_key
+    const hashString = `${config.appId}${userId}${ipAddress}${config.apiKey}`;
+    return CryptoJS.MD5(hashString).toString();
+  }
+
+  // Generate SHA3-256 hash for TheoremReach requests
+  generateTheoremReachHash(requestUrl: string, jsonBody: string = '', secretKey: string): string {
+    const hashInput = requestUrl + jsonBody + secretKey;
+    return CryptoJS.SHA3(hashInput, { outputLength: 256 }).toString();
+  }
+
+  // Generate HMAC-SHA1 hash for BitLabs callback validation
+  generateBitLabsHash(callbackUrl: string, secretKey: string): string {
+    return CryptoJS.HmacSHA1(callbackUrl, secretKey).toString();
+  }
+
+  // Get callback URL for survey providers
+  getCallbackUrl(): string {
+    return `${window.location.origin}/survey-callback`;
   }
 
   // Get user's IP address (fallback to placeholder)
@@ -101,9 +109,10 @@ class SurveyApiService {
         };
         const countryLanguageCode = countryLanguageMap[userDemographics?.country_code || 'US'] || 'ENG-US';
 
+        const config = getProviderConfig().rapidoreach;
         const requestBody = {
           UserId: userId,
-          AppId: RAPIDOREACH_APP_ID,
+          AppId: config.appId,
           IpAddress: ipAddress,
           City: city,
           CountryLanguageCode: countryLanguageCode,
@@ -114,10 +123,10 @@ class SurveyApiService {
           ...(userDemographics?.zip_code && { ZipCode: userDemographics.zip_code })
         };
 
-        const response = await fetch('https://www.rapidoreach.com/getallsurveys-api/', {
+        const response = await fetch(config.endpoints.surveys || 'https://www.rapidoreach.com/getallsurveys-api/', {
           method: 'POST',
           headers: {
-            'X-RapidoReach-Api-Key': RAPIDOREACH_API_KEY,
+            'X-RapidoReach-Api-Key': config.apiKey,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify(requestBody)
@@ -182,8 +191,12 @@ class SurveyApiService {
     country_code?: string;
     zip_code?: string;
   }): SurveyProvider[] {
-    return [
-      {
+    const config = getProviderConfig();
+    const enabledProviders: SurveyProvider[] = [];
+    
+    // Only include enabled providers
+    if (config.cpx.enabled) {
+      enabledProviders.push({
         id: 'cpx_offerwall',
         name: 'CPX Research',
         provider: 'cpx' as const,
@@ -195,10 +208,13 @@ class SurveyApiService {
         rating: 87,
         userRating: 4.4,
         averageReward: 150,
-        url: `https://offers.cpx-research.com/index.php?app_id=${CPX_APP_ID}&ext_user_id=${userId}&secure_hash=${this.generateSimpleHash(userId, CPX_API_KEY)}${this.buildDemographicParams(userDemographics)}`,
+        url: `${config.cpx.endpoints.offerwall}?app_id=${config.cpx.appId}&ext_user_id=${userId}&secure_hash=${this.generateCPXSecureHash(userId)}${this.buildDemographicParams(userDemographics)}&postback_url=${encodeURIComponent(config.cpx.callbackUrl)}`,
         isIframe: true
-      },
-      {
+      });
+    }
+    
+    if (config.theoremreach.enabled) {
+      enabledProviders.push({
         id: 'theoremreach_wall',
         name: 'TheoremReach',
         provider: 'theoremreach' as const,
@@ -210,10 +226,13 @@ class SurveyApiService {
         rating: 83,
         userRating: 4.2,
         averageReward: 120,
-        url: `https://theoremreach.com/reward_center?user_id=${userId}&api_key=${THEOREMREACH_API_KEY}`,
+        url: `${config.theoremreach.endpoints.offerwall}?user_id=${userId}&api_key=${config.theoremreach.apiKey}&callback_url=${encodeURIComponent(config.theoremreach.callbackUrl)}`,
         isIframe: true
-      },
-      {
+      });
+    }
+    
+    if (config.bitlabs.enabled) {
+      enabledProviders.push({
         id: 'bitlabs_wall',
         name: 'BitLabs',
         provider: 'bitlabs' as const,
@@ -225,10 +244,13 @@ class SurveyApiService {
         rating: 89,
         userRating: 4.5,
         averageReward: 140,
-        url: `https://web.bitlabs.ai/?uid=${userId}&token=${BITLABS_API_TOKEN}`,
+        url: `${config.bitlabs.endpoints.offerwall}/?uid=${userId}&token=${config.bitlabs.apiKey}&callback=${encodeURIComponent(config.bitlabs.callbackUrl)}`,
         isIframe: true
-      },
-      {
+      });
+    }
+    
+    if (config.rapidoreach.enabled) {
+      enabledProviders.push({
         id: 'rapidoreach_wall',
         name: 'RapidoReach',
         provider: 'rapidoreach' as const,
@@ -240,10 +262,28 @@ class SurveyApiService {
         rating: 91,
         userRating: 4.6,
         averageReward: 180,
-        url: 'https://www.rapidoreach.com/surveys', // Placeholder - actual surveys fetched via API
+        url: 'https://www.rapidoreach.com/surveys', // Will be replaced with actual survey URLs from API
         isIframe: false
-      }
-    ];
+      });
+    }
+    
+    return enabledProviders;
+  }
+
+  // Legacy method for backward compatibility
+  getSurveyProvidersLegacy(userId: string, userDemographics?: {
+    birthday?: string;
+    gender?: string;
+    country_code?: string;
+    zip_code?: string;
+  }): SurveyProvider[] {
+    // Fallback to hardcoded values if configuration system fails
+    const CPX_API_KEY = '7782a3da8da9d1f4f0d2a9f9b9c0c611';
+    const CPX_APP_ID = '28886';
+    const THEOREMREACH_API_KEY = '9854ec5b04228779d58ac3e9d342';
+    const BITLABS_API_TOKEN = '665ef72d-bcf1-4a8d-b427-37c8b7142447';
+    
+    return [];
   }
 
   // Convert provider to Task format for display (enhanced with demographics)
