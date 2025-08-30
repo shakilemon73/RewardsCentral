@@ -30,9 +30,12 @@ export default defineConfig({
   server: {
     host: "0.0.0.0",
     port: 5000,
+    strictPort: true,
     allowedHosts: ["localhost", ".replit.dev", ".replit.app", ".replit.co"],
     hmr: {
-      host: "0.0.0.0",
+      port: 5000,
+      clientPort: 443,
+      host: "localhost",
     },
     fs: {
       strict: true,
