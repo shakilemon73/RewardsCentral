@@ -93,11 +93,15 @@ export default function Tasks() {
     try {
       // Check if this is an external survey
       const task = tasks.find(t => t.id === taskId);
-      const isExternalSurvey = taskId.startsWith('cpx_') || taskId.startsWith('theorem_') || taskId.startsWith('bitlabs_');
+      const isExternalSurvey = taskId.startsWith('cpx_') || taskId.startsWith('theoremreach_') || taskId.startsWith('bitlabs_') || taskId.startsWith('rapidoreach_');
       
       if (isExternalSurvey && task) {
         // For external survey providers, use enhanced targeting URL
-        const provider = taskId.split('_')[0];
+        let provider = taskId.split('_')[0];
+        // Handle compound provider names
+        if (taskId.startsWith('theoremreach_')) provider = 'theoremreach';
+        if (taskId.startsWith('rapidoreach_')) provider = 'rapidoreach';
+        
         const userDemographics = {
           birthday: user.birthday,
           gender: user.gender,
@@ -105,22 +109,38 @@ export default function Tasks() {
           zip_code: user.zip_code
         };
         
-        // Get optimized provider URL with demographics
-        const providers = surveyApiService.getSurveyProviders(user.id, userDemographics);
-        const matchedProvider = providers.find(p => p.provider === provider);
-        
-        if (matchedProvider) {
-          window.open(matchedProvider.url, '_blank', 'width=1000,height=700,scrollbars=yes,resizable=yes');
-          
-          // Get match details for better user feedback
-          const matchInfo = await surveyMatchingService.getBestMatchedSurveys(user, 3);
-          const currentMatch = matchInfo.find(m => m.provider.provider === provider);
+        // Special handling for RapidoReach surveys (they use external_url from task)
+        if (provider === 'rapidoreach' && task.external_url) {
+          console.log(`Opening RapidoReach survey: ${task.external_url}`);
+          window.open(task.external_url, '_blank', 'width=1000,height=700,scrollbars=yes,resizable=yes');
           
           toast({
-            title: "Survey Platform Opened!",
-            description: `${matchedProvider.name} loaded with ${currentMatch?.estimatedCompletionRate ? Math.round(currentMatch.estimatedCompletionRate * 100) : 70}% estimated completion rate. Complete surveys to earn points automatically.`,
+            title: "RapidoReach Survey Opened!",
+            description: `Premium survey started. Complete it to earn ${task.points} points automatically.`,
             duration: 6000,
           });
+        } else {
+          // Get optimized provider URL with demographics for other providers
+          const providers = surveyApiService.getSurveyProviders(user.id, userDemographics);
+          const matchedProvider = providers.find(p => p.provider === provider);
+          
+          if (matchedProvider) {
+            console.log(`Opening survey for provider: ${provider}, URL: ${matchedProvider.url}`);
+            window.open(matchedProvider.url, '_blank', 'width=1000,height=700,scrollbars=yes,resizable=yes');
+            
+            // Get match details for better user feedback
+            const matchInfo = await surveyMatchingService.getBestMatchedSurveys(user, 3);
+            const currentMatch = matchInfo.find(m => m.provider.provider === provider);
+            
+            toast({
+              title: "Survey Platform Opened!",
+              description: `${matchedProvider.name} loaded with ${currentMatch?.estimatedCompletionRate ? Math.round(currentMatch.estimatedCompletionRate * 100) : 70}% estimated completion rate. Complete surveys to earn points automatically.`,
+              duration: 6000,
+            });
+          } else {
+            console.error(`No provider found for: ${provider}, available providers:`, providers.map(p => p.provider));
+            throw new Error(`Survey provider ${provider} not found`);
+          }
         }
       } else {
         // Handle local tasks (ads, offers)

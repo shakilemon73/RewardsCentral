@@ -262,7 +262,7 @@ class SurveyApiService {
       provider: provider.provider,
       external_url: provider.url,
       is_iframe: provider.isIframe
-    } as any;
+    };
   }
 
   // Open survey provider in new window
@@ -362,7 +362,7 @@ class SurveyApiService {
       provider: 'rapidoreach',
       external_url: survey.SurveyUrl,
       is_iframe: true
-    } as any;
+    };
   }
 
   // Enhanced survey availability check with health monitoring

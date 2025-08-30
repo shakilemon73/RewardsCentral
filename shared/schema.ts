@@ -10,6 +10,9 @@ export interface Task {
   rating: number;
   is_active: boolean;
   created_at?: string;
+  provider?: string;
+  external_url?: string;
+  is_iframe?: boolean;
 }
 
 export interface User {
