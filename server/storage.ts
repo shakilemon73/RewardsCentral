@@ -16,7 +16,8 @@ import {
   type InsertUserRewardRedemption,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc, and, sql } from "drizzle-orm";
+import { surveyService, type ProviderSurvey } from "./surveyProviders";
 
 export interface IStorage {
   // User operations (mandatory for Replit Auth)
@@ -28,6 +29,10 @@ export interface IStorage {
   getTasks(): Promise<Task[]>;
   getTasksByType(type: string): Promise<Task[]>;
   createTask(task: InsertTask): Promise<Task>;
+  
+  // External survey provider operations
+  getExternalSurveys(userId: string, userAgent?: string, ipAddress?: string): Promise<ProviderSurvey[]>;
+  getExternalSurveysByType(type: string, userId: string, userAgent?: string, ipAddress?: string): Promise<ProviderSurvey[]>;
   
   // User task completion operations
   completeTask(completion: InsertUserTaskCompletion): Promise<UserTaskCompletion>;
@@ -69,9 +74,9 @@ export class DatabaseStorage implements IStorage {
     const [user] = await db
       .update(users)
       .set({
-        points: db.raw(`points + ${pointsChange}`),
-        totalEarned: pointsChange > 0 ? db.raw(`total_earned + ${pointsChange}`) : db.raw('total_earned'),
-        tasksCompleted: pointsChange > 0 ? db.raw('tasks_completed + 1') : db.raw('tasks_completed'),
+        points: sql`points + ${pointsChange}`,
+        totalEarned: pointsChange > 0 ? sql`total_earned + ${pointsChange}` : sql`total_earned`,
+        tasksCompleted: pointsChange > 0 ? sql`tasks_completed + 1` : sql`tasks_completed`,
         updatedAt: new Date(),
       })
       .where(eq(users.id, userId))
@@ -89,6 +94,15 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(tasks)
       .where(and(eq(tasks.type, type), eq(tasks.isActive, true)));
+  }
+
+  // External survey provider operations
+  async getExternalSurveys(userId: string, userAgent?: string, ipAddress?: string): Promise<ProviderSurvey[]> {
+    return await surveyService.getAllSurveys(userId, userAgent, ipAddress);
+  }
+
+  async getExternalSurveysByType(type: string, userId: string, userAgent?: string, ipAddress?: string): Promise<ProviderSurvey[]> {
+    return await surveyService.getSurveysByType(type, userId, userAgent, ipAddress);
   }
 
   async createTask(task: InsertTask): Promise<Task> {
@@ -121,7 +135,7 @@ export class DatabaseStorage implements IStorage {
     const completions = await db
       .select({
         id: userTaskCompletions.id,
-        type: 'task_completion',
+        type: sql`'task_completion'`.as('type'),
         title: tasks.title,
         taskType: tasks.type,
         pointsEarned: userTaskCompletions.pointsEarned,

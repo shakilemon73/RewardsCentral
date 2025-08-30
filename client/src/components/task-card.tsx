@@ -4,14 +4,44 @@ import { Badge } from "@/components/ui/badge";
 import { Star, FileText, Video, HandHeart } from "lucide-react";
 import type { Task } from "@shared/schema";
 
+interface ExternalSurvey {
+  id: string;
+  type: string;
+  title: string;
+  description: string;
+  points: number;
+  duration: string;
+  category: string;
+  rating: number;
+  provider?: string;
+  entryUrl?: string;
+  isActive: boolean;
+}
+
+type TaskOrSurvey = Task | ExternalSurvey;
+
 interface TaskCardProps {
-  task: Task;
+  task: TaskOrSurvey;
   onComplete: (taskId: string, points: number) => void;
   isMobile?: boolean;
   isCompleting?: boolean;
 }
 
 export default function TaskCard({ task, onComplete, isMobile = false, isCompleting = false }: TaskCardProps) {
+  const isExternalSurvey = 'provider' in task && task.provider;
+  
+  const handleComplete = () => {
+    if (isExternalSurvey && task.entryUrl) {
+      // Open external survey in new tab
+      window.open(task.entryUrl, '_blank');
+      // Award points after a short delay (in real app, this would be handled by webhooks)
+      setTimeout(() => {
+        onComplete(task.id, task.points);
+      }, 1000);
+    } else {
+      onComplete(task.id, task.points);
+    }
+  };
   const getTaskIcon = () => {
     switch (task.type) {
       case "survey":
@@ -80,7 +110,12 @@ export default function TaskCard({ task, onComplete, isMobile = false, isComplet
                 <div className={`p-2 rounded ${getTaskColor()}`}>
                   <Icon className="h-4 w-4" />
                 </div>
-                <h3 className="font-medium text-foreground text-sm">{task.title}</h3>
+                <div className="flex-1">
+                  <h3 className="font-medium text-foreground text-sm">{task.title}</h3>
+                  {isExternalSurvey && (
+                    <p className="text-xs text-muted-foreground">{task.provider}</p>
+                  )}
+                </div>
               </div>
               <p className="text-muted-foreground text-xs mb-2">
                 {task.duration && `${task.duration} • `}{task.category}
@@ -94,11 +129,11 @@ export default function TaskCard({ task, onComplete, isMobile = false, isComplet
             </div>
             <Button
               className={`${getButtonColor()} text-white text-xs px-3 py-1 h-auto`}
-              onClick={() => onComplete(task.id, task.points)}
+              onClick={handleComplete}
               disabled={isCompleting}
               data-testid={`button-complete-${task.id}`}
             >
-              {isCompleting ? "..." : `${task.points} pts`}
+              {isCompleting ? "..." : isExternalSurvey ? "Start" : `${task.points} pts`}
             </Button>
           </div>
           {task.description && (
@@ -114,7 +149,12 @@ export default function TaskCard({ task, onComplete, isMobile = false, isComplet
       <CardContent className="p-4">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <h3 className="font-medium text-foreground">{task.title}</h3>
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="font-medium text-foreground">{task.title}</h3>
+              {isExternalSurvey && (
+                <Badge variant="secondary" className="text-xs">{task.provider}</Badge>
+              )}
+            </div>
             <p className="text-muted-foreground text-sm mt-1">
               {task.duration && `${task.duration} • `}{task.category}
             </p>
@@ -130,11 +170,11 @@ export default function TaskCard({ task, onComplete, isMobile = false, isComplet
           </div>
           <Button
             className={`${getButtonColor()} text-white ml-4`}
-            onClick={() => onComplete(task.id, task.points)}
+            onClick={handleComplete}
             disabled={isCompleting}
             data-testid={`button-complete-${task.id}`}
           >
-            {isCompleting ? "Completing..." : `${task.points} pts`}
+            {isCompleting ? "Completing..." : isExternalSurvey ? `Start Survey (${task.points} pts)` : `${task.points} pts`}
           </Button>
         </div>
       </CardContent>
