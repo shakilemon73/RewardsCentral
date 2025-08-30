@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import TaskCard from "@/components/task-card";
-import { FileText, Video, HandHeart, Star } from "lucide-react";
+import { FileText, Video, HandHeart, Star, Users, TrendingUp, Clock, CheckCircle, AlertCircle } from "lucide-react";
 import type { Task } from "@shared/schema";
 
 export default function Tasks() {
@@ -23,6 +23,12 @@ export default function Tasks() {
   const [isLoading, setIsLoading] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
   const [configStatus, setConfigStatus] = useState(getSurveyProviderStatus());
+  const [surveyCounts, setSurveyCounts] = useState<{
+    rapidoreach: { count: number; available: boolean; status: string };
+    theoremreach: { count: number; available: boolean; status: string };
+    cpx: { count: number; available: boolean; status: string };
+    bitlabs: { count: number; available: boolean; status: string };
+  } | null>(null);
 
   // Initialize survey postback listener
   useEffect(() => {
@@ -70,6 +76,10 @@ export default function Tasks() {
           // Get best matched surveys using enhanced targeting
           const bestMatches = await surveyMatchingService.getBestMatchedSurveys(user, 6);
           surveyTasks = bestMatches.map(match => surveyApiService.convertProviderToTask(match.provider));
+
+          // Get survey counts for dashboard
+          const counts = await surveyApiService.getSurveyCountsByProvider(user.id, userDemographics);
+          setSurveyCounts(counts);
         }
         
         // Get local tasks (ads, offers) from Supabase
@@ -231,15 +241,148 @@ export default function Tasks() {
 
         {/* Task Content */}
         <div className="space-y-4">
-          {activeTab === "surveys" && surveys.map(task => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              onComplete={handleCompleteTask}
-              isMobile={true}
-              isCompleting={isCompleting}
-            />
-          ))}
+          {activeTab === "surveys" && (
+            <div className="space-y-4">
+              {/* Survey Platform Cards for Mobile */}
+              <div className="grid grid-cols-1 gap-3">
+                {/* RapidoReach Mobile */}
+                <Card className="border-l-4 border-l-purple-500" data-testid="mobile-platform-rapidoreach">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-base">RapidoReach</CardTitle>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="secondary" className="text-xs">
+                          {surveyCounts?.rapidoreach.count || 0} surveys
+                        </Badge>
+                        {surveyCounts?.rapidoreach.available ? (
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                        ) : (
+                          <AlertCircle className="h-4 w-4 text-red-500" />
+                        )}
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Premium Research • $0.80-$6.00 • 5-25 min</p>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <Button 
+                      size="sm" 
+                      className="w-full"
+                      disabled={!surveyCounts?.rapidoreach.available}
+                      onClick={() => {
+                        const rapidoTask = surveys.find(t => t.id.startsWith('rapidoreach_'));
+                        if (rapidoTask) handleCompleteTask(rapidoTask.id, rapidoTask.points);
+                      }}
+                      data-testid="mobile-button-rapidoreach"
+                    >
+                      {surveyCounts?.rapidoreach.available ? 'Start Surveys' : 'Unavailable'}
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* TheoremReach Mobile */}
+                <Card className="border-l-4 border-l-blue-500" data-testid="mobile-platform-theoremreach">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-base">TheoremReach</CardTitle>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="secondary" className="text-xs">
+                          {surveyCounts?.theoremreach.count || 0} surveys
+                        </Badge>
+                        {surveyCounts?.theoremreach.available ? (
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                        ) : (
+                          <AlertCircle className="h-4 w-4 text-red-500" />
+                        )}
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Product Research • $0.75-$3.50 • 8-15 min</p>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <Button 
+                      size="sm" 
+                      className="w-full"
+                      disabled={!surveyCounts?.theoremreach.available}
+                      onClick={() => {
+                        const theoremTask = surveys.find(t => t.id.startsWith('theoremreach_'));
+                        if (theoremTask) handleCompleteTask(theoremTask.id, theoremTask.points);
+                      }}
+                      data-testid="mobile-button-theoremreach"
+                    >
+                      {surveyCounts?.theoremreach.available ? 'Start Surveys' : 'Unavailable'}
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* CPX Research Mobile */}
+                <Card className="border-l-4 border-l-orange-500" data-testid="mobile-platform-cpx">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-base">CPX Research</CardTitle>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="secondary" className="text-xs">
+                          {surveyCounts?.cpx.count || 0} surveys
+                        </Badge>
+                        {surveyCounts?.cpx.available ? (
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                        ) : (
+                          <AlertCircle className="h-4 w-4 text-red-500" />
+                        )}
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Market Research • $0.50-$5.00 • 5-20 min</p>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <Button 
+                      size="sm" 
+                      className="w-full"
+                      disabled={!surveyCounts?.cpx.available}
+                      onClick={() => {
+                        const cpxTask = surveys.find(t => t.id.startsWith('cpx_'));
+                        if (cpxTask) handleCompleteTask(cpxTask.id, cpxTask.points);
+                      }}
+                      data-testid="mobile-button-cpx"
+                    >
+                      {surveyCounts?.cpx.available ? 'Start Surveys' : 'Unavailable'}
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* BitLabs Mobile */}
+                <Card className="border-l-4 border-l-teal-500" data-testid="mobile-platform-bitlabs">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-base">BitLabs</CardTitle>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="secondary" className="text-xs">
+                          {surveyCounts?.bitlabs.count || 0} surveys
+                        </Badge>
+                        {surveyCounts?.bitlabs.available ? (
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                        ) : (
+                          <AlertCircle className="h-4 w-4 text-red-500" />
+                        )}
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Lifestyle • $0.60-$4.00 • 7-18 min</p>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <Button 
+                      size="sm" 
+                      className="w-full"
+                      disabled={!surveyCounts?.bitlabs.available}
+                      onClick={() => {
+                        const bitlabsTask = surveys.find(t => t.id.startsWith('bitlabs_'));
+                        if (bitlabsTask) handleCompleteTask(bitlabsTask.id, bitlabsTask.points);
+                      }}
+                      data-testid="mobile-button-bitlabs"
+                    >
+                      {surveyCounts?.bitlabs.available ? 'Start Surveys' : 'Unavailable'}
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )}
           {activeTab === "ads" && ads.map(task => (
             <TaskCard
               key={task.id}
@@ -267,31 +410,200 @@ export default function Tasks() {
     <div data-testid="page-tasks">
       <h1 className="text-3xl font-bold text-foreground mb-6">Available Tasks</h1>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Surveys Section */}
-        <Card data-testid="section-surveys">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                Surveys
-              </CardTitle>
-              <Badge variant="secondary" className="bg-success/10 text-success">
-                50-200 pts
+      {/* Survey Platforms Dashboard */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
+          <FileText className="h-6 w-6" />
+          Survey Platforms
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* RapidoReach */}
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" data-testid="platform-rapidoreach">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg">RapidoReach</CardTitle>
+                {surveyCounts?.rapidoreach.available ? (
+                  <CheckCircle className="h-5 w-5 text-green-500" />
+                ) : (
+                  <AlertCircle className="h-5 w-5 text-red-500" />
+                )}
+              </div>
+              <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                Premium Research
               </Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {surveys.map(task => (
-              <TaskCard
-                key={task.id}
-                task={task}
-                onComplete={handleCompleteTask}
-                isCompleting={isCompleting}
-              />
-            ))}
-          </CardContent>
-        </Card>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Available Surveys</span>
+                  <span className="font-bold text-lg" data-testid="count-rapidoreach">
+                    {surveyCounts?.rapidoreach.count || 0}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Earnings</span>
+                  <span className="font-semibold text-green-600">$0.80 - $6.00</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Time</span>
+                  <span className="text-sm">5-25 min</span>
+                </div>
+                <Button 
+                  className="w-full" 
+                  disabled={!surveyCounts?.rapidoreach.available}
+                  onClick={() => {
+                    const rapidoTask = surveys.find(t => t.id.startsWith('rapidoreach_'));
+                    if (rapidoTask) handleCompleteTask(rapidoTask.id, rapidoTask.points);
+                  }}
+                  data-testid="button-rapidoreach"
+                >
+                  {surveyCounts?.rapidoreach.available ? 'Start Surveys' : 'Unavailable'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* TheoremReach */}
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" data-testid="platform-theoremreach">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg">TheoremReach</CardTitle>
+                {surveyCounts?.theoremreach.available ? (
+                  <CheckCircle className="h-5 w-5 text-green-500" />
+                ) : (
+                  <AlertCircle className="h-5 w-5 text-red-500" />
+                )}
+              </div>
+              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                Product Research
+              </Badge>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Available Surveys</span>
+                  <span className="font-bold text-lg" data-testid="count-theoremreach">
+                    {surveyCounts?.theoremreach.count || 0}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Earnings</span>
+                  <span className="font-semibold text-green-600">$0.75 - $3.50</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Time</span>
+                  <span className="text-sm">8-15 min</span>
+                </div>
+                <Button 
+                  className="w-full" 
+                  disabled={!surveyCounts?.theoremreach.available}
+                  onClick={() => {
+                    const theoremTask = surveys.find(t => t.id.startsWith('theoremreach_'));
+                    if (theoremTask) handleCompleteTask(theoremTask.id, theoremTask.points);
+                  }}
+                  data-testid="button-theoremreach"
+                >
+                  {surveyCounts?.theoremreach.available ? 'Start Surveys' : 'Unavailable'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* CPX Research */}
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" data-testid="platform-cpx">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg">CPX Research</CardTitle>
+                {surveyCounts?.cpx.available ? (
+                  <CheckCircle className="h-5 w-5 text-green-500" />
+                ) : (
+                  <AlertCircle className="h-5 w-5 text-red-500" />
+                )}
+              </div>
+              <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
+                Market Research
+              </Badge>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Available Surveys</span>
+                  <span className="font-bold text-lg" data-testid="count-cpx">
+                    {surveyCounts?.cpx.count || 0}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Earnings</span>
+                  <span className="font-semibold text-green-600">$0.50 - $5.00</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Time</span>
+                  <span className="text-sm">5-20 min</span>
+                </div>
+                <Button 
+                  className="w-full" 
+                  disabled={!surveyCounts?.cpx.available}
+                  onClick={() => {
+                    const cpxTask = surveys.find(t => t.id.startsWith('cpx_'));
+                    if (cpxTask) handleCompleteTask(cpxTask.id, cpxTask.points);
+                  }}
+                  data-testid="button-cpx"
+                >
+                  {surveyCounts?.cpx.available ? 'Start Surveys' : 'Unavailable'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* BitLabs */}
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" data-testid="platform-bitlabs">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg">BitLabs</CardTitle>
+                {surveyCounts?.bitlabs.available ? (
+                  <CheckCircle className="h-5 w-5 text-green-500" />
+                ) : (
+                  <AlertCircle className="h-5 w-5 text-red-500" />
+                )}
+              </div>
+              <Badge variant="outline" className="bg-teal-50 text-teal-700 border-teal-200">
+                Lifestyle
+              </Badge>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Available Surveys</span>
+                  <span className="font-bold text-lg" data-testid="count-bitlabs">
+                    {surveyCounts?.bitlabs.count || 0}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Earnings</span>
+                  <span className="font-semibold text-green-600">$0.60 - $4.00</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Time</span>
+                  <span className="text-sm">7-18 min</span>
+                </div>
+                <Button 
+                  className="w-full" 
+                  disabled={!surveyCounts?.bitlabs.available}
+                  onClick={() => {
+                    const bitlabsTask = surveys.find(t => t.id.startsWith('bitlabs_'));
+                    if (bitlabsTask) handleCompleteTask(bitlabsTask.id, bitlabsTask.points);
+                  }}
+                  data-testid="button-bitlabs"
+                >
+                  {surveyCounts?.bitlabs.available ? 'Start Surveys' : 'Unavailable'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* Ads Section */}
         <Card data-testid="section-ads">

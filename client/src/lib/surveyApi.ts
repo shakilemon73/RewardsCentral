@@ -432,6 +432,75 @@ class SurveyApiService {
     };
   }
 
+  // Get survey counts per provider for dashboard display
+  async getSurveyCountsByProvider(userId: string, userDemographics?: {
+    birthday?: string;
+    gender?: string;
+    country_code?: string;
+    zip_code?: string;
+  }): Promise<{
+    rapidoreach: { count: number; available: boolean; status: string };
+    theoremreach: { count: number; available: boolean; status: string };
+    cpx: { count: number; available: boolean; status: string };
+    bitlabs: { count: number; available: boolean; status: string };
+  }> {
+    const healthStatus = surveyResilienceManager.getProviderHealth();
+    const config = getProviderConfig();
+    
+    const counts = {
+      rapidoreach: { count: 0, available: false, status: healthStatus.rapidoreach || 'unhealthy' },
+      theoremreach: { count: 0, available: false, status: healthStatus.theoremreach || 'unhealthy' },
+      cpx: { count: 0, available: false, status: healthStatus.cpx || 'unhealthy' },
+      bitlabs: { count: 0, available: false, status: healthStatus.bitlabs || 'unhealthy' }
+    };
+
+    try {
+      // RapidoReach - get actual survey count
+      if (config.rapidoreach.enabled && healthStatus.rapidoreach !== 'unhealthy') {
+        try {
+          const rapidoSurveys = await this.fetchRapidoReachSurveys(userId, userDemographics);
+          counts.rapidoreach = {
+            count: rapidoSurveys.length,
+            available: true,
+            status: healthStatus.rapidoreach || 'healthy'
+          };
+        } catch (error) {
+          console.warn('Failed to get RapidoReach count:', error);
+        }
+      }
+
+      // For other providers, estimate based on health status
+      if (config.theoremreach.enabled && healthStatus.theoremreach !== 'unhealthy') {
+        counts.theoremreach = {
+          count: healthStatus.theoremreach === 'healthy' ? 8 : 3, // Estimated count
+          available: true,
+          status: healthStatus.theoremreach || 'healthy'
+        };
+      }
+
+      if (config.cpx.enabled && healthStatus.cpx !== 'unhealthy') {
+        counts.cpx = {
+          count: healthStatus.cpx === 'healthy' ? 12 : 5, // Estimated count
+          available: true,
+          status: healthStatus.cpx || 'healthy'
+        };
+      }
+
+      if (config.bitlabs.enabled && healthStatus.bitlabs !== 'unhealthy') {
+        counts.bitlabs = {
+          count: healthStatus.bitlabs === 'healthy' ? 6 : 2, // Estimated count
+          available: true,
+          status: healthStatus.bitlabs || 'healthy'
+        };
+      }
+
+    } catch (error) {
+      console.error('Failed to get survey counts:', error);
+    }
+
+    return counts;
+  }
+
   // Get detailed provider metrics for debugging
   getProviderMetrics() {
     return surveyResilienceManager.getProviderMetrics();
