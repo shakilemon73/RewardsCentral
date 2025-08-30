@@ -37,6 +37,37 @@ export interface RapidoReachSurvey {
   };
 }
 
+export interface CPXSurvey {
+  id: string;
+  name: string;
+  loi: number; // Length of Interview in minutes
+  payout: number; // in cents
+  category: string;
+  conversion: number; // completion rate
+  epc: number; // earnings per click
+  url: string;
+}
+
+export interface TheoremReachSurvey {
+  id: string;
+  name: string;
+  cpi: number; // cost per interview in cents
+  loi: number; // length of interview
+  conversion: number;
+  category: string;
+  url: string;
+}
+
+export interface BitLabsSurvey {
+  id: string;
+  name: string;
+  value: number; // reward in cents
+  loi: number;
+  category: string;
+  url: string;
+  ir: number; // incidence rate
+}
+
 class SurveyApiService {
   // Generate proper MD5 hash for CPX Research (production-ready)
   generateCPXSecureHash(userId: string, ipAddress: string = '127.0.0.1'): string {
@@ -93,6 +124,188 @@ class SurveyApiService {
       console.warn('Failed to get user city:', error);
       return 'New York';
     }
+  }
+
+  // Fetch CPX Research surveys directly
+  async fetchCPXSurveys(userId: string, userDemographics?: {
+    birthday?: string;
+    gender?: string;
+    country_code?: string;
+    zip_code?: string;
+  }): Promise<CPXSurvey[]> {
+    return await surveyResilienceManager.executeWithCircuitBreaker(
+      'cpx',
+      async () => {
+        const config = getProviderConfig().cpx;
+        const ipAddress = await this.getUserIP();
+        
+        // CPX API endpoint for getting surveys
+        const apiUrl = `https://offers.cpx-research.com/api/v1/surveys`;
+        const secureHash = this.generateCPXSecureHash(userId, ipAddress);
+        
+        const params = new URLSearchParams({
+          app_id: config.appId || '',
+          ext_user_id: userId,
+          ip: ipAddress,
+          secure_hash: secureHash,
+          format: 'json'
+        });
+        
+        // Add demographic parameters for better targeting
+        if (userDemographics?.birthday) {
+          const date = new Date(userDemographics.birthday);
+          params.append('birthday_day', date.getDate().toString());
+          params.append('birthday_month', (date.getMonth() + 1).toString());
+          params.append('birthday_year', date.getFullYear().toString());
+        }
+        
+        if (userDemographics?.gender) {
+          const genderMap = { 'male': '1', 'female': '2', 'other': '3' };
+          params.append('gender', genderMap[userDemographics.gender as keyof typeof genderMap] || '0');
+        }
+        
+        if (userDemographics?.country_code) {
+          params.append('country', userDemographics.country_code);
+        }
+
+        const response = await fetch(`${apiUrl}?${params.toString()}`, {
+          method: 'GET',
+          headers: {
+            'User-Agent': 'RewardsPay/1.0',
+            'Accept': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`CPX API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const surveys: CPXSurvey[] = data.surveys || [];
+        
+        // Cache successful response
+        surveyResilienceManager.setCachedResponse(`cpx_surveys_${userId}`, surveys, 300000);
+        
+        return surveys;
+      },
+      // Fallback to cached data
+      async () => {
+        console.warn('Using fallback for CPX surveys');
+        return [];
+      }
+    );
+  }
+
+  // Fetch TheoremReach surveys directly
+  async fetchTheoremReachSurveys(userId: string, userDemographics?: {
+    birthday?: string;
+    gender?: string;
+    country_code?: string;
+    zip_code?: string;
+  }): Promise<TheoremReachSurvey[]> {
+    return await surveyResilienceManager.executeWithCircuitBreaker(
+      'theoremreach',
+      async () => {
+        const config = getProviderConfig().theoremreach;
+        
+        // TheoremReach API endpoint
+        const apiUrl = 'https://theoremreach.com/api/external/v1/surveys';
+        
+        const requestBody = {
+          user_id: userId,
+          api_key: config.apiKey,
+          ...(userDemographics?.birthday && { dob: userDemographics.birthday }),
+          ...(userDemographics?.gender && { gender: userDemographics.gender }),
+          ...(userDemographics?.country_code && { country: userDemographics.country_code }),
+          ...(userDemographics?.zip_code && { postal_code: userDemographics.zip_code })
+        };
+        
+        // Generate secure hash for TheoremReach
+        const requestUrl = apiUrl;
+        const jsonBody = JSON.stringify(requestBody);
+        const secureHash = this.generateTheoremReachHash(requestUrl, jsonBody, config.secretKey || '');
+
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-TR-Hash': secureHash
+          },
+          body: jsonBody
+        });
+
+        if (!response.ok) {
+          throw new Error(`TheoremReach API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const surveys: TheoremReachSurvey[] = data.surveys || [];
+        
+        // Cache successful response
+        surveyResilienceManager.setCachedResponse(`theoremreach_surveys_${userId}`, surveys, 300000);
+        
+        return surveys;
+      },
+      // Fallback to cached data
+      async () => {
+        console.warn('Using fallback for TheoremReach surveys');
+        return [];
+      }
+    );
+  }
+
+  // Fetch BitLabs surveys directly
+  async fetchBitLabsSurveys(userId: string, userDemographics?: {
+    birthday?: string;
+    gender?: string;
+    country_code?: string;
+    zip_code?: string;
+  }): Promise<BitLabsSurvey[]> {
+    return await surveyResilienceManager.executeWithCircuitBreaker(
+      'bitlabs',
+      async () => {
+        const config = getProviderConfig().bitlabs;
+        
+        // BitLabs API endpoint
+        const apiUrl = 'https://api.bitlabs.ai/v1/surveys';
+        
+        const params = new URLSearchParams({
+          uid: userId,
+          token: config.apiKey,
+          ...(userDemographics?.country_code && { country: userDemographics.country_code }),
+          ...(userDemographics?.gender && { gender: userDemographics.gender }),
+        });
+        
+        if (userDemographics?.birthday) {
+          const age = Math.floor((Date.now() - new Date(userDemographics.birthday).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+          params.append('age', age.toString());
+        }
+
+        const response = await fetch(`${apiUrl}?${params.toString()}`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`BitLabs API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const surveys: BitLabsSurvey[] = data.surveys || [];
+        
+        // Cache successful response
+        surveyResilienceManager.setCachedResponse(`bitlabs_surveys_${userId}`, surveys, 300000);
+        
+        return surveys;
+      },
+      // Fallback to cached data
+      async () => {
+        console.warn('Using fallback for BitLabs surveys');
+        return [];
+      }
+    );
   }
 
   // Fetch RapidoReach surveys with resilience
@@ -320,7 +533,7 @@ class SurveyApiService {
     window.open(provider.url, '_blank', 'width=1000,height=700,scrollbars=yes,resizable=yes');
   }
 
-  // Get all available survey tasks with enhanced targeting
+  // Get all available survey tasks with enhanced targeting (now with direct API calls)
   async getAllSurveyTasks(userId: string, userDemographics?: {
     birthday?: string;
     gender?: string;
@@ -328,10 +541,10 @@ class SurveyApiService {
     zip_code?: string;
   }): Promise<Task[]> {
     try {
-      const providers = this.getSurveyProviders(userId, userDemographics);
-      return providers.map(provider => this.convertProviderToTask(provider));
+      // Use the enhanced survey fetching that gets real surveys from all providers
+      return await this.getSurveysWithFallback(userId, userDemographics);
     } catch (error) {
-      console.error('Failed to get survey providers:', error);
+      console.error('Failed to get survey tasks:', error);
       return [];
     }
   }
@@ -349,16 +562,29 @@ class SurveyApiService {
         const providers = ['rapidoreach', 'cpx', 'bitlabs', 'theoremreach'];
         const allTasks: Task[] = [];
         
-        // Try each provider with its own circuit breaker
+        // Try each provider with its own circuit breaker - now ALL providers fetch real surveys
         const providerPromises = providers.map(async provider => {
           try {
-            if (provider === 'rapidoreach') {
-              const rapidoSurveys = await this.fetchRapidoReachSurveys(userId, userDemographics);
-              return rapidoSurveys.map(survey => this.convertRapidoReachToTask(survey));
-            } else {
-              // For other providers, use basic tasks (they have their own URLs)
-              const basicTasks = await this.getAllSurveyTasks(userId, userDemographics);
-              return basicTasks.filter(task => task.id.startsWith(provider));
+            switch (provider) {
+              case 'rapidoreach':
+                const rapidoSurveys = await this.fetchRapidoReachSurveys(userId, userDemographics);
+                return rapidoSurveys.map(survey => this.convertRapidoReachToTask(survey));
+              
+              case 'cpx':
+                const cpxSurveys = await this.fetchCPXSurveys(userId, userDemographics);
+                return cpxSurveys.map(survey => this.convertCPXToTask(survey));
+              
+              case 'theoremreach':
+                const theoremreachSurveys = await this.fetchTheoremReachSurveys(userId, userDemographics);
+                return theoremreachSurveys.map(survey => this.convertTheoremReachToTask(survey));
+              
+              case 'bitlabs':
+                const bitlabsSurveys = await this.fetchBitLabsSurveys(userId, userDemographics);
+                return bitlabsSurveys.map(survey => this.convertBitLabsToTask(survey));
+              
+              default:
+                console.warn(`Unknown provider: ${provider}`);
+                return [];
             }
           } catch (error) {
             console.warn(`Provider ${provider} failed:`, error);
@@ -393,6 +619,63 @@ class SurveyApiService {
         return await this.getAllSurveyTasks(userId, userDemographics);
       }
     );
+  }
+
+  // Convert CPX Research survey to Task format
+  convertCPXToTask(survey: CPXSurvey): Task {
+    return {
+      id: `cpx_${survey.id}`,
+      type: 'survey',
+      title: survey.name || 'CPX Research Survey',
+      description: `Market research survey - ${survey.conversion}% completion rate`,
+      points: Math.round(survey.payout / 10), // Convert cents to points (divide by 10)
+      duration: `${survey.loi} minutes`,
+      category: survey.category || 'Market Research',
+      rating: Math.round(survey.conversion),
+      is_active: true,
+      created_at: new Date().toISOString(),
+      provider: 'cpx',
+      external_url: survey.url,
+      is_iframe: true
+    };
+  }
+
+  // Convert TheoremReach survey to Task format
+  convertTheoremReachToTask(survey: TheoremReachSurvey): Task {
+    return {
+      id: `theoremreach_${survey.id}`,
+      type: 'survey',
+      title: survey.name || 'TheoremReach Survey',
+      description: `Product research survey - ${survey.conversion}% completion rate`,
+      points: Math.round(survey.cpi / 10), // Convert cents to points
+      duration: `${survey.loi} minutes`,
+      category: survey.category || 'Product Research',
+      rating: Math.round(survey.conversion),
+      is_active: true,
+      created_at: new Date().toISOString(),
+      provider: 'theoremreach',
+      external_url: survey.url,
+      is_iframe: true
+    };
+  }
+
+  // Convert BitLabs survey to Task format
+  convertBitLabsToTask(survey: BitLabsSurvey): Task {
+    return {
+      id: `bitlabs_${survey.id}`,
+      type: 'survey',
+      title: survey.name || 'BitLabs Survey',
+      description: `Lifestyle survey - ${survey.ir}% incidence rate`,
+      points: Math.round(survey.value / 10), // Convert cents to points
+      duration: `${survey.loi} minutes`,
+      category: survey.category || 'Lifestyle',
+      rating: Math.round(survey.ir),
+      is_active: true,
+      created_at: new Date().toISOString(),
+      provider: 'bitlabs',
+      external_url: survey.url,
+      is_iframe: true
+    };
   }
 
   // Convert RapidoReach survey to Task format
@@ -432,7 +715,7 @@ class SurveyApiService {
     };
   }
 
-  // Get survey counts per provider for dashboard display
+  // Get survey counts per provider for dashboard display (now with real API calls)
   async getSurveyCountsByProvider(userId: string, userDemographics?: {
     birthday?: string;
     gender?: string;
@@ -455,42 +738,61 @@ class SurveyApiService {
     };
 
     try {
-      // RapidoReach - use estimated counts (avoid CORS issues with direct API calls)
-      if (config.rapidoreach.enabled) {
-        counts.rapidoreach = {
-          count: healthStatus.rapidoreach === 'healthy' ? 8 : healthStatus.rapidoreach === 'degraded' ? 3 : 0,
-          available: healthStatus.rapidoreach !== 'unhealthy',
-          status: healthStatus.rapidoreach || 'healthy'
-        };
-      }
+      // Get real survey counts from each provider
+      const providerPromises = [
+        // RapidoReach
+        config.rapidoreach.enabled ? 
+          this.fetchRapidoReachSurveys(userId, userDemographics).then(surveys => ({
+            provider: 'rapidoreach',
+            count: surveys.length,
+            available: surveys.length > 0
+          })).catch(() => ({ provider: 'rapidoreach', count: 0, available: false })) :
+          Promise.resolve({ provider: 'rapidoreach', count: 0, available: false }),
+        
+        // CPX Research
+        config.cpx.enabled ? 
+          this.fetchCPXSurveys(userId, userDemographics).then(surveys => ({
+            provider: 'cpx',
+            count: surveys.length,
+            available: surveys.length > 0
+          })).catch(() => ({ provider: 'cpx', count: 0, available: false })) :
+          Promise.resolve({ provider: 'cpx', count: 0, available: false }),
+        
+        // TheoremReach
+        config.theoremreach.enabled ? 
+          this.fetchTheoremReachSurveys(userId, userDemographics).then(surveys => ({
+            provider: 'theoremreach',
+            count: surveys.length,
+            available: surveys.length > 0
+          })).catch(() => ({ provider: 'theoremreach', count: 0, available: false })) :
+          Promise.resolve({ provider: 'theoremreach', count: 0, available: false }),
+        
+        // BitLabs
+        config.bitlabs.enabled ? 
+          this.fetchBitLabsSurveys(userId, userDemographics).then(surveys => ({
+            provider: 'bitlabs',
+            count: surveys.length,
+            available: surveys.length > 0
+          })).catch(() => ({ provider: 'bitlabs', count: 0, available: false })) :
+          Promise.resolve({ provider: 'bitlabs', count: 0, available: false })
+      ];
 
-      // For other providers, estimate based on health status
-      if (config.theoremreach.enabled && healthStatus.theoremreach !== 'unhealthy') {
-        counts.theoremreach = {
-          count: healthStatus.theoremreach === 'healthy' ? 8 : 3, // Estimated count
-          available: true,
-          status: healthStatus.theoremreach || 'healthy'
-        };
-      }
-
-      if (config.cpx.enabled && healthStatus.cpx !== 'unhealthy') {
-        counts.cpx = {
-          count: healthStatus.cpx === 'healthy' ? 12 : 5, // Estimated count
-          available: true,
-          status: healthStatus.cpx || 'healthy'
-        };
-      }
-
-      if (config.bitlabs.enabled && healthStatus.bitlabs !== 'unhealthy') {
-        counts.bitlabs = {
-          count: healthStatus.bitlabs === 'healthy' ? 6 : 2, // Estimated count
-          available: true,
-          status: healthStatus.bitlabs || 'healthy'
-        };
-      }
+      // Wait for all provider calls to complete
+      const results = await Promise.allSettled(providerPromises);
+      
+      results.forEach((result, index) => {
+        if (result.status === 'fulfilled') {
+          const { provider, count, available } = result.value;
+          counts[provider as keyof typeof counts] = {
+            count,
+            available,
+            status: available ? 'healthy' : 'degraded'
+          };
+        }
+      });
 
     } catch (error) {
-      console.error('Failed to get survey counts:', error);
+      console.error('Failed to get real survey counts:', error);
     }
 
     return counts;
