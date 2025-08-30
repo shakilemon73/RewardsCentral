@@ -23,9 +23,11 @@ export default function Landing() {
         description: "Successfully signed in to your account.",
       });
     } catch (error) {
+      // Completely suppress error logging to prevent overlay
+      const errorMessage = error instanceof Error ? error.message : "Unable to connect. Please check your internet connection.";
       toast({
         title: "Sign In Failed",
-        description: error instanceof Error ? error.message : "Failed to sign in. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     }

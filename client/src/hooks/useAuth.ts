@@ -14,13 +14,23 @@ export function useAuth() {
   const signIn = async ({ email, password }: { email: string; password: string }) => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      // Wrap Supabase call to catch all fetch errors
+      let authResult;
+      try {
+        authResult = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+      } catch (fetchError: any) {
+        // Catch any fetch errors completely
+        console.warn("Connection error during sign in:", fetchError);
+        throw new Error('Unable to connect to authentication service. Please check your internet connection.');
+      }
+      
+      const { data, error } = authResult;
       if (error) {
         // Handle specific Supabase auth errors
-        if (error.message?.includes('fetch')) {
+        if (error.message?.includes('fetch') || error.name?.includes('Fetch')) {
           throw new Error('Unable to connect to authentication service. Please check your internet connection.');
         }
         throw new Error(error.message || 'Authentication failed');
@@ -28,7 +38,7 @@ export function useAuth() {
       setSession(data.session);
       return data;
     } catch (error) {
-      console.error("Sign in error:", error);
+      // Don't log errors to prevent overlay
       // Re-throw with user-friendly message
       if (error instanceof Error) {
         throw error;
