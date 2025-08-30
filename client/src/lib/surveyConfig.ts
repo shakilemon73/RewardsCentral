@@ -61,7 +61,7 @@ class SurveyConfigManager {
           surveys: this.environment === 'development' 
             ? 'https://surveys-sandbox.theoremreach.com/api/external/v1'
             : 'https://surveys.theoremreach.com/api/external/v1',
-          offerwall: 'https://theoremreach.com/reward_center'
+          offerwall: 'https://surveys.theoremreach.com/respondent_result'
         }
       },
       bitlabs: {
@@ -86,7 +86,8 @@ class SurveyConfigManager {
         callbackUrl: `${baseCallbackUrl}?provider=rapidoreach`,
         endpoints: {
           surveys: 'https://www.rapidoreach.com/getallsurveys-api',
-          postback: 'https://www.rapidoreach.com/postback'
+          postback: 'https://www.rapidoreach.com/postback',
+          offerwall: 'https://www.rapidoreach.com/ofw'
         }
       }
     };

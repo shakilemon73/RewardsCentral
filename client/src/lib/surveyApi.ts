@@ -57,6 +57,15 @@ class SurveyApiService {
     return CryptoJS.HmacSHA1(callbackUrl, secretKey).toString();
   }
 
+  // Generate RapidoReach UID for offerwall integration
+  generateRapidoReachUID(userId: string, appId: string, apiKey: string): string {
+    // RapidoReach UID format: userId-appId-hash
+    const timestamp = Date.now().toString();
+    const hashInput = `${userId}${appId}${apiKey}${timestamp}`;
+    const hash = CryptoJS.MD5(hashInput).toString().substring(0, 8);
+    return `${userId}-${hash}-${timestamp.substring(-6)}`;
+  }
+
   // Get callback URL for survey providers
   getCallbackUrl(): string {
     return `${window.location.origin}/survey-callback`;
@@ -226,7 +235,7 @@ class SurveyApiService {
         rating: 83,
         userRating: 4.2,
         averageReward: 120,
-        url: `${config.theoremreach.endpoints.offerwall}?user_id=${userId}&api_key=${config.theoremreach.apiKey}&callback_url=${encodeURIComponent(config.theoremreach.callbackUrl)}`,
+        url: `https://theoremreach.com/respondent/login?user_id=${userId}&api_key=${config.theoremreach.apiKey}&callback=${encodeURIComponent(config.theoremreach.callbackUrl)}`,
         isIframe: true
       });
     }
@@ -262,7 +271,7 @@ class SurveyApiService {
         rating: 91,
         userRating: 4.6,
         averageReward: 180,
-        url: 'https://www.rapidoreach.com/surveys', // Will be replaced with actual survey URLs from API
+        url: `${config.rapidoreach.endpoints.offerwall}/?userId=${this.generateRapidoReachUID(userId, config.rapidoreach.appId || '', config.rapidoreach.apiKey)}`,
         isIframe: false
       });
     }
