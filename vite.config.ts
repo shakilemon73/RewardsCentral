@@ -7,8 +7,7 @@ export default defineConfig({
   plugins: [
     react(),
     runtimeErrorOverlay(),
-    ...(process.env.NODE_ENV !== "production" &&
-    process.env.REPL_ID !== undefined
+    ...(false // Disable cartographer to fix traverse errors
       ? [
           await import("@replit/vite-plugin-cartographer").then((m) =>
             m.cartographer(),
