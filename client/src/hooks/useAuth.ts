@@ -15,12 +15,32 @@ export function useAuth() {
         const { data: { session } } = await supabase.auth.getSession();
         setSession(session);
         if (session?.user) {
-          // Fetch user data from database
-          const { data: userData } = await supabase
+          // Try to get existing user or create new one
+          let { data: userData, error } = await supabase
             .from('users')
             .select('*')
             .eq('id', session.user.id)
             .single();
+          
+          // If user doesn't exist, create them
+          if (error && error.code === 'PGRST116') {
+            const { data: newUser } = await supabase
+              .from('users')
+              .insert({
+                id: session.user.id,
+                email: session.user.email,
+                first_name: session.user.user_metadata?.first_name,
+                last_name: session.user.user_metadata?.last_name,
+                profile_image_url: session.user.user_metadata?.avatar_url,
+                points: 0,
+                total_earned: 0,
+                tasks_completed: 0
+              })
+              .select()
+              .single();
+            userData = newUser;
+          }
+          
           setUser(userData);
         }
       } catch (error) {
@@ -35,11 +55,32 @@ export function useAuth() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setSession(session);
       if (session?.user) {
-        const { data: userData } = await supabase
+        // Try to get existing user or create new one
+        let { data: userData, error } = await supabase
           .from('users')
           .select('*')
           .eq('id', session.user.id)
           .single();
+        
+        // If user doesn't exist, create them
+        if (error && error.code === 'PGRST116') {
+          const { data: newUser } = await supabase
+            .from('users')
+            .insert({
+              id: session.user.id,
+              email: session.user.email,
+              first_name: session.user.user_metadata?.first_name,
+              last_name: session.user.user_metadata?.last_name,
+              profile_image_url: session.user.user_metadata?.avatar_url,
+              points: 0,
+              total_earned: 0,
+              tasks_completed: 0
+            })
+            .select()
+            .single();
+          userData = newUser;
+        }
+        
         setUser(userData);
       } else {
         setUser(null);
@@ -74,6 +115,41 @@ export function useAuth() {
         throw new Error(error.message || 'Authentication failed');
       }
       setSession(data.session);
+      
+      // Auto-create user record if it doesn't exist
+      if (data.session?.user) {
+        try {
+          let { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', data.session.user.id)
+            .single();
+          
+          // If user doesn't exist, create them
+          if (userError && userError.code === 'PGRST116') {
+            const { data: newUser } = await supabase
+              .from('users')
+              .insert({
+                id: data.session.user.id,
+                email: data.session.user.email,
+                first_name: data.session.user.user_metadata?.first_name,
+                last_name: data.session.user.user_metadata?.last_name,
+                profile_image_url: data.session.user.user_metadata?.avatar_url,
+                points: 0,
+                total_earned: 0,
+                tasks_completed: 0
+              })
+              .select()
+              .single();
+            userData = newUser;
+          }
+          
+          setUser(userData);
+        } catch (userCreateError) {
+          console.warn('User creation failed:', userCreateError);
+        }
+      }
+      
       return data;
     } catch (error) {
       // Don't log errors to prevent overlay
@@ -101,6 +177,27 @@ export function useAuth() {
         }
         throw new Error(error.message || 'Sign up failed');
       }
+      
+      // Auto-create user record after successful signup
+      if (data.session?.user) {
+        try {
+          await supabase
+            .from('users')
+            .insert({
+              id: data.session.user.id,
+              email: data.session.user.email,
+              first_name: data.session.user.user_metadata?.first_name,
+              last_name: data.session.user.user_metadata?.last_name,
+              profile_image_url: data.session.user.user_metadata?.avatar_url,
+              points: 0,
+              total_earned: 0,
+              tasks_completed: 0
+            });
+        } catch (userCreateError) {
+          console.warn('User record creation failed:', userCreateError);
+        }
+      }
+      
       return data;
     } catch (error) {
       console.error("Sign up error:", error);

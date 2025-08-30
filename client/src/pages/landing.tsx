@@ -22,6 +22,7 @@ export default function Landing() {
         title: "Welcome back!",
         description: "Successfully signed in to your account.",
       });
+      // User will automatically be redirected when isAuthenticated becomes true
     } catch (error) {
       // Completely suppress error logging to prevent overlay
       const errorMessage = error instanceof Error ? error.message : "Unable to connect. Please check your internet connection.";
