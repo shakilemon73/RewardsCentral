@@ -40,6 +40,13 @@ export class SurveyMatchingService {
         completionRate += 0.08;
         reasons.push('Wide age range acceptance');
       }
+
+      // RapidoReach excels with all age groups but especially 21-65
+      if (provider.provider === 'rapidoreach' && age >= 21 && age <= 65) {
+        score += 25;
+        completionRate += 0.2;
+        reasons.push('Premium surveys with excellent age targeting');
+      }
     }
 
     // Gender targeting
@@ -55,6 +62,13 @@ export class SurveyMatchingService {
         score += 8;
         completionRate += 0.05;
         reasons.push('Higher completion rate for women');
+      }
+
+      // RapidoReach has excellent gender balance and targeting
+      if (provider.provider === 'rapidoreach') {
+        score += 12;
+        completionRate += 0.08;
+        reasons.push('Advanced gender-based survey matching');
       }
     }
 
@@ -72,6 +86,23 @@ export class SurveyMatchingService {
           score += 10;
           completionRate += 0.1;
           reasons.push('Premium US market surveys');
+        }
+
+        // RapidoReach has global coverage with premium targeting
+        if (provider.provider === 'rapidoreach') {
+          score += 18;
+          completionRate += 0.15;
+          reasons.push('Global premium survey network');
+        }
+      }
+
+      // RapidoReach supports many countries with good rates
+      if (provider.provider === 'rapidoreach') {
+        const rapidoCountries = ['US', 'CA', 'GB', 'AU', 'DE', 'FR', 'IT', 'ES', 'NL', 'IN'];
+        if (rapidoCountries.includes(user.country_code)) {
+          score += 12;
+          completionRate += 0.1;
+          reasons.push('Available in your country with good rates');
         }
       }
     }
@@ -157,12 +188,13 @@ export class SurveyMatchingService {
     const providerInterests = {
       'cpx': ['market research', 'consumer products', 'brands', 'shopping'],
       'bitlabs': ['technology', 'lifestyle', 'entertainment', 'social media'],
-      'theoremreach': ['product feedback', 'brand awareness', 'business', 'services']
+      'theoremreach': ['product feedback', 'brand awareness', 'business', 'services'],
+      'rapidoreach': ['premium research', 'global studies', 'advanced targeting', 'high-value surveys', 'demographics']
     };
     
     const relevantInterests = providerInterests[provider.provider] || [];
     const matches = userInterests.filter(interest => 
-      relevantInterests.some(relevant => 
+      relevantInterests.some((relevant: string) => 
         interest.toLowerCase().includes(relevant) || relevant.includes(interest.toLowerCase())
       )
     );
@@ -170,7 +202,7 @@ export class SurveyMatchingService {
     return matches.length * 3; // 3 points per matching interest
   }
 
-  private getProviderPerformanceBonus(provider: 'cpx' | 'theoremreach' | 'bitlabs'): {
+  private getProviderPerformanceBonus(provider: 'cpx' | 'theoremreach' | 'bitlabs' | 'rapidoreach'): {
     score: number;
     completionBonus: number;
     reasons: string[];
@@ -195,6 +227,13 @@ export class SurveyMatchingService {
           score: 6,
           completionBonus: 0.06,
           reasons: ['Guaranteed payouts', 'Good for beginners']
+        };
+
+      case 'rapidoreach':
+        return {
+          score: 15,
+          completionBonus: 0.18,
+          reasons: ['Premium survey network', 'Highest completion rates', 'Real-time matching', 'Advanced demographics']
         };
         
       default:
