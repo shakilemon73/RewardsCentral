@@ -27,17 +27,14 @@ export default function Tasks() {
       
       setIsLoading(true);
       try {
-        // Get surveys from external APIs
-        const externalSurveys = await surveyApiService.getAllSurveys(user.id);
+        // Get survey providers (CPX, TheoremReach, Bitlabs)
+        const surveyTasks = await surveyApiService.getAllSurveyTasks(user.id);
         
-        // Convert to Task format
-        const surveyTasks = externalSurveys.map(survey => surveyApiService.convertToTask(survey));
-        
-        // Also get local tasks (ads, offers) from Supabase
+        // Get local tasks (ads, offers) from Supabase
         const localTasks = await supabaseHelpers.getTasks();
         const nonSurveyTasks = localTasks.filter(task => task.type !== 'survey');
         
-        // Combine external surveys with local tasks
+        // Combine survey providers with local tasks
         const allTasks = [...surveyTasks, ...nonSurveyTasks];
         
         setTasks(allTasks);
@@ -68,20 +65,17 @@ export default function Tasks() {
       const isExternalSurvey = taskId.startsWith('cpx_') || taskId.startsWith('theorem_') || taskId.startsWith('bitlabs_');
       
       if (isExternalSurvey && task) {
-        // For external surveys, open in new window and record completion
+        // For external survey providers, open survey wall
         const provider = taskId.split('_')[0];
         
-        // Open survey in new window
+        // Open survey provider wall in new window
         if ((task as any).external_url) {
-          window.open((task as any).external_url, '_blank');
+          window.open((task as any).external_url, '_blank', 'width=1000,height=700,scrollbars=yes,resizable=yes');
         }
         
-        // Record completion with provider
-        await surveyApiService.completeSurvey(user.id, taskId, provider);
-        
         toast({
-          title: "Survey Opened!",
-          description: `Complete the survey in the new window to earn ${points} points.`,
+          title: "Survey Platform Opened!",
+          description: `Complete surveys in the new window to earn points. Points will be credited automatically.`,
         });
       } else {
         // Handle local tasks (ads, offers)
