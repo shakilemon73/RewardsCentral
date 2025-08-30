@@ -8,152 +8,116 @@ export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Helper function to fetch or create user data
-  const fetchUserData = async (userId: string) => {
-    try {
-      let { data: userData, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', userId)
-        .single();
-      
-      // If user doesn't exist, create them
-      if (error && error.code === 'PGRST116') {
-        const { data: newUser } = await supabase
-          .from('users')
-          .insert({
-            id: userId,
-            email: session?.user?.email,
-            first_name: session?.user?.user_metadata?.first_name,
-            last_name: session?.user?.user_metadata?.last_name,
-            profile_image_url: session?.user?.user_metadata?.avatar_url,
-            points: 0,
-            total_earned: 0,
-            tasks_completed: 0
-          })
-          .select()
-          .single();
-        userData = newUser;
-      }
-      
-      return userData;
-    } catch (error) {
-      console.warn('User data fetch failed:', error);
-      return null;
-    }
-  };
-
   useEffect(() => {
-    let isMounted = true;
+    let mounted = true;
 
-    // Get initial session
-    const initializeAuth = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (!isMounted) return;
-        
-        setSession(session);
-        
-        if (session?.user) {
-          const userData = await fetchUserData(session.user.id);
-          if (isMounted) {
+    // Single function to handle session and user data
+    const handleSession = async (currentSession: Session | null) => {
+      if (!mounted) return;
+
+      setSession(currentSession);
+
+      if (currentSession?.user) {
+        try {
+          // Get or create user
+          let { data: userData, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', currentSession.user.id)
+            .single();
+
+          if (error && error.code === 'PGRST116') {
+            // Create user if doesn't exist
+            const { data: newUser } = await supabase
+              .from('users')
+              .insert({
+                id: currentSession.user.id,
+                email: currentSession.user.email,
+                first_name: currentSession.user.user_metadata?.first_name,
+                last_name: currentSession.user.user_metadata?.last_name,
+                profile_image_url: currentSession.user.user_metadata?.avatar_url,
+                points: 0,
+                total_earned: 0,
+                tasks_completed: 0
+              })
+              .select()
+              .single();
+            userData = newUser;
+          }
+
+          if (mounted) {
             setUser(userData);
           }
-        }
-      } catch (error) {
-        console.warn('Auth initialization failed:', error);
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    initializeAuth();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!isMounted) return;
-      
-      setSession(session);
-      
-      if (session?.user) {
-        const userData = await fetchUserData(session.user.id);
-        if (isMounted) {
-          setUser(userData);
+        } catch (error) {
+          console.warn('User fetch failed:', error);
+          if (mounted) {
+            setUser(null);
+          }
         }
       } else {
-        if (isMounted) {
+        if (mounted) {
           setUser(null);
         }
       }
-      
-      if (isMounted) {
+
+      if (mounted) {
         setIsLoading(false);
+      }
+    };
+
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      handleSession(session);
+    });
+
+    // Listen for changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        if (mounted) {
+          setSession(null);
+          setUser(null);
+          setIsLoading(false);
+        }
+      } else {
+        handleSession(session);
       }
     });
 
     return () => {
-      isMounted = false;
+      mounted = false;
       subscription.unsubscribe();
     };
   }, []);
 
   const signIn = async ({ email, password }: { email: string; password: string }) => {
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      
-      if (error) {
-        if (error.message?.includes('fetch') || error.name?.includes('Fetch')) {
-          throw new Error('Unable to connect to authentication service. Please check your internet connection.');
-        }
-        throw new Error(error.message || 'Authentication failed');
-      }
-      
-      return data;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      }
-      throw new Error('Unable to sign in. Please check your internet connection and try again.');
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      throw new Error(error.message || 'Authentication failed');
     }
+
+    return data;
   };
 
   const signUp = async ({ email, password }: { email: string; password: string }) => {
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-      
-      if (error) {
-        if (error.message?.includes('fetch')) {
-          throw new Error('Unable to connect to authentication service. Please check your internet connection.');
-        }
-        throw new Error(error.message || 'Sign up failed');
-      }
-      
-      return data;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      }
-      throw new Error('Unable to sign up. Please check your internet connection and try again.');
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) {
+      throw new Error(error.message || 'Sign up failed');
     }
+
+    return data;
   };
 
   const signOut = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-    } catch (error) {
-      console.error("Sign out error:", error);
-      throw error;
-    }
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
   };
 
   return {
@@ -164,8 +128,8 @@ export function useAuth() {
     signIn,
     signUp,
     signOut,
-    isSigningIn: isLoading,
-    isSigningUp: isLoading,
-    isSigningOut: isLoading,
+    isSigningIn: false,
+    isSigningUp: false,
+    isSigningOut: false,
   };
 }
