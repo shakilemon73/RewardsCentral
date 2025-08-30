@@ -114,42 +114,29 @@ export const supabaseHelpers = {
     return completion;
   },
 
-  // Redeem a reward
+  // Redeem a reward using secure backend function
   redeemReward: async (userId: string, rewardId: string, pointsCost: number) => {
-    // Check if user has enough points first
-    const { data: user, error: userError } = await supabase
-      .from("users")
-      .select("points")
-      .eq("id", userId)
-      .single();
+    const { data, error } = await supabase.rpc("redeem_reward_secure", {
+      user_id: userId,
+      reward_id: rewardId,
+      points_cost: pointsCost,
+    });
 
-    if (userError) throw userError;
-    if (!user || user.points < pointsCost) {
-      throw new Error("Insufficient points");
+    if (error) throw error;
+    
+    const result = data;
+    if (!result.success) {
+      throw new Error(result.error);
     }
-
-    // Insert redemption record
-    const { data: redemption, error: redemptionError } = await supabase
-      .from("user_reward_redemptions")
-      .insert({
-        user_id: userId,
-        reward_id: rewardId,
-        points_spent: pointsCost,
-        status: "pending",
-      })
-      .select()
-      .single();
-
-    if (redemptionError) throw redemptionError;
-
-    // Update user points
-    const { error: updateError } = await supabase
-      .from("users")
-      .update({ points: user.points - pointsCost })
-      .eq("id", userId);
-
-    if (updateError) throw updateError;
-    return redemption;
+    
+    return {
+      id: result.redemption_id,
+      user_id: userId,
+      reward_id: rewardId,
+      points_spent: pointsCost,
+      status: "pending",
+      redeemed_at: new Date().toISOString()
+    };
   },
 
   // Update user profile
@@ -180,42 +167,26 @@ export const supabaseHelpers = {
     return data;
   },
 
-  // Get app statistics for landing page
+  // Get app statistics using backend function
   getAppStats: async () => {
-    // Get user count
-    const { count: userCount, error: userError } = await supabase
-      .from("users")
-      .select("*", { count: "exact", head: true });
+    const { data, error } = await supabase.rpc("get_app_statistics");
+    
+    if (error) throw error;
+    return data;
+  },
 
-    if (userError) throw userError;
+  // Get user dashboard stats using backend function
+  getUserDashboardStats: async (userId: string) => {
+    const { data, error } = await supabase.rpc("get_user_dashboard_stats", {
+      user_id: userId,
+    });
 
-    // Get total rewards paid (sum of points_spent converted to dollars)
-    const { data: redemptionsData, error: redemptionsError } = await supabase
-      .from("user_reward_redemptions")
-      .select("points_spent")
-      .eq("status", "processed");
-
-    if (redemptionsError) throw redemptionsError;
-
-    const totalRewardsPaid = redemptionsData?.reduce((sum, redemption) => 
-      sum + (redemption.points_spent / 100), 0) || 0;
-
-    // Get average task rating
-    const { data: tasksData, error: tasksError } = await supabase
-      .from("tasks")
-      .select("rating")
-      .eq("is_active", true);
-
-    if (tasksError) throw tasksError;
-
-    const averageRating = tasksData && tasksData.length > 0 
-      ? tasksData.reduce((sum, task) => sum + (task.rating / 10), 0) / tasksData.length
-      : 4.8;
-
-    return {
-      activeUsers: userCount || 0,
-      totalRewardsPaid,
-      averageRating: Math.round(averageRating * 10) / 10
-    };
+    if (error) throw error;
+    
+    if (data.error) {
+      throw new Error(data.error);
+    }
+    
+    return data;
   },
 };

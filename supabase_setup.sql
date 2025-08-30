@@ -131,3 +131,108 @@ BEGIN
   WHERE id = user_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Create function to handle reward redemption with validation
+CREATE OR REPLACE FUNCTION redeem_reward_secure(
+  user_id UUID,
+  reward_id UUID,
+  points_cost INTEGER
+)
+RETURNS JSON AS $$
+DECLARE
+  user_points INTEGER;
+  redemption_id UUID;
+BEGIN
+  -- Check user has enough points
+  SELECT points INTO user_points FROM users WHERE id = user_id;
+  
+  IF user_points IS NULL THEN
+    RETURN json_build_object('success', false, 'error', 'User not found');
+  END IF;
+  
+  IF user_points < points_cost THEN
+    RETURN json_build_object('success', false, 'error', 'Insufficient points');
+  END IF;
+  
+  -- Insert redemption record
+  INSERT INTO user_reward_redemptions (user_id, reward_id, points_spent, status)
+  VALUES (user_id, reward_id, points_cost, 'pending')
+  RETURNING id INTO redemption_id;
+  
+  -- Update user points
+  UPDATE users 
+  SET 
+    points = points - points_cost,
+    updated_at = NOW()
+  WHERE id = user_id;
+  
+  RETURN json_build_object(
+    'success', true, 
+    'redemption_id', redemption_id,
+    'remaining_points', user_points - points_cost
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Create function to get user dashboard stats
+CREATE OR REPLACE FUNCTION get_user_dashboard_stats(user_id UUID)
+RETURNS JSON AS $$
+DECLARE
+  user_data users%ROWTYPE;
+  recent_completions INTEGER;
+  pending_redemptions INTEGER;
+BEGIN
+  SELECT * INTO user_data FROM users WHERE id = user_id;
+  
+  IF user_data IS NULL THEN
+    RETURN json_build_object('error', 'User not found');
+  END IF;
+  
+  -- Get recent completions (last 7 days)
+  SELECT COUNT(*) INTO recent_completions 
+  FROM user_task_completions 
+  WHERE user_id = user_id AND completed_at > NOW() - INTERVAL '7 days';
+  
+  -- Get pending redemptions
+  SELECT COUNT(*) INTO pending_redemptions
+  FROM user_reward_redemptions
+  WHERE user_id = user_id AND status = 'pending';
+  
+  RETURN json_build_object(
+    'points', user_data.points,
+    'total_earned', user_data.total_earned,
+    'tasks_completed', user_data.tasks_completed,
+    'recent_completions', recent_completions,
+    'pending_redemptions', pending_redemptions
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Create function to get app statistics for landing page
+CREATE OR REPLACE FUNCTION get_app_statistics()
+RETURNS JSON AS $$
+DECLARE
+  user_count INTEGER;
+  total_rewards_paid NUMERIC;
+  avg_rating NUMERIC;
+BEGIN
+  -- Get active user count
+  SELECT COUNT(*) INTO user_count FROM users;
+  
+  -- Get total rewards paid (convert points to dollars: points/100)
+  SELECT COALESCE(SUM(points_spent::NUMERIC / 100), 0) INTO total_rewards_paid
+  FROM user_reward_redemptions
+  WHERE status = 'processed';
+  
+  -- Get average task rating
+  SELECT COALESCE(AVG(rating::NUMERIC / 10), 4.8) INTO avg_rating
+  FROM tasks
+  WHERE is_active = true AND rating > 0;
+  
+  RETURN json_build_object(
+    'activeUsers', user_count,
+    'totalRewardsPaid', total_rewards_paid,
+    'averageRating', ROUND(avg_rating, 1)
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
