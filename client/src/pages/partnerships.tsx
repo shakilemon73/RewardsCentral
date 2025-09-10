@@ -40,6 +40,22 @@ export default function Partnerships() {
             </div>
           </Link>
           <div className="hidden md:flex items-center gap-4">
+            <Button 
+              variant="ghost" 
+              className="text-muted-foreground hover:text-foreground"
+              onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
+              data-testid="link-how-it-works"
+            >
+              How it Works
+            </Button>
+            <Button 
+              variant="ghost" 
+              className="text-muted-foreground hover:text-foreground"
+              onClick={() => document.getElementById('audience')?.scrollIntoView({ behavior: 'smooth' })}
+              data-testid="link-audience"
+            >
+              Audience
+            </Button>
             <Link href="/">
               <Button variant="ghost" className="text-muted-foreground hover:text-foreground" data-testid="link-for-users">
                 For Users
@@ -73,12 +89,11 @@ export default function Partnerships() {
             </Badge>
             
             <h1 className="text-4xl md:text-6xl font-bold mb-6 text-balance leading-tight">
-              Partner with <span className="gradient-primary bg-clip-text text-transparent">RewardsPay</span>
+              Get fast, reliable responses from <span className="gradient-primary bg-clip-text text-transparent">engaged participants</span>
             </h1>
             
             <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto text-balance">
-              Connect with our engaged community of <span className="font-semibold text-foreground">847K+</span> users. 
-              Drive customer acquisition and market research through our trusted platform.
+              Recruit high-quality participants through RewardsPay, powered by <span className="font-semibold text-foreground">CPX Research</span> and leading survey networks.
             </p>
 
             {/* Trust Indicators */}
@@ -115,11 +130,55 @@ export default function Partnerships() {
                 variant="outline" 
                 size="lg" 
                 className="border-primary/20 hover:border-primary text-primary hover:bg-primary/5 px-8 py-6 text-lg rounded-xl"
-                onClick={() => document.getElementById('platform-metrics')?.scrollIntoView({ behavior: 'smooth' })}
-                data-testid="button-view-metrics"
+                onClick={() => document.getElementById('audience')?.scrollIntoView({ behavior: 'smooth' })}
+                data-testid="button-view-audience"
               >
-                View Metrics
+                View Audience
               </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How it Works - 3 Step Process */}
+      <section id="how-it-works" className="py-24">
+        <div className="container mx-auto px-6 max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">How it Works</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Get quality responses from engaged participants in three simple steps
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center p-6">
+              <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span className="text-2xl font-bold text-primary">1</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-4">Define Your Study</h3>
+              <p className="text-muted-foreground">
+                Set your targeting criteria, sample size, and study parameters. We'll help you design for maximum response quality.
+              </p>
+            </div>
+
+            <div className="text-center p-6">
+              <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span className="text-2xl font-bold text-primary">2</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-4">We Route & Recruit</h3>
+              <p className="text-muted-foreground">
+                Our platform automatically routes your study through CPX Research and integrated networks to find the right participants.
+              </p>
+            </div>
+
+            <div className="text-center p-6">
+              <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span className="text-2xl font-bold text-primary">3</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-4">Get Quality Data</h3>
+              <p className="text-muted-foreground">
+                Receive real-time responses with built-in quality controls, fraud prevention, and comprehensive analytics.
+              </p>
             </div>
           </div>
         </div>
@@ -129,9 +188,9 @@ export default function Partnerships() {
       <section className="py-24 bg-muted/10">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Trusted Survey Provider Integrations</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Powered by Leading Survey Networks</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Pre-approved and ready to integrate with leading survey platforms
+              Seamlessly integrated with trusted survey providers for reliable data collection
             </p>
           </div>
 
@@ -142,15 +201,15 @@ export default function Partnerships() {
                 <CheckCircle className="w-8 h-8 text-success" />
               </div>
               <h3 className="text-xl font-semibold mb-2">CPX Research</h3>
-              <Badge className="bg-success/20 text-success mb-3">Pre-Approved</Badge>
-              <p className="text-sm text-muted-foreground">Instant integration • No approval barriers</p>
+              <Badge className="bg-success/20 text-success mb-3">Integrated Provider</Badge>
+              <p className="text-sm text-muted-foreground">Primary survey partner • Global reach</p>
             </div>
             <div className="text-center p-6 bg-card border border-border/50 rounded-lg">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <BarChart3 className="w-8 h-8 text-primary" />
               </div>
               <h3 className="text-xl font-semibold mb-2">BitLabs</h3>
-              <Badge className="bg-primary/20 text-primary mb-3">Publisher Ready</Badge>
+              <Badge className="bg-primary/20 text-primary mb-3">Integrated Provider</Badge>
               <p className="text-sm text-muted-foreground">Advanced targeting • Premium surveys</p>
             </div>
             <div className="text-center p-6 bg-card border border-border/50 rounded-lg">
@@ -158,7 +217,7 @@ export default function Partnerships() {
                 <Target className="w-8 h-8 text-accent" />
               </div>
               <h3 className="text-xl font-semibold mb-2">TabResearch</h3>
-              <Badge className="bg-accent/20 text-accent mb-3">Enterprise Ready</Badge>
+              <Badge className="bg-accent/20 text-accent mb-3">Integrated Provider</Badge>
               <p className="text-sm text-muted-foreground">ISO 27001 compliant • B2B research</p>
             </div>
           </div>
@@ -208,9 +267,9 @@ export default function Partnerships() {
       <section className="py-24">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Partnership Models</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Who We Serve</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Flexible engagement options designed for your business needs
+              Tailored solutions for researchers, brands, and agencies
             </p>
           </div>
 
@@ -221,29 +280,29 @@ export default function Partnerships() {
                   <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
                     <Users className="w-5 h-5 text-primary" />
                   </div>
-                  Survey Provider
+                  Researchers
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground mb-6">
-                  Integrate your surveys and offers directly into our platform
+                  Access our participant pool for academic and market research studies
                 </p>
                 <ul className="space-y-3 mb-6">
                   <li className="flex items-center gap-2 text-sm">
                     <CheckCircle className="w-4 h-4 text-success" />
-                    Revenue sharing model
+                    Quality participant screening
                   </li>
                   <li className="flex items-center gap-2 text-sm">
                     <CheckCircle className="w-4 h-4 text-success" />
-                    Real-time API integration
+                    Demographic targeting
                   </li>
                   <li className="flex items-center gap-2 text-sm">
                     <CheckCircle className="w-4 h-4 text-success" />
-                    Advanced user targeting
+                    IRB-compliant processes
                   </li>
                 </ul>
-                <Button variant="outline" className="w-full" data-testid="button-survey-provider">
-                  Learn More
+                <Button variant="outline" className="w-full" data-testid="button-researchers">
+                  Start Research
                 </Button>
               </CardContent>
             </Card>
@@ -255,12 +314,12 @@ export default function Partnerships() {
                   <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center">
                     <Building2 className="w-5 h-5 text-primary" />
                   </div>
-                  Brand Advertiser
+                  Brands
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground mb-6">
-                  Launch targeted campaigns to our engaged user base
+                  Connect with consumers for feedback, testing, and brand awareness
                 </p>
                 <ul className="space-y-3 mb-6">
                   <li className="flex items-center gap-2 text-sm">
@@ -276,7 +335,7 @@ export default function Partnerships() {
                     Fraud prevention included
                   </li>
                 </ul>
-                <Button className="w-full bg-primary hover:bg-primary/90" data-testid="button-brand-advertiser">
+                <Button className="w-full bg-primary hover:bg-primary/90" data-testid="button-brands">
                   Get Started
                 </Button>
               </CardContent>
@@ -288,29 +347,29 @@ export default function Partnerships() {
                   <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
                     <TrendingUp className="w-5 h-5 text-accent" />
                   </div>
-                  Market Research
+                  Agencies
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground mb-6">
-                  Access our user insights and custom research capabilities
+                  Provide client research services with our participant network
                 </p>
                 <ul className="space-y-3 mb-6">
                   <li className="flex items-center gap-2 text-sm">
                     <CheckCircle className="w-4 h-4 text-success" />
-                    Custom survey design
+                    White-label solutions
                   </li>
                   <li className="flex items-center gap-2 text-sm">
                     <CheckCircle className="w-4 h-4 text-success" />
-                    Demographic targeting
+                    Client dashboard access
                   </li>
                   <li className="flex items-center gap-2 text-sm">
                     <CheckCircle className="w-4 h-4 text-success" />
-                    Expert analysis reports
+                    Bulk pricing options
                   </li>
                 </ul>
-                <Button variant="outline" className="w-full" data-testid="button-market-research">
-                  Contact Sales
+                <Button variant="outline" className="w-full" data-testid="button-agencies">
+                  Partner with us
                 </Button>
               </CardContent>
             </Card>
@@ -319,7 +378,7 @@ export default function Partnerships() {
       </section>
 
       {/* User Demographics & Engagement */}
-      <section className="relative py-32 overflow-hidden">
+      <section id="audience" className="relative py-32 overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0 gradient-primary opacity-5"></div>
         <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-mocha/10 rounded-full blur-3xl"></div>
@@ -337,44 +396,44 @@ export default function Partnerships() {
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-20 max-w-6xl mx-auto">
-            <div className="fade-up glass-card p-8 text-center hover-3d card-hover" data-testid="metric-active-users">
-              <div className="w-20 h-20 gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-6 float">
-                <Users className="h-10 w-10 text-white" />
+            <div className="bg-card border border-border/50 rounded-lg p-8 text-center" data-testid="metric-active-users">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Users className="h-8 w-8 text-primary" />
               </div>
-              <div className="text-4xl md:text-5xl font-bold text-primary mb-3 text-shimmer">50K+</div>
-              <div className="text-base text-muted-foreground">Active Monthly Users</div>
+              <div className="text-3xl font-bold text-primary mb-2">50K+</div>
+              <div className="text-sm text-muted-foreground">Active Monthly Users</div>
             </div>
             
-            <div className="fade-up glass-card p-8 text-center hover-3d card-hover" style={{animationDelay: '0.1s'}} data-testid="metric-engagement">
-              <div className="w-20 h-20 gradient-warm rounded-2xl flex items-center justify-center mx-auto mb-6 float" style={{animationDelay: '2s'}}>
-                <TrendingUp className="h-10 w-10 text-white" />
+            <div className="bg-card border border-border/50 rounded-lg p-8 text-center" data-testid="metric-engagement">
+              <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <TrendingUp className="h-8 w-8 text-success" />
               </div>
-              <div className="text-4xl md:text-5xl font-bold text-success mb-3">85%</div>
-              <div className="text-base text-muted-foreground">User Engagement Rate</div>
+              <div className="text-3xl font-bold text-success mb-2">85%</div>
+              <div className="text-sm text-muted-foreground">User Engagement Rate</div>
             </div>
             
-            <div className="fade-up glass-card p-8 text-center hover-3d card-hover" style={{animationDelay: '0.2s'}} data-testid="metric-completion">
-              <div className="w-20 h-20 gradient-neon rounded-2xl flex items-center justify-center mx-auto mb-6 float" style={{animationDelay: '4s'}}>
-                <Target className="h-10 w-10 text-white" />
+            <div className="bg-card border border-border/50 rounded-lg p-8 text-center" data-testid="metric-completion">
+              <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Target className="h-8 w-8 text-accent" />
               </div>
-              <div className="text-4xl md:text-5xl font-bold text-accent mb-3">92%</div>
-              <div className="text-base text-muted-foreground">Task Completion Rate</div>
+              <div className="text-3xl font-bold text-accent mb-2">92%</div>
+              <div className="text-sm text-muted-foreground">Task Completion Rate</div>
             </div>
             
-            <div className="fade-up glass-card p-8 text-center hover-3d card-hover" style={{animationDelay: '0.3s'}} data-testid="metric-satisfaction">
-              <div className="w-20 h-20 gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-6 float" style={{animationDelay: '1s'}}>
-                <Star className="h-10 w-10 text-white" />
+            <div className="bg-card border border-border/50 rounded-lg p-8 text-center" data-testid="metric-satisfaction">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Star className="h-8 w-8 text-primary" />
               </div>
-              <div className="text-4xl md:text-5xl font-bold text-primary mb-3">4.8★</div>
-              <div className="text-base text-muted-foreground">Partner Satisfaction</div>
+              <div className="text-3xl font-bold text-primary mb-2">4.8★</div>
+              <div className="text-sm text-muted-foreground">Partner Satisfaction</div>
             </div>
           </div>
 
           {/* Demographics - Modern Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="fade-up glass-card border-0 shadow-xl hover-3d card-hover" data-testid="card-age-demographics">
-              <CardHeader className="pb-6">
-                <CardTitle className="text-2xl font-bold gradient-primary bg-clip-text text-transparent">Age Demographics</CardTitle>
+            <Card className="bg-card border border-border/50 rounded-lg" data-testid="card-age-demographics">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-xl font-bold text-primary">Age Demographics</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -398,9 +457,9 @@ export default function Partnerships() {
               </CardContent>
             </Card>
             
-            <Card className="fade-up glass-card border-0 shadow-xl hover-3d card-hover" style={{animationDelay: '0.1s'}} data-testid="card-geographic-reach">
-              <CardHeader className="pb-6">
-                <CardTitle className="text-2xl font-bold gradient-warm bg-clip-text text-transparent">Geographic Reach</CardTitle>
+            <Card className="bg-card border border-border/50 rounded-lg" data-testid="card-geographic-reach">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-xl font-bold text-success">Geographic Reach</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -424,9 +483,9 @@ export default function Partnerships() {
               </CardContent>
             </Card>
             
-            <Card className="fade-up glass-card border-0 shadow-xl hover-3d card-hover" style={{animationDelay: '0.2s'}} data-testid="card-interests">
-              <CardHeader className="pb-6">
-                <CardTitle className="text-2xl font-bold gradient-neon bg-clip-text text-transparent">Top Interests</CardTitle>
+            <Card className="bg-card border border-border/50 rounded-lg" data-testid="card-interests">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-xl font-bold text-accent">Top Interests</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-3">
@@ -440,9 +499,9 @@ export default function Partnerships() {
               </CardContent>
             </Card>
             
-            <Card className="fade-up glass-card border-0 shadow-xl hover-3d card-hover" style={{animationDelay: '0.3s'}} data-testid="card-device-usage">
-              <CardHeader className="pb-6">
-                <CardTitle className="text-2xl font-bold gradient-mocha bg-clip-text text-transparent">Device Usage</CardTitle>
+            <Card className="bg-card border border-border/50 rounded-lg" data-testid="card-device-usage">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-xl font-bold text-foreground">Device Usage</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -625,7 +684,7 @@ export default function Partnerships() {
       </section>
 
       {/* Partnership Application Form */}
-      <section id="partnership-form" className="py-20">
+      <section id="contact-form" className="py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto">
             <div className="text-center mb-12">
@@ -876,11 +935,11 @@ export default function Partnerships() {
               
               {/* Key Provider Requirements Met */}
               <div className="glass-card p-6 mb-6">
-                <h3 className="text-2xl font-bold text-primary mb-4">✅ Ready for CPX Research</h3>
+                <h3 className="text-2xl font-bold text-primary mb-4">✅ Powered by CPX Research</h3>
                 <ul className="space-y-3">
                   <li className="flex items-center gap-3">
                     <CheckCircle className="h-5 w-5 text-success" />
-                    <span className="text-lg">No approval barriers - instant integration</span>
+                    <span className="text-lg">Direct integration with leading survey network</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <CheckCircle className="h-5 w-5 text-success" />
