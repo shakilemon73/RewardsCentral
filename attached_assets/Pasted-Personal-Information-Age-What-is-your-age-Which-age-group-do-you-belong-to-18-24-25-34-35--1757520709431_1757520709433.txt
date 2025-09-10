@@ -1,0 +1,167 @@
+Personal Information
+
+Age - What is your age? / Which age group do you belong to?
+
+18-24, 25-34, 35-44, 45-54, 55-64, 65+
+
+
+Gender - What is your gender?
+
+Male, Female, Non-binary, Prefer not to say
+
+
+Ethnicity/Race - What is your ethnicity?
+
+White/Caucasian, Black/African American, Hispanic/Latino, Asian, Native American, Mixed Race, Other
+
+
+Location/Geographic
+
+What country do you live in?
+What state/province do you live in?
+What is your zip/postal code?
+Urban/Suburban/Rural area
+
+
+
+Education & Employment
+
+Education Level - What is your highest level of education?
+
+Less than high school, High school graduate, Some college, Associate degree, Bachelor's degree, Master's degree, Doctoral degree
+
+
+Employment Status - What is your current employment status?
+
+Employed full-time, Employed part-time, Self-employed, Unemployed, Student, Retired, Homemaker
+
+
+Profession/Industry - What industry do you work in?
+
+Technology, Healthcare, Education, Finance, Retail, Manufacturing, Government, etc.
+
+
+Job Title/Role - What is your job title or role?
+
+Financial Information
+
+Annual Household Income - What is your total household income?
+
+Under $25,000, $25,000-$49,999, $50,000-$74,999, $75,000-$99,999, $100,000-$149,999, $150,000+
+
+
+Personal Income - What is your personal annual income?
+
+Family & Household
+
+Marital Status - What is your marital status?
+
+Single, Married, Divorced, Widowed, Separated, In a relationship
+
+
+Household Size - How many people live in your household?
+Children/Dependents - Do you have children?
+
+Number of children, Ages of children, Children living at home
+
+
+Family Status - Which best describes your family situation?
+
+Single with no children, Single with children, Married with no children, Married with children
+
+
+
+Lifestyle & Preferences
+
+Housing Status - Do you own or rent your home?
+
+Own, Rent, Live with family/friends
+
+
+Vehicle Ownership - Do you own a vehicle?
+
+Yes/No, Type of vehicle, Number of vehicles
+
+
+Pet Ownership - Do you have pets?
+
+Dogs, Cats, Other pets, No pets
+
+
+
+Technology & Communication
+
+Internet Usage - How often do you use the internet?
+
+Daily, Several times a week, Weekly, Rarely, Never
+
+
+Device Usage - What devices do you primarily use?
+
+Smartphone, Tablet, Laptop, Desktop computer
+
+
+Social Media Usage - Which social media platforms do you use?
+
+Facebook, Instagram, Twitter, LinkedIn, TikTok, Snapchat, etc.
+
+
+Email Frequency - How often do you check email?
+
+Consumer Behavior
+
+Shopping Habits - How do you prefer to shop?
+
+Online, In-store, Both equally
+
+
+Brand Loyalty - Do you tend to stick with familiar brands?
+Purchase Decision Factors - What influences your purchasing decisions most?
+
+Price, Quality, Brand reputation, Reviews, Recommendations
+
+
+
+Personal Interests & Values
+
+Hobbies/Interests - What are your main hobbies or interests?
+
+Sports, Reading, Cooking, Travel, Music, etc.
+
+
+Political Affiliation - What is your political affiliation?
+
+Democrat, Republican, Independent, Other, Prefer not to say
+
+
+Religion - What is your religious affiliation?
+
+Christian, Jewish, Muslim, Hindu, Buddhist, Atheist/Agnostic, Other, Prefer not to say
+
+
+
+Health & Wellness
+
+Health Status - How would you rate your overall health?
+
+Excellent, Very good, Good, Fair, Poor
+
+
+Exercise Habits - How often do you exercise?
+
+Daily, Several times a week, Weekly, Rarely, Never
+
+
+Dietary Preferences - Do you follow any special diet?
+
+Vegetarian, Vegan, Gluten-free, Keto, No special diet
+
+
+
+Additional Demographic Questions
+
+Language - What is your primary language?
+Birthplace - Where were you born?
+Military Service - Have you ever served in the military?
+Disability Status - Do you have any disabilities?
+Insurance Status - Do you have health insurance?
