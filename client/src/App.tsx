@@ -1,4 +1,5 @@
 import { Switch, Route, useLocation } from "wouter";
+import { useEffect, useRef } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
@@ -23,6 +24,15 @@ function Router() {
   const { isAuthenticated, isLoading, user, session } = useAuth();
   const isMobile = useIsMobile();
   const [location] = useLocation();
+  const mainRef = useRef<HTMLElement>(null);
+
+  // Reset scroll position when navigating to new page (both window and main container)
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    if (mainRef.current) {
+      mainRef.current.scrollTop = 0;
+    }
+  }, [location]);
 
   // Check if we're on a protected route
   const protectedRoutes = ["/tasks", "/rewards", "/profile", "/survey-callback"];
@@ -62,7 +72,7 @@ function Router() {
         <DesktopHeader />
         <div className="flex flex-1">
           <DesktopSidebar />
-          <main className="flex-1 overflow-y-auto p-6">
+          <main ref={mainRef} className="flex-1 overflow-y-auto p-6">
             <Switch>
               <Route path="/" component={Home} />
               <Route path="/partnerships" component={Partnerships} />

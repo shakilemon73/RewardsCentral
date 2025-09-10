@@ -209,6 +209,11 @@
   }
 
   html {
+    /* Remove global smooth scrolling - only apply to specific scroll actions */
+  }
+
+  /* Utility class for smooth scrolling when intentionally needed */
+  .smooth-scroll {
     scroll-behavior: smooth;
   }
 
