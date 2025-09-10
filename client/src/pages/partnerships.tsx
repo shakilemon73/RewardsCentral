@@ -19,6 +19,7 @@ import {
   Handshake,
   ArrowRight
 } from "lucide-react";
+import ModernFooter from "@/components/modern-footer";
 
 export default function Partnerships() {
   const handlePartnershipInquiry = (e: React.FormEvent) => {
@@ -629,22 +630,106 @@ export default function Partnerships() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-border bg-card py-12">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8">
-            <div className="gradient-bg text-white px-4 py-2 rounded-lg font-bold text-xl inline-block mb-4">
-              RewardsPay
+      {/* Provider Success Showcase */}
+      <section className="relative py-32 overflow-hidden bg-muted/20">
+        {/* Background Elements */}
+        <div className="absolute inset-0 gradient-primary opacity-5"></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-mocha/10 rounded-full blur-3xl"></div>
+        
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center max-w-7xl mx-auto">
+            
+            {/* Left - Business Illustration */}
+            <div className="fade-up">
+              <div className="relative">
+                <img 
+                  src="/attached_assets/generated_images/Business_partnership_illustration_a4d10d9b.png" 
+                  alt="Successful business partnerships and growth analytics" 
+                  className="w-full h-auto rounded-3xl shadow-2xl hover-3d"
+                  data-testid="img-business-partnerships"
+                />
+                <div className="absolute -bottom-6 -right-6 glass-card p-4 rounded-2xl">
+                  <div className="text-2xl font-bold text-success">95%</div>
+                  <div className="text-sm text-muted-foreground">Partner Satisfaction</div>
+                </div>
+              </div>
             </div>
-            <p className="text-muted-foreground">
-              Connecting brands with engaged audiences for mutual success.
-            </p>
-          </div>
-          <div className="text-center text-sm text-muted-foreground">
-            <p>© 2024 RewardsPay. All rights reserved.</p>
+            
+            {/* Right - Provider Appeal Content */}
+            <div className="fade-up" style={{animationDelay: '0.3s'}}>
+              <h2 className="text-4xl md:text-6xl font-bold mb-8 leading-tight">
+                <span className="text-shimmer">Partner</span>
+                <br />
+                <span className="gradient-primary bg-clip-text text-transparent">Success</span>
+              </h2>
+              
+              <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
+                Join leading providers who've found success with our engaged user base and professional platform.
+              </p>
+              
+              {/* Key Provider Requirements Met */}
+              <div className="glass-card p-6 mb-6">
+                <h3 className="text-2xl font-bold text-primary mb-4">✅ Ready for CPX Research</h3>
+                <ul className="space-y-3">
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-success" />
+                    <span className="text-lg">No approval barriers - instant integration</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-success" />
+                    <span className="text-lg">Quality content standards maintained</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-success" />
+                    <span className="text-lg">10-minute setup process</span>
+                  </li>
+                </ul>
+              </div>
+              
+              {/* BitLabs.ai & Cint Ready */}
+              <div className="glass-card p-6 mb-8">
+                <h3 className="text-2xl font-bold text-warm mb-4">🏢 Enterprise Ready</h3>
+                <ul className="space-y-3">
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-success" />
+                    <span className="text-lg">Workspace verification completed</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-success" />
+                    <span className="text-lg">High user engagement metrics</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-success" />
+                    <span className="text-lg">Advanced fraud prevention</span>
+                  </li>
+                </ul>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button 
+                  size="lg" 
+                  className="gradient-primary text-lg px-8 py-4 h-auto hover-3d"
+                  data-testid="button-apply-partnership"
+                >
+                  <Handshake className="mr-3 h-5 w-5" />
+                  Apply for Partnership
+                </Button>
+                <Button 
+                  size="lg" 
+                  variant="outline"
+                  className="glass-card text-lg px-8 py-4 h-auto hover-3d"
+                  data-testid="button-view-analytics"
+                >
+                  <BarChart3 className="mr-3 h-5 w-5" />
+                  View Analytics Dashboard
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
-      </footer>
+      </section>
+
+      <ModernFooter />
     </div>
   );
 }

@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Gift, Star, Award, CheckCircle, Loader2, Zap, Clock, Users, ArrowRight } from "lucide-react";
 import { Link } from "wouter";
+import ModernFooter from "@/components/modern-footer";
 
 export default function Landing() {
   const [email, setEmail] = useState("");
@@ -153,6 +154,108 @@ export default function Landing() {
             <div className="glass-card p-8 text-center hover-3d card-hover" style={{animationDelay: '0.3s'}}>
               <div className="text-4xl md:text-5xl font-bold text-primary mb-3">2min</div>
               <div className="text-base text-muted-foreground">Average Payout Time</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Dual-Purpose Platform Section - For Users & Providers */}
+      <section className="relative py-32 overflow-hidden bg-muted/20">
+        {/* Background Elements */}
+        <div className="absolute inset-0 gradient-primary opacity-5"></div>
+        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-mocha/10 rounded-full blur-3xl"></div>
+        
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center max-w-7xl mx-auto">
+            
+            {/* Left - User Appeal */}
+            <div className="fade-up">
+              <div className="relative">
+                <img 
+                  src="/attached_assets/generated_images/Happy_users_earning_rewards_1706e547.png" 
+                  alt="Happy users earning rewards on RewardsPay" 
+                  className="w-full h-auto rounded-3xl shadow-2xl hover-3d"
+                  data-testid="img-users-earning"
+                />
+                <div className="absolute -bottom-6 -right-6 glass-card p-4 rounded-2xl">
+                  <div className="text-2xl font-bold text-success">$5M+</div>
+                  <div className="text-sm text-muted-foreground">Paid to Users</div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Right - Content for Both */}
+            <div className="fade-up" style={{animationDelay: '0.3s'}}>
+              <h2 className="text-4xl md:text-6xl font-bold mb-8 leading-tight">
+                <span className="text-shimmer">Two-Sided</span>
+                <br />
+                <span className="gradient-primary bg-clip-text text-transparent">Success</span>
+              </h2>
+              
+              <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
+                RewardsPay connects engaged users with quality businesses, creating value for everyone involved.
+              </p>
+              
+              {/* Benefits for Users */}
+              <div className="glass-card p-6 mb-6">
+                <h3 className="text-2xl font-bold text-primary mb-4">👤 For Users</h3>
+                <ul className="space-y-3">
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-success" />
+                    <span className="text-lg">Instant PayPal & gift card rewards</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-success" />
+                    <span className="text-lg">High-quality surveys & offers</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-success" />
+                    <span className="text-lg">24/7 customer support</span>
+                  </li>
+                </ul>
+              </div>
+              
+              {/* Benefits for Providers */}
+              <div className="glass-card p-6 mb-8">
+                <h3 className="text-2xl font-bold text-warm mb-4">🏢 For Providers</h3>
+                <ul className="space-y-3">
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-success" />
+                    <span className="text-lg">Quality engaged user base (500K+)</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-success" />
+                    <span className="text-lg">Easy integration & API access</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-success" />
+                    <span className="text-lg">No approval barriers (CPX Research ready)</span>
+                  </li>
+                </ul>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button 
+                  size="lg" 
+                  className="gradient-primary text-lg px-8 py-4 h-auto hover-3d"
+                  onClick={() => document.getElementById('auth-section')?.scrollIntoView({ behavior: 'smooth' })}
+                  data-testid="button-start-earning"
+                >
+                  <Gift className="mr-3 h-5 w-5" />
+                  Start Earning
+                </Button>
+                <Link href="/partnerships">
+                  <Button 
+                    size="lg" 
+                    variant="outline"
+                    className="glass-card text-lg px-8 py-4 h-auto hover-3d"
+                    data-testid="button-become-partner"
+                  >
+                    <Users className="mr-3 h-5 w-5" />
+                    Become a Partner
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -573,22 +676,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Footer - Modern Glassmorphism */}
-      <footer className="glass-card border-0 backdrop-blur-lg py-16">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-8">
-            <div className="animated-gradient text-white px-6 py-3 rounded-2xl font-bold text-2xl inline-block mb-6 hover-3d">
-              RewardsPay
-            </div>
-            <p className="text-muted-foreground text-xl font-light">
-              Building a better world with better rewards.
-            </p>
-          </div>
-          <div className="text-center text-lg text-muted-foreground">
-            <p>© 2025 RewardsPay. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <ModernFooter />
     </div>
   );
 }
