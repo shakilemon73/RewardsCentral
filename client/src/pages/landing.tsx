@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Gift, Star, Award, CheckCircle, Loader2, Zap, Clock, Users, ArrowRight } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import { Gift, Star, Award, CheckCircle, Loader2, Zap, Clock, Users, ArrowRight, Shield, TrendingUp, CreditCard, Smartphone } from "lucide-react";
 import usersEarningImg from "@assets/generated_images/Happy_users_earning_rewards_1706e547.png";
 import { Link } from "wouter";
 import ModernFooter from "@/components/modern-footer";
@@ -14,8 +15,19 @@ import ModernFooter from "@/components/modern-footer";
 export default function Landing() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [surveysPerDay, setSurveysPerDay] = useState([3]);
+  const [tasksPerWeek, setTasksPerWeek] = useState([10]);
   const { signIn, signUp, isSigningIn, isSigningUp } = useAuth();
   const { toast } = useToast();
+
+  // Calculate potential monthly earnings
+  const calculateEarnings = () => {
+    const surveysDaily = surveysPerDay[0];
+    const tasksWeekly = tasksPerWeek[0];
+    const surveyEarnings = surveysDaily * 30 * 1.5; // $1.5 per survey on average
+    const taskEarnings = tasksWeekly * 4 * 3.2; // $3.2 per task on average
+    return Math.round(surveyEarnings + taskEarnings);
+  };
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -188,7 +200,7 @@ export default function Landing() {
             </div>
 
             {/* Payout Proof */}
-            <div className="bg-success/10 border border-success/20 rounded-lg p-6 max-w-lg mx-auto">
+            <div className="bg-success/10 border border-success/20 rounded-lg p-6 max-w-lg mx-auto mb-8">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <CheckCircle className="w-5 h-5 text-success" />
                 <span className="font-medium text-success">$12,847</span>
@@ -197,6 +209,102 @@ export default function Landing() {
               <div className="text-sm text-muted-foreground">
                 Real earnings from real users • Updated daily
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Interactive Earnings Estimator - 2025 Conversion Feature */}
+      <section className="py-24 bg-gradient-to-br from-primary/5 via-sage-green/3 to-terracotta/5 relative overflow-hidden">
+        <div className="absolute top-10 right-10 w-64 h-64 bg-jewel-purple/10 rounded-full blur-3xl"></div>
+        <div className="container mx-auto px-6 max-w-4xl relative z-10">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-black mb-4 text-balance">
+              See Your <span className="gradient-primary bg-clip-text text-transparent">Earning Potential</span>
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Customize your activity level and see how much you could earn monthly
+            </p>
+          </div>
+
+          <div className="bg-white/90 backdrop-blur-lg rounded-3xl p-8 md:p-12 border border-primary/20 shadow-2xl">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div className="space-y-8">
+                <div>
+                  <div className="flex justify-between items-center mb-4">
+                    <Label className="text-lg font-semibold">Surveys per day</Label>
+                    <div className="bg-primary/10 px-3 py-1 rounded-full">
+                      <span className="font-bold text-primary" data-testid="surveys-count">{surveysPerDay[0]}</span>
+                    </div>
+                  </div>
+                  <Slider
+                    value={surveysPerDay}
+                    onValueChange={setSurveysPerDay}
+                    max={15}
+                    min={1}
+                    step={1}
+                    className="w-full"
+                    data-testid="slider-surveys"
+                  />
+                  <div className="flex justify-between text-sm text-muted-foreground mt-2">
+                    <span>1 survey</span>
+                    <span>15 surveys</span>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between items-center mb-4">
+                    <Label className="text-lg font-semibold">Tasks per week</Label>
+                    <div className="bg-success/10 px-3 py-1 rounded-full">
+                      <span className="font-bold text-success" data-testid="tasks-count">{tasksPerWeek[0]}</span>
+                    </div>
+                  </div>
+                  <Slider
+                    value={tasksPerWeek}
+                    onValueChange={setTasksPerWeek}
+                    max={30}
+                    min={2}
+                    step={1}
+                    className="w-full"
+                    data-testid="slider-tasks"
+                  />
+                  <div className="flex justify-between text-sm text-muted-foreground mt-2">
+                    <span>2 tasks</span>
+                    <span>30 tasks</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-center">
+                <div className="bg-gradient-to-br from-jewel-purple to-electric-blue rounded-3xl p-8 text-white">
+                  <div className="mb-4">
+                    <span className="text-2xl font-light">Monthly Earnings</span>
+                  </div>
+                  <div className="text-6xl font-black mb-4" data-testid="estimated-earnings">
+                    ${calculateEarnings()}
+                  </div>
+                  <div className="text-lg opacity-90">
+                    Based on average rates
+                  </div>
+                  <div className="mt-6 pt-6 border-t border-white/20">
+                    <div className="text-sm opacity-75 mb-2">That's ${Math.round(calculateEarnings() * 12 / 52)} per week!</div>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground mt-4">
+                  * Earnings vary by task complexity and user location
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-8 text-center">
+              <Button 
+                size="lg"
+                className="bg-gradient-to-r from-success to-sage-green hover:from-success/90 hover:to-sage-green/90 text-white px-12 py-6 text-lg font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+                onClick={() => document.getElementById('auth-section')?.scrollIntoView({ behavior: 'smooth' })}
+                data-testid="button-start-earning"
+              >
+                Start Earning ${calculateEarnings()}/month <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
             </div>
           </div>
         </div>
