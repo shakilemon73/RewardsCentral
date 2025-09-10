@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Gift, Star, Award, CheckCircle, Loader2, Zap, Clock, Users, ArrowRight } from "lucide-react";
+import usersEarningImg from "@assets/generated_images/Happy_users_earning_rewards_1706e547.png";
 import { Link } from "wouter";
 import ModernFooter from "@/components/modern-footer";
 
@@ -213,10 +214,11 @@ export default function Landing() {
             <div className="fade-up">
               <div className="relative">
                 <img 
-                  src="/attached_assets/generated_images/Happy_users_earning_rewards_1706e547.png" 
+                  src={usersEarningImg} 
                   alt="Happy users earning rewards on RewardsPay" 
                   className="w-full h-auto rounded-3xl shadow-2xl hover-3d"
                   data-testid="img-users-earning"
+                  onError={(e) => console.error('Image failed to load:', e.currentTarget.src)}
                 />
                 <div className="absolute -bottom-6 -right-6 glass-card p-4 rounded-2xl">
                   <div className="text-2xl font-bold text-success">$5M+</div>

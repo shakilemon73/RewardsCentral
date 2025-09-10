@@ -20,6 +20,7 @@ import {
   ArrowRight
 } from "lucide-react";
 import ModernFooter from "@/components/modern-footer";
+import businessPartnershipImg from "@assets/generated_images/Business_partnership_illustration_a4d10d9b.png";
 
 export default function Partnerships() {
   const handlePartnershipInquiry = (e: React.FormEvent) => {
@@ -848,10 +849,11 @@ export default function Partnerships() {
             <div className="fade-up">
               <div className="relative">
                 <img 
-                  src="/attached_assets/generated_images/Business_partnership_illustration_a4d10d9b.png" 
+                  src={businessPartnershipImg} 
                   alt="Successful business partnerships and growth analytics" 
                   className="w-full h-auto rounded-3xl shadow-2xl hover-3d"
                   data-testid="img-business-partnerships"
+                  onError={(e) => console.error('Image failed to load:', e.currentTarget.src)}
                 />
                 <div className="absolute -bottom-6 -right-6 glass-card p-4 rounded-2xl">
                   <div className="text-2xl font-bold text-success">95%</div>
