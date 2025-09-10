@@ -18,13 +18,11 @@ export default function GDPRCompliance() {
             <Badge className="mb-6 text-lg px-6 py-2 gradient-primary" data-testid="badge-gdpr-compliance">
               Legal & Technical Implementation
             </Badge>
-            <h1 className="text-5xl md:text-7xl font-bold mb-8 leading-tight">
-              <span className="gradient-primary bg-clip-text text-transparent">GDPR Compliance</span>
-              <br />
-              <span className="text-shimmer">Implementation</span>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+              <span className="text-primary">Privacy & Data Protection</span>
             </h1>
-            <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-              Complete GDPR compliance system meeting TabResearch, BitLabs, and CPX Research data protection requirements
+            <p className="text-lg text-muted-foreground mb-8 max-w-3xl mx-auto">
+              We protect your personal information with industry-leading security measures and full GDPR compliance.
             </p>
           </div>
         </div>
@@ -37,36 +35,51 @@ export default function GDPRCompliance() {
             <Card className="glass-card " data-testid="card-legal-framework">
               <CardHeader className="text-center">
                 <FileText className="h-12 w-12 text-primary mx-auto mb-4" />
-                <CardTitle className="text-2xl">Legal Framework</CardTitle>
+                <CardTitle className="text-xl font-semibold">Your Rights</CardTitle>
               </CardHeader>
               <CardContent className="text-center">
-                <p className="text-muted-foreground">
-                  Full compliance with GDPR Articles 6, 7, 13, 14, and 17 including lawful basis and consent management
+                <p className="text-muted-foreground mb-3">
+                  Complete control over your personal data
                 </p>
+                <div className="text-sm text-foreground space-y-1">
+                  <div>• Access your data anytime</div>
+                  <div>• Request corrections or deletion</div>
+                  <div>• Control data sharing preferences</div>
+                </div>
               </CardContent>
             </Card>
 
             <Card className="glass-card " data-testid="card-data-protection">
               <CardHeader className="text-center">
                 <Lock className="h-12 w-12 text-success mx-auto mb-4" />
-                <CardTitle className="text-2xl">Data Protection</CardTitle>
+                <CardTitle className="text-xl font-semibold">Secure by Design</CardTitle>
               </CardHeader>
               <CardContent className="text-center">
-                <p className="text-muted-foreground">
-                  End-to-end encryption, pseudonymization, and data minimization with automated retention policies
+                <p className="text-muted-foreground mb-3">
+                  Your data is encrypted and protected
                 </p>
+                <div className="text-sm text-foreground space-y-1">
+                  <div>✓ Bank-level encryption</div>
+                  <div>✓ Minimal data collection</div>
+                  <div>✓ Automatic data cleanup</div>
+                </div>
               </CardContent>
             </Card>
 
             <Card className="glass-card " data-testid="card-user-rights">
               <CardHeader className="text-center">
                 <Users className="h-12 w-12 text-accent mx-auto mb-4" />
-                <CardTitle className="text-2xl">User Rights</CardTitle>
+                <CardTitle className="text-xl font-semibold">Transparent Process</CardTitle>
               </CardHeader>
               <CardContent className="text-center">
-                <p className="text-muted-foreground">
-                  Automated handling of access, portability, rectification, erasure, and objection requests
+                <p className="text-muted-foreground mb-3">
+                  Clear and simple privacy practices
                 </p>
+                <div className="text-sm text-foreground space-y-1">
+                  <div>• Easy-to-understand policies</div>
+                  <div>• Clear consent requests</div>
+                  <div>• Instant privacy controls</div>
+                </div>
               </CardContent>
             </Card>
           </div>

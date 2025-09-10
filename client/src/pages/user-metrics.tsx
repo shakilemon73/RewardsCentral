@@ -18,13 +18,11 @@ export default function UserMetrics() {
             <Badge className="mb-6 text-lg px-6 py-2 gradient-primary" data-testid="badge-user-metrics">
               Platform Analytics & Demographics
             </Badge>
-            <h1 className="text-5xl md:text-7xl font-bold mb-8 leading-tight">
-              <span className="gradient-primary bg-clip-text text-transparent">User Metrics</span>
-              <br />
-              <span className="text-shimmer">& Analytics</span>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+              Platform <span className="text-primary">Performance</span> Overview
             </h1>
-            <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-              Comprehensive user analytics meeting survey provider requirements for account approval and partnership evaluation
+            <p className="text-lg text-muted-foreground mb-8 max-w-3xl mx-auto">
+              Real-time insights into our growing community of survey participants and reward earners.
             </p>
           </div>
         </div>
@@ -37,10 +35,10 @@ export default function UserMetrics() {
             <Card className="glass-card text-center" data-testid="card-total-users">
               <CardContent className="pt-6">
                 <Users className="h-12 w-12 text-primary mx-auto mb-4" />
-                <div className="text-4xl font-bold text-primary mb-2">847K+</div>
-                <div className="text-xl font-semibold mb-2">Total Users</div>
-                <div className="text-sm text-muted-foreground">
-                  <span className="text-success">+12.5%</span> this month
+                <div className="text-3xl font-bold text-primary mb-2">847K+</div>
+                <div className="text-lg font-semibold mb-2">Active Members</div>
+                <div className="text-sm text-success font-medium">
+                  ↗ +12.5% growth
                 </div>
               </CardContent>
             </Card>
@@ -48,10 +46,10 @@ export default function UserMetrics() {
             <Card className="glass-card text-center" data-testid="card-active-users">
               <CardContent className="pt-6">
                 <TrendingUp className="h-12 w-12 text-success mx-auto mb-4" />
-                <div className="text-4xl font-bold text-success mb-2">523K</div>
-                <div className="text-xl font-semibold mb-2">Monthly Active</div>
-                <div className="text-sm text-muted-foreground">
-                  62% retention rate
+                <div className="text-3xl font-bold text-success mb-2">523K</div>
+                <div className="text-lg font-semibold mb-2">Monthly Users</div>
+                <div className="text-sm font-medium text-foreground">
+                  62% return monthly
                 </div>
               </CardContent>
             </Card>
@@ -70,10 +68,10 @@ export default function UserMetrics() {
             <Card className="glass-card text-center" data-testid="card-rewards-paid">
               <CardContent className="pt-6">
                 <DollarSign className="h-12 w-12 text-warm mx-auto mb-4" />
-                <div className="text-4xl font-bold text-warm mb-2">$8.2M</div>
-                <div className="text-xl font-semibold mb-2">Rewards Paid</div>
-                <div className="text-sm text-muted-foreground">
-                  Lifetime total
+                <div className="text-3xl font-bold text-warm mb-2">$8.2M</div>
+                <div className="text-lg font-semibold mb-2">Paid to Users</div>
+                <div className="text-sm font-medium text-foreground">
+                  Real cash rewards
                 </div>
               </CardContent>
             </Card>
