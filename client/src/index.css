@@ -7,40 +7,29 @@
 @tailwind utilities;
 
 :root {
-  /* 2025 Color Palette - Mocha Mousse & Warm Earth Tones */
-  --background: hsl(30, 15%, 97%);
-  --foreground: hsl(24, 10%, 15%);
+  /* Simplified Color Palette */
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(0, 0%, 9%);
   --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(24, 10%, 15%);
+  --card-foreground: hsl(0, 0%, 9%);
   --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(24, 10%, 15%);
+  --popover-foreground: hsl(0, 0%, 9%);
   
-  /* Primary: Mocha Mousse - Pantone 2025 Color of the Year */
-  --primary: hsl(25, 24%, 64%);
+  /* Primary: Clean Blue */
+  --primary: hsl(221, 83%, 53%);
   --primary-foreground: hsl(0, 0%, 100%);
   
-  /* Secondary: Warm Neutral */
-  --secondary: hsl(30, 25%, 94%);
-  --secondary-foreground: hsl(24, 10%, 15%);
+  /* Secondary: Light Gray */
+  --secondary: hsl(0, 0%, 96%);
+  --secondary-foreground: hsl(0, 0%, 9%);
   
-  /* Success: Vibrant Green with Energy */
-  --success: hsl(142, 76%, 58%);
+  /* Success: Simple Green */
+  --success: hsl(142, 76%, 36%);
   --success-foreground: hsl(0, 0%, 100%);
   
-  /* Electric Purple - High Energy CTA */
-  --electric: hsl(252, 83%, 64%);
-  --electric-foreground: hsl(0, 0%, 100%);
-  
-  /* Accent: Coral Energy */
-  --accent: hsl(16, 82%, 64%);
+  /* Accent: Orange */
+  --accent: hsl(24, 100%, 50%);
   --accent-foreground: hsl(0, 0%, 100%);
-  
-  /* 2025 Trend Colors */
-  --sage-green: hsl(142, 35%, 45%);
-  --terracotta: hsl(16, 82%, 64%);
-  --butter-yellow: hsl(54, 85%, 75%);
-  --jewel-purple: hsl(271, 91%, 65%);
-  --electric-blue: hsl(189, 100%, 58%);
   
   --muted: hsl(30, 10%, 88%);
   --muted-foreground: hsl(24, 5%, 45%);
@@ -67,10 +56,8 @@
   --sidebar-border: hsl(30, 15%, 90%);
   --sidebar-ring: hsl(252, 83%, 64%);
   
-  /* Modern Typography System */
+  /* Simple Typography */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  --font-serif: 'Playfair Display', Georgia, serif;
-  --font-mono: 'JetBrains Mono', Monaco, Consolas, monospace;
   
   /* Enhanced Radius for Modern Feel */
   --radius: 16px;
@@ -104,16 +91,13 @@
   --space-12: 4rem;    /* 64px */
   --space-16: 6rem;    /* 96px */
   
-  /* Typography Scale */
-  --text-xs: 0.75rem;    /* 12px */
+  /* Simplified Typography Scale */
   --text-sm: 0.875rem;   /* 14px */
   --text-base: 1rem;     /* 16px */
   --text-lg: 1.125rem;   /* 18px */
   --text-xl: 1.25rem;    /* 20px */
   --text-2xl: 1.5rem;    /* 24px */
   --text-3xl: 1.875rem;  /* 30px */
-  --text-4xl: 2.25rem;   /* 36px */
-  --text-5xl: 3rem;      /* 48px */
   
   /* Line Heights */
   --leading-tight: 1.25;
@@ -226,28 +210,26 @@
     line-height: 1.6;
   }
 
-  /* Modern Typography Scale */
+  /* Simple Typography */
   h1, h2, h3, h4, h5, h6 {
-    @apply font-serif;
-    font-variation-settings: "wght" 600;
-    letter-spacing: var(--tracking-tight);
+    @apply font-sans;
+    font-weight: 600;
     line-height: 1.2;
-    text-wrap: balance;
   }
 
   h1 {
-    font-size: clamp(2.5rem, 5vw, 4rem);
-    font-variation-settings: "wght" 700;
+    font-size: 2rem;
+    font-weight: 700;
   }
 
   h2 {
-    font-size: clamp(2rem, 4vw, 3rem);
-    font-variation-settings: "wght" 650;
+    font-size: 1.5rem;
+    font-weight: 600;
   }
 
   h3 {
-    font-size: clamp(1.5rem, 3vw, 2.25rem);
-    font-variation-settings: "wght" 625;
+    font-size: 1.25rem;
+    font-weight: 600;
   }
 
   p {
@@ -474,14 +456,17 @@
   backdrop-filter: var(--backdrop-blur);
 }
 
-/* 2025 Trend Color Utilities */
-.text-jewel-purple { color: hsl(271, 91%, 65%); }
-.text-electric-blue { color: hsl(189, 100%, 58%); }
-.text-sage-green { color: hsl(142, 35%, 45%); }
-.text-terracotta { color: hsl(16, 82%, 64%); }
-.bg-jewel-purple { background-color: hsl(271, 91%, 65%); }
-.bg-electric-blue { background-color: hsl(189, 100%, 58%); }
-.border-jewel-purple { border-color: hsl(271, 91%, 65%); }
+/* Simple Color Utilities */
+.text-success { color: hsl(142, 76%, 36%); }
+.text-primary { color: hsl(221, 83%, 53%); }
+.bg-success { background-color: hsl(142, 76%, 36%); }
+.bg-primary { background-color: hsl(221, 83%, 53%); }
+
+/* Essential gradient colors for existing components */
+.from-jewel-purple { --tw-gradient-from: hsl(271, 91%, 65%) var(--tw-gradient-from-position); --tw-gradient-to: hsl(271, 91%, 65% / 0) var(--tw-gradient-to-position); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+.to-jewel-purple { --tw-gradient-to: hsl(271, 91%, 65%) var(--tw-gradient-to-position); }
+.via-jewel-purple { --tw-gradient-to: hsl(271, 91%, 65% / 0) var(--tw-gradient-to-position); --tw-gradient-stops: var(--tw-gradient-from), hsl(271, 91%, 65%) var(--tw-gradient-via-position), var(--tw-gradient-to); }
+.to-electric-blue { --tw-gradient-to: hsl(189, 100%, 58%) var(--tw-gradient-to-position); }
 
 @keyframes pointsGlow {
   from { 

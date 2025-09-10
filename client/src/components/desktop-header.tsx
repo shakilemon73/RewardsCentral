@@ -1,7 +1,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { Building, Gift, BarChart3, User } from "lucide-react";
+import { Gift, BarChart3, User } from "lucide-react";
 
 export default function DesktopHeader() {
   const { user } = useAuth();
@@ -26,12 +26,6 @@ export default function DesktopHeader() {
               <Button variant="ghost" className="hover:bg-white/10 hover:backdrop-blur-sm text-lg px-6 flex items-center gap-2" data-testid="nav-earn">
                 <Gift className="h-5 w-5" />
                 Earn Rewards
-              </Button>
-            </Link>
-            <Link href="/partnerships">
-              <Button variant="ghost" className="hover:bg-white/10 hover:backdrop-blur-sm text-lg px-6 flex items-center gap-2" data-testid="nav-businesses">
-                <Building className="h-5 w-5" />
-                For Businesses
               </Button>
             </Link>
           </nav>
