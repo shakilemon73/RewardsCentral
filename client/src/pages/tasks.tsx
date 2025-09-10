@@ -198,15 +198,18 @@ export default function Tasks() {
   if (isMobile) {
     return (
       <div className="p-4">
-        {/* Mobile Header */}
-        <header className="bg-card border-b border-border px-4 py-3 -mx-4 mb-6">
+        {/* Goal-Oriented Header - Psychology: Clear Progress */}
+        <header className="bg-background border-b border-border px-4 py-4 -mx-4 mb-6">
           <div className="flex items-center justify-between">
-            <h1 className="text-xl font-bold text-foreground">Tasks</h1>
-            <div className="flex items-center space-x-1 bg-success text-success-foreground px-3 py-1 rounded-full text-sm points-animation">
-              <span className="font-semibold" data-testid="text-points-mobile">
+            <div>
+              <h1 className="text-lg font-bold text-foreground">Earn Money</h1>
+              <p className="text-sm text-muted-foreground">Choose tasks to complete</p>
+            </div>
+            <div className="bg-success/10 border border-success/20 px-3 py-2 rounded-lg text-center">
+              <div className="text-success font-bold" data-testid="text-points-mobile">
                 {user?.points || 0}
-              </span>
-              <span className="text-xs">pts</span>
+              </div>
+              <div className="text-xs text-success/80">points</div>
             </div>
           </div>
         </header>

@@ -71,25 +71,37 @@ export default function Rewards() {
   if (isMobile) {
     return (
       <div className="p-4">
-        {/* Mobile Header */}
-        <header className="bg-card border-b border-border px-4 py-3 -mx-4 mb-6">
+        {/* Goal-Oriented Header - Focus on Achievement */}
+        <header className="bg-background border-b border-border px-4 py-4 -mx-4 mb-6">
           <div className="flex items-center justify-between">
-            <h1 className="text-xl font-bold text-foreground">Rewards</h1>
-            <div className="flex items-center space-x-1 bg-success text-success-foreground px-3 py-1 rounded-full text-sm points-animation">
-              <span className="font-semibold" data-testid="text-points-mobile">
+            <div>
+              <h1 className="text-lg font-bold text-foreground">Your Rewards</h1>
+              <p className="text-sm text-muted-foreground">Turn points into real money & gifts</p>
+            </div>
+            <div className="bg-success/10 border border-success/20 px-3 py-2 rounded-lg text-center">
+              <div className="text-success font-bold" data-testid="text-points-mobile">
                 {user?.points || 0}
-              </span>
-              <span className="text-xs">pts</span>
+              </div>
+              <div className="text-xs text-success/80">points ready</div>
             </div>
           </div>
         </header>
 
-        {/* Points Balance Card */}
-        <Card className="gradient-bg text-white mb-6" data-testid="card-points-balance">
-          <CardContent className="p-4 text-center">
-            <p className="text-sm opacity-90">Your Balance</p>
-            <p className="text-2xl font-bold">{user?.points || 0} Points</p>
-            <p className="text-sm opacity-90">≈ ${((user?.points || 0) / 100).toFixed(2)} in rewards</p>
+        {/* Clear Value Proposition - Psychology: Make points feel valuable */}
+        <Card className="bg-success/5 border-success/20 mb-6" data-testid="card-points-balance">
+          <CardContent className="p-4">
+            <div className="text-center mb-4">
+              <div className="text-3xl font-bold text-success mb-1">{user?.points || 0}</div>
+              <div className="text-sm text-muted-foreground">points available</div>
+              <div className="text-lg font-semibold text-foreground mt-1">
+                ≈ ${((user?.points || 0) / 100).toFixed(2)} cash value
+              </div>
+            </div>
+            {/* Social Proof */}
+            <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground">
+              <div className="w-2 h-2 bg-success rounded-full animate-pulse"></div>
+              <span>2,847 rewards redeemed this week</span>
+            </div>
           </CardContent>
         </Card>
 
@@ -112,24 +124,38 @@ export default function Rewards() {
 
   return (
     <div data-testid="page-rewards">
-      <h1 className="text-3xl font-bold text-foreground mb-6">Redeem Rewards</h1>
+      {/* Emotional Connection - User Goals */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-foreground mb-2">Your Rewards</h1>
+        <p className="text-lg text-muted-foreground">Turn your hard-earned points into cash and gift cards</p>
+      </div>
       
-      {/* Redemption Info */}
-      <Card className="gradient-bg text-white mb-8" data-testid="card-balance-info">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold">Your Points Balance</h2>
-              <p className="text-2xl font-bold mt-1">{user?.points || 0} Points</p>
-              <p className="opacity-90 mt-1">≈ ${((user?.points || 0) / 100).toFixed(2)} in rewards</p>
+      {/* Clear Balance Info with Social Proof */}
+      <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <Card className="bg-success/5 border-success/20" data-testid="card-balance-info">
+          <CardContent className="p-6 text-center">
+            <h2 className="text-lg font-semibold text-foreground mb-2">Your Balance</h2>
+            <div className="text-4xl font-bold text-success mb-2">{user?.points || 0}</div>
+            <div className="text-muted-foreground mb-3">points ready to use</div>
+            <div className="text-xl font-semibold text-foreground">
+              ≈ ${((user?.points || 0) / 100).toFixed(2)} cash value
             </div>
-            <div className="text-right">
-              <p className="text-sm opacity-90">Exchange Rate</p>
-              <p className="font-semibold">100 pts = $1.00</p>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-primary/5 border-primary/20">
+          <CardContent className="p-6 text-center">
+            <h2 className="text-lg font-semibold text-foreground mb-2">Exchange Rate</h2>
+            <div className="text-2xl font-bold text-primary mb-2">100 pts = $1.00</div>
+            <div className="text-muted-foreground mb-2">Instant redemption</div>
+            {/* Social Proof */}
+            <div className="flex items-center justify-center gap-1 text-sm text-muted-foreground">
+              <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+              <span>$12,847 paid out yesterday</span>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Rewards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

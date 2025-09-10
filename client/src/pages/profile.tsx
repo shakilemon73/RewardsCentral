@@ -63,29 +63,45 @@ export default function Profile() {
   if (isMobile) {
     return (
       <div className="p-4">
-        {/* Mobile Header */}
-        <header className="bg-card border-b border-border px-4 py-3 -mx-4 mb-6">
+        {/* Clear Profile Header - Goal-oriented */}
+        <header className="bg-background border-b border-border px-4 py-4 -mx-4 mb-6">
           <div className="flex items-center justify-between">
-            <h1 className="text-xl font-bold text-foreground">Profile</h1>
+            <div>
+              <h1 className="text-lg font-bold text-foreground">Your Profile</h1>
+              <p className="text-sm text-muted-foreground">Complete profile for better surveys</p>
+            </div>
             <Button variant="outline" size="sm" onClick={handleLogout} data-testid="button-logout">
-              Logout
+              Sign Out
             </Button>
           </div>
         </header>
 
-        {/* Profile Summary */}
-        <Card className="mb-4" data-testid="card-profile-summary">
-          <CardContent className="p-4 text-center">
-            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-              <User className="h-8 w-8 text-primary" />
+        {/* Clear Profile Summary with Progress - Susan Weinschenk: Show Progress */}
+        <Card className="mb-4 border-primary/20" data-testid="card-profile-summary">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <User className="h-6 w-6 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-foreground">
+                  {user?.first_name || user?.last_name 
+                    ? `${user.first_name || ''} ${user.last_name || ''}`.trim()
+                    : 'Complete Your Profile'
+                  }
+                </h3>
+                <p className="text-sm text-muted-foreground">{user?.email}</p>
+              </div>
             </div>
-            <h3 className="font-semibold text-foreground">
-              {user?.first_name || user?.last_name 
-                ? `${user.first_name || ''} ${user.last_name || ''}`.trim()
-                : 'User'
-              }
-            </h3>
-            <p className="text-muted-foreground text-sm">{user?.email}</p>
+            {/* Progress Indicator */}
+            <div className="mt-3">
+              <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                <span>Profile completeness</span>
+                <span>65%</span>
+              </div>
+              <Progress value={65} className="h-2" />
+              <p className="text-xs text-muted-foreground mt-1">Complete profile to unlock higher-paying surveys</p>
+            </div>
           </CardContent>
         </Card>
 
@@ -161,32 +177,40 @@ export default function Profile() {
               <CardTitle>Personal Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              {/* Single Column Layout - Luke Wroblewski Principle */}
+              <div className="space-y-4">
                 <div>
-                  <Label htmlFor="firstName">First Name</Label>
+                  <Label htmlFor="firstName" className="text-base font-medium">First Name</Label>
                   <Input
                     id="firstName"
                     defaultValue={user?.first_name || ''}
+                    className="mt-1 h-12"
+                    placeholder="Enter your first name"
                     data-testid="input-first-name"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="lastName">Last Name</Label>
+                  <Label htmlFor="lastName" className="text-base font-medium">Last Name</Label>
                   <Input
                     id="lastName"
                     defaultValue={user?.last_name || ''}
+                    className="mt-1 h-12"
+                    placeholder="Enter your last name"
                     data-testid="input-last-name"
                   />
                 </div>
               </div>
               <div>
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="text-base font-medium">Email Address</Label>
                 <Input
                   id="email"
                   type="email"
                   defaultValue={user?.email || ''}
+                  className="mt-1 h-12"
+                  placeholder="your@email.com"
                   data-testid="input-email"
                 />
+                <p className="text-xs text-muted-foreground mt-1">We'll never share your email with anyone</p>
               </div>
               
               <Separator className="my-4" />

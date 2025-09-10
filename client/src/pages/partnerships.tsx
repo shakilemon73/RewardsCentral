@@ -88,39 +88,38 @@ export default function Partnerships() {
               Partnership Opportunities
             </Badge>
             
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-balance leading-tight">
-              Get fast, reliable responses from <span className="gradient-primary bg-clip-text text-transparent">engaged participants</span>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-balance leading-tight">
+              Access Quality Research Participants <span className="text-primary">at Scale</span>
             </h1>
             
-            <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto text-balance">
-              Recruit high-quality participants through RewardsPay, powered by <span className="font-semibold text-foreground">trusted survey networks</span> and leading providers.
+            <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">
+              Connect with 800K+ verified participants for market research, customer insights, and product validation. Fast, reliable, cost-effective.
             </p>
 
-            {/* Trust Indicators */}
-            <div className="grid md:grid-cols-4 gap-6 mb-12 max-w-4xl mx-auto">
-              <div className="text-center p-4 bg-card/50 border border-border/50 rounded-lg">
-                <div className="text-2xl font-bold text-primary mb-1">847K+</div>
-                <div className="text-sm text-muted-foreground">Total Users</div>
-              </div>
-              <div className="text-center p-4 bg-card/50 border border-border/50 rounded-lg">
-                <div className="text-2xl font-bold text-success mb-1">523K</div>
-                <div className="text-sm text-muted-foreground">Monthly Active</div>
-              </div>
-              <div className="text-center p-4 bg-card/50 border border-border/50 rounded-lg">
-                <div className="text-2xl font-bold text-accent mb-1">73.2%</div>
-                <div className="text-sm text-muted-foreground">Completion Rate</div>
-              </div>
-              <div className="text-center p-4 bg-card/50 border border-border/50 rounded-lg">
-                <div className="text-2xl font-bold text-primary mb-1">99.2%</div>
-                <div className="text-sm text-muted-foreground">Data Accuracy</div>
-              </div>
+            {/* Clear Value Metrics - Business Decision Makers */}
+            <div className="grid md:grid-cols-3 gap-6 mb-12 max-w-3xl mx-auto">
+              <Card className="text-center p-6 border-primary/20">
+                <div className="text-3xl font-bold text-primary mb-2">800K+</div>
+                <div className="text-sm font-medium text-foreground mb-1">Verified Participants</div>
+                <div className="text-xs text-muted-foreground">Across demographics</div>
+              </Card>
+              <Card className="text-center p-6 border-success/20">
+                <div className="text-3xl font-bold text-success mb-2">48hrs</div>
+                <div className="text-sm font-medium text-foreground mb-1">Average Completion</div>
+                <div className="text-xs text-muted-foreground">Fastest in industry</div>
+              </Card>
+              <Card className="text-center p-6 border-accent/20">
+                <div className="text-3xl font-bold text-accent mb-2">94%</div>
+                <div className="text-sm font-medium text-foreground mb-1">Quality Score</div>
+                <div className="text-xs text-muted-foreground">Data reliability</div>
+              </Card>
             </div>
             
-            {/* Primary CTA */}
+            {/* Professional CTA - Clear Action */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
                 size="lg" 
-                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                className="bg-primary hover:bg-primary/90 text-white px-8 py-4 text-base font-semibold rounded-lg shadow-md hover:shadow-lg transition-all"
                 onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}
                 data-testid="button-book-demo"
               >

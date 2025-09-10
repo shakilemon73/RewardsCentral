@@ -135,21 +135,32 @@ export default function Landing() {
               </div>
             </div>
 
-            {/* Bold 2025 Typography - Oversized & Dramatic */}
-            <h1 className="text-5xl md:text-8xl lg:text-9xl font-black mb-8 text-balance leading-[0.85] tracking-tight">
-              <span className="block text-foreground font-serif">EARN</span>
-              <span className="block bg-gradient-to-r from-primary via-jewel-purple to-electric-blue bg-clip-text text-transparent font-serif relative">
-                REAL MONEY
-                <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-primary to-jewel-purple rounded-full"></div>
-              </span>
-              <span className="block text-muted-foreground text-3xl md:text-4xl lg:text-5xl font-sans font-light mt-4">from simple tasks</span>
+            {/* Clear, Scannable Heading - Don Norman Principle: Discoverability */}
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-center">
+              <span className="block text-foreground">Earn Real Money</span>
+              <span className="block text-primary mt-2">From Simple Tasks</span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed font-medium">
-              Join the largest rewards platform. Complete <span className="text-foreground font-semibold">surveys</span>, <span className="text-foreground font-semibold">tasks</span>, and <span className="text-foreground font-semibold">offers</span> from trusted partners.
-              <br className="hidden md:block" />
-              Get paid instantly to <span className="text-primary font-semibold">PayPal</span> or <span className="text-primary font-semibold">gift cards</span>.
+            {/* Clear Value Proposition - Steve Krug Principle: Scannability */}
+            <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+              Complete surveys and tasks. Get paid instantly to PayPal or gift cards.
             </p>
+            
+            {/* Key Benefits - Under 15 words each */}
+            <div className="grid md:grid-cols-3 gap-4 mb-8 max-w-3xl mx-auto">
+              <div className="text-center p-4">
+                <div className="text-success font-semibold">✓ Instant Payments</div>
+                <div className="text-sm text-muted-foreground">Cash out immediately</div>
+              </div>
+              <div className="text-center p-4">
+                <div className="text-success font-semibold">✓ No Minimums</div>
+                <div className="text-sm text-muted-foreground">Start earning from $1</div>
+              </div>
+              <div className="text-center p-4">
+                <div className="text-success font-semibold">✓ Trusted Platform</div>
+                <div className="text-sm text-muted-foreground">Used by 800K+ people</div>
+              </div>
+            </div>
 
             {/* Modern Benefit Cards - Bento Box Layout */}
             <div className="grid md:grid-cols-3 gap-8 mb-16 max-w-5xl mx-auto">
@@ -185,18 +196,18 @@ export default function Landing() {
               </div>
             </div>
             
-            {/* Primary CTA with Electric Purple - 2025 Trends */}
-            <div className="mb-12">
+            {/* Clear Primary CTA - 44px touch target (Mobile First) */}
+            <div className="mb-8">
               <Button 
                 size="lg" 
-                className="bg-gradient-to-r from-jewel-purple to-electric-blue hover:from-jewel-purple/90 hover:to-electric-blue/90 text-white px-16 py-8 text-xl font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 hover:-translate-y-1 hover:scale-105 group"
+                className="bg-primary hover:bg-primary/90 text-white px-8 py-4 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all min-h-[44px] min-w-[200px]"
                 onClick={() => document.getElementById('auth-section')?.scrollIntoView({ behavior: 'smooth' })}
                 data-testid="button-get-started"
               >
-                Start Earning Free Money 
-                <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform duration-200" />
+                Get Started Free
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <p className="text-base text-muted-foreground mt-4 font-medium">✨ No credit card required • ⚡ Takes 30 seconds • 🎁 $5 signup bonus</p>
+              <p className="text-sm text-muted-foreground mt-3">No credit card • Takes 30 seconds</p>
             </div>
 
             {/* Payout Proof */}
@@ -214,17 +225,12 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Interactive Earnings Estimator - 2025 Conversion Feature */}
-      <section className="py-24 bg-gradient-to-br from-primary/5 via-sage-green/3 to-terracotta/5 relative overflow-hidden">
-        <div className="absolute top-10 right-10 w-64 h-64 bg-jewel-purple/10 rounded-full blur-3xl"></div>
-        <div className="container mx-auto px-6 max-w-4xl relative z-10">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-black mb-4 text-balance">
-              See Your <span className="gradient-primary bg-clip-text text-transparent">Earning Potential</span>
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Customize your activity level and see how much you could earn monthly
-            </p>
+      {/* Simple Earnings Preview - Dieter Rams: As little design as possible */}
+      <section className="py-16 bg-card/50">
+        <div className="container mx-auto px-6 max-w-2xl">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold mb-4">Your Earning Potential</h2>
+            <p className="text-muted-foreground">See what you could make with simple tasks</p>
           </div>
 
           <div className="bg-white/90 backdrop-blur-lg rounded-3xl p-8 md:p-12 border border-primary/20 shadow-2xl">
