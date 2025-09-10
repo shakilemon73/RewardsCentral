@@ -267,7 +267,7 @@ export class SurveyMatchingService {
     }
   }
 
-  // Check if user profile is complete enough for good survey matching
+  // Enhanced profile completeness check with Survey Junkie/Swagbucks fields
   getProfileCompleteness(user: User): {
     score: number;
     missingFields: string[];
@@ -279,8 +279,16 @@ export class SurveyMatchingService {
       recommendations: [] as string[]
     };
     
-    let totalFields = 7;
+    let totalFields = 16; // Expanded from 7 to 16 based on enhanced profile
     let completedFields = 0;
+    
+    // Basic profile fields
+    if (user.first_name && user.last_name) {
+      completedFields++;
+    } else {
+      completeness.missingFields.push('name');
+      completeness.recommendations.push('Complete name improves survey credibility');
+    }
     
     // Essential demographic fields
     if (user.birthday) {
@@ -311,6 +319,72 @@ export class SurveyMatchingService {
       completeness.recommendations.push('ZIP code improves local survey matching');
     }
     
+    // Enhanced demographics (Survey Junkie/Swagbucks style)
+    if (user.education_level) {
+      completedFields++;
+    } else {
+      completeness.missingFields.push('education');
+      completeness.recommendations.push('Education level unlocks academic and professional surveys');
+    }
+    
+    if (user.employment_status) {
+      completedFields++;
+    } else {
+      completeness.missingFields.push('employment');
+      completeness.recommendations.push('Employment status matches career-focused surveys');
+    }
+    
+    if (user.occupation_category) {
+      completedFields++;
+    } else {
+      completeness.missingFields.push('occupation');
+      completeness.recommendations.push('Occupation details unlock industry-specific surveys');
+    }
+    
+    if (user.household_income) {
+      completedFields++;
+    } else {
+      completeness.missingFields.push('income');
+      completeness.recommendations.push('Income range enables financial product surveys');
+    }
+    
+    if (user.marital_status) {
+      completedFields++;
+    } else {
+      completeness.missingFields.push('marital_status');
+      completeness.recommendations.push('Marital status helps with family-focused surveys');
+    }
+    
+    if (user.children_count) {
+      completedFields++;
+    } else {
+      completeness.missingFields.push('children');
+      completeness.recommendations.push('Family size unlocks parenting and family surveys');
+    }
+    
+    // Behavioral targeting
+    if (user.shopping_habits) {
+      completedFields++;
+    } else {
+      completeness.missingFields.push('shopping');
+      completeness.recommendations.push('Shopping habits enable retail and brand surveys');
+    }
+    
+    if (user.technology_usage) {
+      completedFields++;
+    } else {
+      completeness.missingFields.push('technology');
+      completeness.recommendations.push('Tech usage unlocks technology product surveys');
+    }
+    
+    if (user.travel_frequency) {
+      completedFields++;
+    } else {
+      completeness.missingFields.push('travel');
+      completeness.recommendations.push('Travel habits enable travel and hospitality surveys');
+    }
+    
+    // Survey preferences
     if (user.preferred_survey_length) {
       completedFields++;
     } else {
@@ -323,13 +397,6 @@ export class SurveyMatchingService {
     } else {
       completeness.missingFields.push('interests');
       completeness.recommendations.push('Add interests for topic-specific surveys');
-    }
-    
-    if (user.first_name && user.last_name) {
-      completedFields++;
-    } else {
-      completeness.missingFields.push('name');
-      completeness.recommendations.push('Complete name improves survey credibility');
     }
     
     completeness.score = Math.round((completedFields / totalFields) * 100);

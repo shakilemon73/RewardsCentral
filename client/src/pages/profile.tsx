@@ -191,9 +191,9 @@ export default function Profile() {
               
               <Separator className="my-4" />
               
-              {/* Demographics for Survey Targeting */}
+              {/* Basic Demographics */}
               <div className="space-y-4">
-                <Label className="text-base font-semibold">Survey Preferences (Optional)</Label>
+                <Label className="text-base font-semibold">Basic Demographics</Label>
                 <p className="text-sm text-muted-foreground">Help us find better-paying surveys for you</p>
                 
                 <div className="grid grid-cols-2 gap-4">
@@ -249,6 +249,192 @@ export default function Profile() {
                     />
                   </div>
                 </div>
+              </div>
+
+              <Separator className="my-6" />
+
+              {/* Enhanced Demographics (Survey Junkie/Swagbucks style) */}
+              <div className="space-y-4">
+                <Label className="text-base font-semibold">Education & Employment</Label>
+                <p className="text-sm text-muted-foreground">Higher education and employment details unlock premium surveys</p>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="education">Education Level</Label>
+                    <Select defaultValue={user?.education_level || ''}>
+                      <SelectTrigger data-testid="select-education">
+                        <SelectValue placeholder="Select education level" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="high_school">High School</SelectItem>
+                        <SelectItem value="some_college">Some College</SelectItem>
+                        <SelectItem value="bachelor">Bachelor's Degree</SelectItem>
+                        <SelectItem value="master">Master's Degree</SelectItem>
+                        <SelectItem value="doctorate">Doctorate</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="employment">Employment Status</Label>
+                    <Select defaultValue={user?.employment_status || ''}>
+                      <SelectTrigger data-testid="select-employment">
+                        <SelectValue placeholder="Select employment status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="employed_full_time">Employed Full-Time</SelectItem>
+                        <SelectItem value="employed_part_time">Employed Part-Time</SelectItem>
+                        <SelectItem value="self_employed">Self-Employed</SelectItem>
+                        <SelectItem value="unemployed">Unemployed</SelectItem>
+                        <SelectItem value="student">Student</SelectItem>
+                        <SelectItem value="retired">Retired</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="occupation">Occupation Category</Label>
+                    <Select defaultValue={user?.occupation_category || ''}>
+                      <SelectTrigger data-testid="select-occupation">
+                        <SelectValue placeholder="Select occupation" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="professional">Professional</SelectItem>
+                        <SelectItem value="management">Management</SelectItem>
+                        <SelectItem value="service">Service</SelectItem>
+                        <SelectItem value="sales">Sales</SelectItem>
+                        <SelectItem value="education">Education</SelectItem>
+                        <SelectItem value="healthcare">Healthcare</SelectItem>
+                        <SelectItem value="retired">Retired</SelectItem>
+                        <SelectItem value="student">Student</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="income">Household Income</Label>
+                    <Select defaultValue={user?.household_income || ''}>
+                      <SelectTrigger data-testid="select-income">
+                        <SelectValue placeholder="Select income range" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="under_25k">Under $25,000</SelectItem>
+                        <SelectItem value="25k_50k">$25,000 - $50,000</SelectItem>
+                        <SelectItem value="50k_75k">$50,000 - $75,000</SelectItem>
+                        <SelectItem value="75k_100k">$75,000 - $100,000</SelectItem>
+                        <SelectItem value="100k_150k">$100,000 - $150,000</SelectItem>
+                        <SelectItem value="over_150k">Over $150,000</SelectItem>
+                        <SelectItem value="prefer_not_to_say">Prefer not to say</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
+              <Separator className="my-6" />
+
+              {/* Family & Lifestyle */}
+              <div className="space-y-4">
+                <Label className="text-base font-semibold">Family & Lifestyle</Label>
+                <p className="text-sm text-muted-foreground">Family details help match family-focused and lifestyle surveys</p>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="marital">Marital Status</Label>
+                    <Select defaultValue={user?.marital_status || ''}>
+                      <SelectTrigger data-testid="select-marital">
+                        <SelectValue placeholder="Select marital status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="single">Single</SelectItem>
+                        <SelectItem value="married">Married</SelectItem>
+                        <SelectItem value="divorced">Divorced</SelectItem>
+                        <SelectItem value="widowed">Widowed</SelectItem>
+                        <SelectItem value="domestic_partnership">Domestic Partnership</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="children">Number of Children</Label>
+                    <Select defaultValue={user?.children_count || ''}>
+                      <SelectTrigger data-testid="select-children">
+                        <SelectValue placeholder="Select number of children" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="0">No children</SelectItem>
+                        <SelectItem value="1">1 child</SelectItem>
+                        <SelectItem value="2">2 children</SelectItem>
+                        <SelectItem value="3">3 children</SelectItem>
+                        <SelectItem value="4_or_more">4 or more children</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
+              <Separator className="my-6" />
+
+              {/* Behavioral & Interest Targeting */}
+              <div className="space-y-4">
+                <Label className="text-base font-semibold">Interests & Behavior</Label>
+                <p className="text-sm text-muted-foreground">Your habits and interests unlock specialized high-paying surveys</p>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="shopping">Shopping Habits</Label>
+                    <Select defaultValue={user?.shopping_habits || ''}>
+                      <SelectTrigger data-testid="select-shopping">
+                        <SelectValue placeholder="Select shopping style" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="online_primarily">Primarily Online</SelectItem>
+                        <SelectItem value="in_store_primarily">Primarily In-Store</SelectItem>
+                        <SelectItem value="mixed">Mixed Online/In-Store</SelectItem>
+                        <SelectItem value="budget_conscious">Budget Conscious</SelectItem>
+                        <SelectItem value="brand_loyal">Brand Loyal</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="technology">Technology Usage</Label>
+                    <Select defaultValue={user?.technology_usage || ''}>
+                      <SelectTrigger data-testid="select-technology">
+                        <SelectValue placeholder="Select tech usage" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="early_adopter">Early Adopter</SelectItem>
+                        <SelectItem value="mainstream">Mainstream User</SelectItem>
+                        <SelectItem value="late_adopter">Late Adopter</SelectItem>
+                        <SelectItem value="minimal_user">Minimal User</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                <div>
+                  <Label htmlFor="travel">Travel Frequency</Label>
+                  <Select defaultValue={user?.travel_frequency || ''}>
+                    <SelectTrigger data-testid="select-travel">
+                      <SelectValue placeholder="Select travel frequency" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="never">Never</SelectItem>
+                      <SelectItem value="rarely">Rarely (1-2 times/year)</SelectItem>
+                      <SelectItem value="few_times_year">Few times/year</SelectItem>
+                      <SelectItem value="monthly">Monthly</SelectItem>
+                      <SelectItem value="weekly">Weekly</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <Separator className="my-6" />
+
+              {/* Survey Preferences */}
+              <div className="space-y-4">
+                <Label className="text-base font-semibold">Survey Preferences</Label>
+                <p className="text-sm text-muted-foreground">Customize your survey experience</p>
                 
                 <div>
                   <Label htmlFor="surveyLength">Preferred Survey Length</Label>
@@ -272,27 +458,80 @@ export default function Profile() {
                 onClick={async () => {
                   setIsUpdating(true);
                   try {
-                    // Get form data
+                    // Get form data from all profile sections
                     const form = document.querySelector('form') || document;
-                    const birthday = (form.querySelector('#birthday') as HTMLInputElement)?.value;
-                    const gender = (form.querySelector('[data-testid="select-gender"] input') as HTMLInputElement)?.value;
-                    const countryCode = (form.querySelector('[data-testid="select-country"] input') as HTMLInputElement)?.value;
-                    const zipCode = (form.querySelector('#zipCode') as HTMLInputElement)?.value;
+                    
+                    // Basic info
                     const firstName = (form.querySelector('#firstName') as HTMLInputElement)?.value;
                     const lastName = (form.querySelector('#lastName') as HTMLInputElement)?.value;
+                    const email = (form.querySelector('#email') as HTMLInputElement)?.value;
+                    
+                    // Basic demographics
+                    const birthday = (form.querySelector('#birthday') as HTMLInputElement)?.value;
+                    const gender = (form.querySelector('[data-testid="select-gender"]') as any)?.getAttribute('data-value') || user?.gender;
+                    const countryCode = (form.querySelector('[data-testid="select-country"]') as any)?.getAttribute('data-value') || user?.country_code;
+                    const zipCode = (form.querySelector('#zipCode') as HTMLInputElement)?.value;
+                    
+                    // Enhanced demographics (Survey Junkie/Swagbucks style)
+                    const educationLevel = (form.querySelector('[data-testid="select-education"]') as any)?.getAttribute('data-value') || user?.education_level;
+                    const employmentStatus = (form.querySelector('[data-testid="select-employment"]') as any)?.getAttribute('data-value') || user?.employment_status;
+                    const occupationCategory = (form.querySelector('[data-testid="select-occupation"]') as any)?.getAttribute('data-value') || user?.occupation_category;
+                    const householdIncome = (form.querySelector('[data-testid="select-income"]') as any)?.getAttribute('data-value') || user?.household_income;
+                    
+                    // Family & lifestyle
+                    const maritalStatus = (form.querySelector('[data-testid="select-marital"]') as any)?.getAttribute('data-value') || user?.marital_status;
+                    const childrenCount = (form.querySelector('[data-testid="select-children"]') as any)?.getAttribute('data-value') || user?.children_count;
+                    
+                    // Behavioral targeting
+                    const shoppingHabits = (form.querySelector('[data-testid="select-shopping"]') as any)?.getAttribute('data-value') || user?.shopping_habits;
+                    const technologyUsage = (form.querySelector('[data-testid="select-technology"]') as any)?.getAttribute('data-value') || user?.technology_usage;
+                    const travelFrequency = (form.querySelector('[data-testid="select-travel"]') as any)?.getAttribute('data-value') || user?.travel_frequency;
+                    
+                    // Survey preferences
+                    const preferredSurveyLength = (form.querySelector('[data-testid="select-survey-length"]') as any)?.getAttribute('data-value') || user?.preferred_survey_length;
                     
                     if (!user?.id) return;
                     
-                    // Update user profile with all demographic data
+                    // Calculate profile completion score
+                    const completedFields = [
+                      firstName, lastName, birthday, gender, countryCode, zipCode,
+                      educationLevel, employmentStatus, occupationCategory, householdIncome,
+                      maritalStatus, childrenCount, shoppingHabits, technologyUsage,
+                      travelFrequency, preferredSurveyLength
+                    ].filter(field => field && field !== '').length;
+                    
+                    const totalFields = 16;
+                    const profileCompletionScore = Math.round((completedFields / totalFields) * 100);
+                    
+                    // Update user profile with all enhanced demographic data
                     const { error } = await supabase
                       .from('users')
                       .update({
                         first_name: firstName,
                         last_name: lastName,
+                        email,
+                        // Basic demographics
                         birthday,
                         gender,
                         country_code: countryCode,
                         zip_code: zipCode,
+                        // Enhanced demographics
+                        education_level: educationLevel,
+                        employment_status: employmentStatus,
+                        occupation_category: occupationCategory,
+                        household_income: householdIncome,
+                        // Family & lifestyle
+                        marital_status: maritalStatus,
+                        children_count: childrenCount,
+                        // Behavioral targeting
+                        shopping_habits: shoppingHabits,
+                        technology_usage: technologyUsage,
+                        travel_frequency: travelFrequency,
+                        // Survey preferences
+                        preferred_survey_length: preferredSurveyLength,
+                        // Profile tracking
+                        profile_completion_score: profileCompletionScore,
+                        last_profile_update: new Date().toISOString(),
                         updated_at: new Date().toISOString()
                       })
                       .eq('id', user?.id);
@@ -301,7 +540,7 @@ export default function Profile() {
                     
                     toast({
                       title: "Profile Updated!",
-                      description: "Your survey targeting has been improved with better demographic matching.",
+                      description: `Profile is ${profileCompletionScore}% complete. Enhanced survey targeting activated!`,
                     });
                     
                     // Refresh page to load updated user data
