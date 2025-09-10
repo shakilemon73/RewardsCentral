@@ -30,93 +30,298 @@ export default function Partnerships() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header - Modern Glassmorphism */}
-      <header className="sticky top-0 z-50 glass-card border-0 backdrop-blur-lg">
-        <div className="container mx-auto px-6 py-6 flex items-center justify-between">
-          <div className="animated-gradient text-white px-6 py-3 rounded-2xl font-bold text-2xl hover-3d cursor-pointer">
-            RewardsPay
-          </div>
-          <div className="hidden md:flex items-center space-x-6">
+      {/* Clean Business Header */}
+      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border/50">
+        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+          <Link href="/">
+            <div className="gradient-primary bg-clip-text text-transparent font-bold text-2xl cursor-pointer" data-testid="logo-rewardspay">
+              RewardsPay
+            </div>
+          </Link>
+          <div className="hidden md:flex items-center gap-4">
             <Link href="/">
-              <Button variant="ghost" className="hover:bg-white/10 hover:backdrop-blur-sm text-lg px-6" data-testid="button-home">
-                Home
+              <Button variant="ghost" className="text-muted-foreground hover:text-foreground" data-testid="link-for-users">
+                For Users
               </Button>
             </Link>
             <Button 
-              className="gradient-primary button-glow shadow-lg hover:shadow-2xl text-lg px-6"
-              onClick={() => document.getElementById('partnership-form')?.scrollIntoView({ behavior: 'smooth' })}
-              data-testid="button-contact"
+              variant="outline" 
+              className="border-primary/20 hover:border-primary text-primary hover:bg-primary/5"
+              onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}
+              data-testid="button-contact-us"
             >
               Contact Us
+            </Button>
+            <Button 
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+              onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}
+              data-testid="button-book-demo"
+            >
+              Book a Demo
             </Button>
           </div>
         </div>
       </header>
 
-      {/* Hero Section - Modern Business-Focused Design */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0 gradient-warm opacity-10"></div>
-        <div className="absolute inset-0 bg-gradient-to-br from-background/90 via-background/50 to-background/90"></div>
-        
-        {/* Floating Elements */}
-        <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-mocha/20 rounded-full blur-xl float"></div>
-        <div className="absolute top-3/4 right-1/4 w-24 h-24 bg-accent/20 rounded-full blur-xl float" style={{animationDelay: '2s'}}></div>
-        <div className="absolute bottom-1/4 left-1/3 w-28 h-28 bg-success/20 rounded-full blur-xl float" style={{animationDelay: '4s'}}></div>
-        
-        <div className="container mx-auto px-6 py-32 text-center relative z-10">
-          <div className="max-w-6xl mx-auto">
-            <div className="fade-up">
-              <Badge className="gradient-warm px-6 py-3 text-white text-lg font-semibold rounded-2xl mb-8 shadow-lg">
-                Partnership Opportunities
-              </Badge>
+      {/* Business-Focused Hero - Clean & Professional */}
+      <section className="pt-16 pb-24 md:pt-24 md:pb-32 bg-gradient-to-br from-primary/5 via-transparent to-accent/5">
+        <div className="container mx-auto px-6 max-w-6xl">
+          <div className="text-center mb-16">
+            <Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-2 text-sm font-medium rounded-full mb-6">
+              Partnership Opportunities
+            </Badge>
+            
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-balance leading-tight">
+              Partner with <span className="gradient-primary bg-clip-text text-transparent">RewardsPay</span>
+            </h1>
+            
+            <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto text-balance">
+              Connect with our engaged community of <span className="font-semibold text-foreground">847K+</span> users. 
+              Drive customer acquisition and market research through our trusted platform.
+            </p>
+
+            {/* Trust Indicators */}
+            <div className="grid md:grid-cols-4 gap-6 mb-12 max-w-4xl mx-auto">
+              <div className="text-center p-4 bg-card/50 border border-border/50 rounded-lg">
+                <div className="text-2xl font-bold text-primary mb-1">847K+</div>
+                <div className="text-sm text-muted-foreground">Total Users</div>
+              </div>
+              <div className="text-center p-4 bg-card/50 border border-border/50 rounded-lg">
+                <div className="text-2xl font-bold text-success mb-1">523K</div>
+                <div className="text-sm text-muted-foreground">Monthly Active</div>
+              </div>
+              <div className="text-center p-4 bg-card/50 border border-border/50 rounded-lg">
+                <div className="text-2xl font-bold text-accent mb-1">73.2%</div>
+                <div className="text-sm text-muted-foreground">Completion Rate</div>
+              </div>
+              <div className="text-center p-4 bg-card/50 border border-border/50 rounded-lg">
+                <div className="text-2xl font-bold text-primary mb-1">99.2%</div>
+                <div className="text-sm text-muted-foreground">Data Accuracy</div>
+              </div>
             </div>
             
-            <div className="fade-up" style={{animationDelay: '0.2s'}}>
-              <h1 className="text-6xl md:text-8xl font-bold mb-8 leading-none">
-                <span className="text-foreground">Partner with</span>
-                <br />
-                <span className="text-shimmer">RewardsPay</span>
-              </h1>
-            </div>
-            
-            <div className="fade-up" style={{animationDelay: '0.4s'}}>
-              <p className="text-2xl md:text-3xl text-muted-foreground mb-16 max-w-4xl mx-auto font-light">
-                Connect with our engaged community of{' '}
-                <span className="font-semibold gradient-primary bg-clip-text text-transparent">50,000+</span>{' '}
-                active users. Drive customer acquisition, brand awareness, and market research through our trusted platform.
-              </p>
-            </div>
-            
-            <div className="fade-up flex flex-col md:flex-row gap-6 justify-center" style={{animationDelay: '0.6s'}}>
+            {/* Primary CTA */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
                 size="lg" 
-                className="gradient-primary button-glow text-xl px-10 py-6 h-auto rounded-2xl hover-3d shadow-2xl"
-                onClick={() => document.getElementById('partnership-form')?.scrollIntoView({ behavior: 'smooth' })}
-                data-testid="button-apply-partnership"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}
+                data-testid="button-book-demo"
               >
-                Apply for Partnership <ArrowRight className="ml-3 h-6 w-6" />
+                Book a Demo <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="glass-card border-primary/30 hover:border-primary/60 text-xl px-10 py-6 h-auto rounded-2xl hover-3d"
+                className="border-primary/20 hover:border-primary text-primary hover:bg-primary/5 px-8 py-6 text-lg rounded-xl"
                 onClick={() => document.getElementById('platform-metrics')?.scrollIntoView({ behavior: 'smooth' })}
                 data-testid="button-view-metrics"
               >
-                View Platform Metrics
+                View Metrics
               </Button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Platform Metrics - Modern Business Cards */}
-      <section id="platform-metrics" className="relative py-32 overflow-hidden">
+      {/* Provider Integrations & Trust Signals */}
+      <section className="py-24 bg-muted/10">
+        <div className="container mx-auto px-6 max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Trusted Survey Provider Integrations</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Pre-approved and ready to integrate with leading survey platforms
+            </p>
+          </div>
+
+          {/* Provider Logos & Status */}
+          <div className="grid md:grid-cols-3 gap-8 mb-16">
+            <div className="text-center p-6 bg-card border border-border/50 rounded-lg">
+              <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="w-8 h-8 text-success" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">CPX Research</h3>
+              <Badge className="bg-success/20 text-success mb-3">Pre-Approved</Badge>
+              <p className="text-sm text-muted-foreground">Instant integration • No approval barriers</p>
+            </div>
+            <div className="text-center p-6 bg-card border border-border/50 rounded-lg">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <BarChart3 className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">BitLabs</h3>
+              <Badge className="bg-primary/20 text-primary mb-3">Publisher Ready</Badge>
+              <p className="text-sm text-muted-foreground">Advanced targeting • Premium surveys</p>
+            </div>
+            <div className="text-center p-6 bg-card border border-border/50 rounded-lg">
+              <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Target className="w-8 h-8 text-accent" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">TabResearch</h3>
+              <Badge className="bg-accent/20 text-accent mb-3">Enterprise Ready</Badge>
+              <p className="text-sm text-muted-foreground">ISO 27001 compliant • B2B research</p>
+            </div>
+          </div>
+
+          {/* Compliance & Security Badges */}
+          <div className="bg-card/50 border border-border/50 rounded-xl p-8">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold mb-4">Enterprise-Grade Security & Compliance</h3>
+              <p className="text-muted-foreground">Built for the most demanding enterprise requirements</p>
+            </div>
+            
+            <div className="grid md:grid-cols-4 gap-6 text-center">
+              <div className="p-4">
+                <div className="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <CheckCircle className="w-6 h-6 text-success" />
+                </div>
+                <div className="font-semibold mb-1">GDPR Compliant</div>
+                <div className="text-sm text-muted-foreground">Full data protection</div>
+              </div>
+              <div className="p-4">
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <Building2 className="w-6 h-6 text-primary" />
+                </div>
+                <div className="font-semibold mb-1">ISO 27001</div>
+                <div className="text-sm text-muted-foreground">Security management</div>
+              </div>
+              <div className="p-4">
+                <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <Globe className="w-6 h-6 text-accent" />
+                </div>
+                <div className="font-semibold mb-1">99.9% Uptime</div>
+                <div className="text-sm text-muted-foreground">Enterprise SLA</div>
+              </div>
+              <div className="p-4">
+                <div className="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <Handshake className="w-6 h-6 text-success" />
+                </div>
+                <div className="font-semibold mb-1">SOC 2 Type II</div>
+                <div className="text-sm text-muted-foreground">Audited security</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Partnership Models */}
+      <section className="py-24">
+        <div className="container mx-auto px-6 max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Partnership Models</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Flexible engagement options designed for your business needs
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <Card className="border-border/50 bg-card/50">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <Users className="w-5 h-5 text-primary" />
+                  </div>
+                  Survey Provider
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground mb-6">
+                  Integrate your surveys and offers directly into our platform
+                </p>
+                <ul className="space-y-3 mb-6">
+                  <li className="flex items-center gap-2 text-sm">
+                    <CheckCircle className="w-4 h-4 text-success" />
+                    Revenue sharing model
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <CheckCircle className="w-4 h-4 text-success" />
+                    Real-time API integration
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <CheckCircle className="w-4 h-4 text-success" />
+                    Advanced user targeting
+                  </li>
+                </ul>
+                <Button variant="outline" className="w-full" data-testid="button-survey-provider">
+                  Learn More
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="border-primary/20 bg-primary/5">
+              <CardHeader>
+                <Badge className="bg-primary text-primary-foreground w-fit mb-2">Most Popular</Badge>
+                <CardTitle className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center">
+                    <Building2 className="w-5 h-5 text-primary" />
+                  </div>
+                  Brand Advertiser
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground mb-6">
+                  Launch targeted campaigns to our engaged user base
+                </p>
+                <ul className="space-y-3 mb-6">
+                  <li className="flex items-center gap-2 text-sm">
+                    <CheckCircle className="w-4 h-4 text-success" />
+                    CPC/CPM pricing models
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <CheckCircle className="w-4 h-4 text-success" />
+                    Detailed analytics dashboard
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <CheckCircle className="w-4 h-4 text-success" />
+                    Fraud prevention included
+                  </li>
+                </ul>
+                <Button className="w-full bg-primary hover:bg-primary/90" data-testid="button-brand-advertiser">
+                  Get Started
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/50 bg-card/50">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                    <TrendingUp className="w-5 h-5 text-accent" />
+                  </div>
+                  Market Research
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground mb-6">
+                  Access our user insights and custom research capabilities
+                </p>
+                <ul className="space-y-3 mb-6">
+                  <li className="flex items-center gap-2 text-sm">
+                    <CheckCircle className="w-4 h-4 text-success" />
+                    Custom survey design
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <CheckCircle className="w-4 h-4 text-success" />
+                    Demographic targeting
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <CheckCircle className="w-4 h-4 text-success" />
+                    Expert analysis reports
+                  </li>
+                </ul>
+                <Button variant="outline" className="w-full" data-testid="button-market-research">
+                  Contact Sales
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* User Demographics & Engagement */}
+      <section className="relative py-32 overflow-hidden">
         {/* Background Elements */}
-        <div className="absolute inset-0 gradient-neon opacity-5"></div>
-        <div className="absolute top-0 left-0 w-96 h-96 bg-mocha/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl"></div>
+        <div className="absolute inset-0 gradient-primary opacity-5"></div>
+        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-mocha/10 rounded-full blur-3xl"></div>
         
         <div className="container mx-auto px-6 relative z-10">
           <div className="text-center mb-20 fade-up">
