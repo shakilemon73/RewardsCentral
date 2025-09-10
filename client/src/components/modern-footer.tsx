@@ -161,14 +161,14 @@ export default function ModernFooter() {
         {/* Provider Disclaimer */}
         <div className="bg-muted/20 border border-border/30 rounded-lg p-4 mb-8">
           <p className="text-sm text-muted-foreground text-center">
-            <strong>Provider Disclaimer:</strong> RewardsPay operates as a participant recruitment platform powered by CPX Research, BitLabs, and other integrated survey networks. We facilitate connections between researchers and participants but do not directly provide survey content.
+            <strong>Provider Disclaimer:</strong> RewardsPay operates as a participant recruitment platform powered by trusted survey providers. We facilitate connections between researchers and participants but do not directly provide survey content.
           </p>
         </div>
 
         {/* Bottom Bar */}
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-muted-foreground text-lg">
-            © 2025 RewardsPay. Powered by CPX Research and partner networks.
+            © 2025 RewardsPay. Powered by trusted partner networks.
           </div>
           
           {/* Trust Indicators */}

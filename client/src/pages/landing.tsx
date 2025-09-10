@@ -276,7 +276,7 @@ export default function Landing() {
                   </li>
                   <li className="flex items-center gap-3">
                     <CheckCircle className="h-5 w-5 text-success" />
-                    <span className="text-lg">Powered by CPX Research network</span>
+                    <span className="text-lg">Powered by trusted survey networks</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <CheckCircle className="h-5 w-5 text-success" />

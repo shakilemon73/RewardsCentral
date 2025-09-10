@@ -93,7 +93,7 @@ export default function Partnerships() {
             </h1>
             
             <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto text-balance">
-              Recruit high-quality participants through RewardsPay, powered by <span className="font-semibold text-foreground">CPX Research</span> and leading survey networks.
+              Recruit high-quality participants through RewardsPay, powered by <span className="font-semibold text-foreground">trusted survey networks</span> and leading providers.
             </p>
 
             {/* Trust Indicators */}
@@ -167,7 +167,7 @@ export default function Partnerships() {
               </div>
               <h3 className="text-xl font-semibold mb-4">We Route & Recruit</h3>
               <p className="text-muted-foreground">
-                Our platform automatically routes your study through CPX Research and integrated networks to find the right participants.
+                Our platform automatically routes your study through integrated survey networks to find the right participants.
               </p>
             </div>
 
@@ -200,7 +200,7 @@ export default function Partnerships() {
               <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="w-8 h-8 text-success" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">CPX Research</h3>
+              <h3 className="text-xl font-semibold mb-2">Survey Provider A</h3>
               <Badge className="bg-success/20 text-success mb-3">Integrated Provider</Badge>
               <p className="text-sm text-muted-foreground">Primary survey partner • Global reach</p>
             </div>
@@ -208,7 +208,7 @@ export default function Partnerships() {
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <BarChart3 className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">BitLabs</h3>
+              <h3 className="text-xl font-semibold mb-2">Survey Provider B</h3>
               <Badge className="bg-primary/20 text-primary mb-3">Integrated Provider</Badge>
               <p className="text-sm text-muted-foreground">Advanced targeting • Premium surveys</p>
             </div>
@@ -216,7 +216,7 @@ export default function Partnerships() {
               <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Target className="w-8 h-8 text-accent" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">TabResearch</h3>
+              <h3 className="text-xl font-semibold mb-2">Survey Provider C</h3>
               <Badge className="bg-accent/20 text-accent mb-3">Integrated Provider</Badge>
               <p className="text-sm text-muted-foreground">ISO 27001 compliant • B2B research</p>
             </div>
@@ -935,11 +935,11 @@ export default function Partnerships() {
               
               {/* Key Provider Requirements Met */}
               <div className="glass-card p-6 mb-6">
-                <h3 className="text-2xl font-bold text-primary mb-4">✅ Powered by CPX Research</h3>
+                <h3 className="text-2xl font-bold text-primary mb-4">✅ Powered by Trusted Networks</h3>
                 <ul className="space-y-3">
                   <li className="flex items-center gap-3">
                     <CheckCircle className="h-5 w-5 text-success" />
-                    <span className="text-lg">Direct integration with leading survey network</span>
+                    <span className="text-lg">Direct integration with leading survey networks</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <CheckCircle className="h-5 w-5 text-success" />
