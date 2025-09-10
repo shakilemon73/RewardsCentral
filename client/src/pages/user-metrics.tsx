@@ -14,7 +14,7 @@ export default function UserMetrics() {
       <section className="relative py-24 overflow-hidden">
         <div className="absolute inset-0 gradient-primary opacity-5"></div>
         <div className="container mx-auto px-6 relative z-10">
-          <div className="text-center max-w-4xl mx-auto fade-up">
+          <div className="text-center max-w-4xl mx-auto">
             <Badge className="mb-6 text-lg px-6 py-2 gradient-primary" data-testid="badge-user-metrics">
               Platform Analytics & Demographics
             </Badge>
@@ -34,7 +34,7 @@ export default function UserMetrics() {
       <section className="py-16">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-            <Card className="glass-card text-center fade-up" data-testid="card-total-users">
+            <Card className="glass-card text-center" data-testid="card-total-users">
               <CardContent className="pt-6">
                 <Users className="h-12 w-12 text-primary mx-auto mb-4" />
                 <div className="text-4xl font-bold text-primary mb-2">847K+</div>
@@ -45,7 +45,7 @@ export default function UserMetrics() {
               </CardContent>
             </Card>
 
-            <Card className="glass-card text-center fade-up" style={{animationDelay: '0.2s'}} data-testid="card-active-users">
+            <Card className="glass-card text-center" data-testid="card-active-users">
               <CardContent className="pt-6">
                 <TrendingUp className="h-12 w-12 text-success mx-auto mb-4" />
                 <div className="text-4xl font-bold text-success mb-2">523K</div>
@@ -56,7 +56,7 @@ export default function UserMetrics() {
               </CardContent>
             </Card>
 
-            <Card className="glass-card text-center fade-up" style={{animationDelay: '0.4s'}} data-testid="card-daily-active">
+            <Card className="glass-card text-center" data-testid="card-daily-active">
               <CardContent className="pt-6">
                 <Clock className="h-12 w-12 text-accent mx-auto mb-4" />
                 <div className="text-4xl font-bold text-accent mb-2">89K</div>
@@ -67,7 +67,7 @@ export default function UserMetrics() {
               </CardContent>
             </Card>
 
-            <Card className="glass-card text-center fade-up" style={{animationDelay: '0.6s'}} data-testid="card-rewards-paid">
+            <Card className="glass-card text-center" data-testid="card-rewards-paid">
               <CardContent className="pt-6">
                 <DollarSign className="h-12 w-12 text-warm mx-auto mb-4" />
                 <div className="text-4xl font-bold text-warm mb-2">$8.2M</div>
@@ -90,7 +90,7 @@ export default function UserMetrics() {
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Top Countries */}
-            <Card className="glass-card fade-up" data-testid="card-top-countries">
+            <Card className="glass-card" data-testid="card-top-countries">
               <CardHeader>
                 <CardTitle className="text-2xl flex items-center gap-3">
                   <Globe className="h-6 w-6 text-primary" />
@@ -166,7 +166,7 @@ export default function UserMetrics() {
             </Card>
 
             {/* Age & Gender Demographics */}
-            <Card className="glass-card fade-up" style={{animationDelay: '0.2s'}} data-testid="card-demographics">
+            <Card className="glass-card" data-testid="card-demographics">
               <CardHeader>
                 <CardTitle className="text-2xl flex items-center gap-3">
                   <Users className="h-6 w-6 text-primary" />
@@ -267,7 +267,7 @@ export default function UserMetrics() {
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Survey Completion Metrics */}
-            <Card className="glass-card fade-up" data-testid="card-survey-metrics">
+            <Card className="glass-card" data-testid="card-survey-metrics">
               <CardHeader>
                 <CardTitle className="text-2xl flex items-center gap-3">
                   <Target className="h-6 w-6 text-primary" />
@@ -341,7 +341,7 @@ export default function UserMetrics() {
             </Card>
 
             {/* User Behavior Analytics */}
-            <Card className="glass-card fade-up" style={{animationDelay: '0.2s'}} data-testid="card-behavior-analytics">
+            <Card className="glass-card" data-testid="card-behavior-analytics">
               <CardHeader>
                 <CardTitle className="text-2xl flex items-center gap-3">
                   <BarChart3 className="h-6 w-6 text-primary" />
@@ -443,7 +443,7 @@ export default function UserMetrics() {
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Revenue Metrics */}
-            <Card className="glass-card fade-up" data-testid="card-revenue-metrics">
+            <Card className="glass-card" data-testid="card-revenue-metrics">
               <CardHeader>
                 <CardTitle className="text-2xl flex items-center gap-3">
                   <DollarSign className="h-6 w-6 text-primary" />
@@ -524,7 +524,7 @@ export default function UserMetrics() {
             </Card>
 
             {/* Fraud Prevention Metrics */}
-            <Card className="glass-card fade-up" style={{animationDelay: '0.2s'}} data-testid="card-fraud-metrics">
+            <Card className="glass-card" data-testid="card-fraud-metrics">
               <CardHeader>
                 <CardTitle className="text-2xl flex items-center gap-3">
                   <Shield className="h-6 w-6 text-primary" />
@@ -620,7 +620,7 @@ export default function UserMetrics() {
           </h2>
           
           <div className="max-w-6xl mx-auto">
-            <Card className="glass-card fade-up" data-testid="card-analytics-dashboard">
+            <Card className="glass-card" data-testid="card-analytics-dashboard">
               <CardHeader>
                 <CardTitle className="text-3xl text-center">Live Platform Metrics</CardTitle>
               </CardHeader>

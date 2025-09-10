@@ -14,7 +14,7 @@ export default function PostbackImplementation() {
       <section className="relative py-24 overflow-hidden">
         <div className="absolute inset-0 gradient-primary opacity-5"></div>
         <div className="container mx-auto px-6 relative z-10">
-          <div className="text-center max-w-4xl mx-auto fade-up">
+          <div className="text-center max-w-4xl mx-auto ">
             <Badge className="mb-6 text-lg px-6 py-2 gradient-primary" data-testid="badge-postback-implementation">
               Webhook & API Integration
             </Badge>
@@ -34,7 +34,7 @@ export default function PostbackImplementation() {
       <section className="py-16">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            <Card className="glass-card fade-up" data-testid="card-real-time-processing">
+            <Card className="glass-card " data-testid="card-real-time-processing">
               <CardHeader className="text-center">
                 <Zap className="h-12 w-12 text-primary mx-auto mb-4" />
                 <CardTitle className="text-2xl">Real-Time Processing</CardTitle>
@@ -46,7 +46,7 @@ export default function PostbackImplementation() {
               </CardContent>
             </Card>
 
-            <Card className="glass-card fade-up" style={{animationDelay: '0.2s'}} data-testid="card-security-validation">
+            <Card className="glass-card " data-testid="card-security-validation">
               <CardHeader className="text-center">
                 <Shield className="h-12 w-12 text-success mx-auto mb-4" />
                 <CardTitle className="text-2xl">Security Validation</CardTitle>
@@ -58,7 +58,7 @@ export default function PostbackImplementation() {
               </CardContent>
             </Card>
 
-            <Card className="glass-card fade-up" style={{animationDelay: '0.4s'}} data-testid="card-multi-provider">
+            <Card className="glass-card " data-testid="card-multi-provider">
               <CardHeader className="text-center">
                 <Webhook className="h-12 w-12 text-accent mx-auto mb-4" />
                 <CardTitle className="text-2xl">Multi-Provider Support</CardTitle>
@@ -82,7 +82,7 @@ export default function PostbackImplementation() {
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* CPX Research Integration */}
-            <Card className="glass-card fade-up" data-testid="card-cpx-integration">
+            <Card className="glass-card " data-testid="card-cpx-integration">
               <CardHeader>
                 <CardTitle className="text-2xl flex items-center gap-3">
                   <Server className="h-6 w-6 text-primary" />
@@ -216,7 +216,7 @@ async function validateCPXRequest(params) {
             </Card>
 
             {/* BitLabs Integration */}
-            <Card className="glass-card fade-up" style={{animationDelay: '0.2s'}} data-testid="card-bitlabs-integration">
+            <Card className="glass-card " data-testid="card-bitlabs-integration">
               <CardHeader>
                 <CardTitle className="text-2xl flex items-center gap-3">
                   <Webhook className="h-6 w-6 text-primary" />
@@ -350,7 +350,7 @@ async function validateBitLabsSignature(fullUrl, receivedHash, secret) {
             </Card>
 
             {/* Generic Webhook Infrastructure */}
-            <Card className="glass-card fade-up" style={{animationDelay: '0.4s'}} data-testid="card-webhook-infrastructure">
+            <Card className="glass-card " data-testid="card-webhook-infrastructure">
               <CardHeader>
                 <CardTitle className="text-2xl flex items-center gap-3">
                   <Database className="h-6 w-6 text-primary" />
@@ -491,7 +491,7 @@ class WebhookProcessor {
             </Card>
 
             {/* Monitoring & Analytics */}
-            <Card className="glass-card fade-up" style={{animationDelay: '0.6s'}} data-testid="card-monitoring-analytics">
+            <Card className="glass-card " data-testid="card-monitoring-analytics">
               <CardHeader>
                 <CardTitle className="text-2xl flex items-center gap-3">
                   <Clock className="h-6 w-6 text-primary" />
@@ -639,7 +639,7 @@ class WebhookMonitor {
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <Card className="glass-card text-center fade-up" data-testid="card-webhook-response-time">
+            <Card className="glass-card text-center " data-testid="card-webhook-response-time">
               <CardContent className="pt-6">
                 <div className="text-4xl font-bold text-primary mb-2">&lt;50ms</div>
                 <div className="text-xl font-semibold mb-2">Avg Response Time</div>
@@ -647,7 +647,7 @@ class WebhookMonitor {
               </CardContent>
             </Card>
 
-            <Card className="glass-card text-center fade-up" style={{animationDelay: '0.2s'}} data-testid="card-success-rate">
+            <Card className="glass-card text-center " data-testid="card-success-rate">
               <CardContent className="pt-6">
                 <div className="text-4xl font-bold text-success mb-2">99.8%</div>
                 <div className="text-xl font-semibold mb-2">Success Rate</div>
@@ -655,7 +655,7 @@ class WebhookMonitor {
               </CardContent>
             </Card>
 
-            <Card className="glass-card text-center fade-up" style={{animationDelay: '0.4s'}} data-testid="card-daily-webhooks">
+            <Card className="glass-card text-center " data-testid="card-daily-webhooks">
               <CardContent className="pt-6">
                 <div className="text-4xl font-bold text-accent mb-2">50K+</div>
                 <div className="text-xl font-semibold mb-2">Daily Webhooks</div>
@@ -663,7 +663,7 @@ class WebhookMonitor {
               </CardContent>
             </Card>
 
-            <Card className="glass-card text-center fade-up" style={{animationDelay: '0.6s'}} data-testid="card-active-providers">
+            <Card className="glass-card text-center " data-testid="card-active-providers">
               <CardContent className="pt-6">
                 <div className="text-4xl font-bold text-warm mb-2">15+</div>
                 <div className="text-xl font-semibold mb-2">Active Providers</div>
@@ -682,7 +682,7 @@ class WebhookMonitor {
           </h2>
           
           <div className="max-w-4xl mx-auto">
-            <Card className="glass-card fade-up" data-testid="card-webhook-endpoints">
+            <Card className="glass-card " data-testid="card-webhook-endpoints">
               <CardHeader>
                 <CardTitle className="text-3xl text-center">Production Webhook URLs</CardTitle>
               </CardHeader>

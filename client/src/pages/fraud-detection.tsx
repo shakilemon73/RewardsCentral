@@ -13,7 +13,7 @@ export default function FraudDetection() {
       <section className="relative py-24 overflow-hidden">
         <div className="absolute inset-0 gradient-primary opacity-5"></div>
         <div className="container mx-auto px-6 relative z-10">
-          <div className="text-center max-w-4xl mx-auto fade-up">
+          <div className="text-center max-w-4xl mx-auto">
             <Badge className="mb-6 text-lg px-6 py-2 gradient-primary" data-testid="badge-fraud-detection">
               Technical Implementation
             </Badge>
@@ -33,7 +33,7 @@ export default function FraudDetection() {
       <section className="py-16">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            <Card className="glass-card fade-up" data-testid="card-detection-layers">
+            <Card className="glass-card" data-testid="card-detection-layers">
               <CardHeader className="text-center">
                 <Shield className="h-12 w-12 text-primary mx-auto mb-4" />
                 <CardTitle className="text-2xl">5-Layer Protection</CardTitle>
@@ -45,7 +45,7 @@ export default function FraudDetection() {
               </CardContent>
             </Card>
 
-            <Card className="glass-card fade-up" style={{animationDelay: '0.2s'}} data-testid="card-real-time">
+            <Card className="glass-card" data-testid="card-real-time">
               <CardHeader className="text-center">
                 <Eye className="h-12 w-12 text-success mx-auto mb-4" />
                 <CardTitle className="text-2xl">Real-Time Scoring</CardTitle>
@@ -57,7 +57,7 @@ export default function FraudDetection() {
               </CardContent>
             </Card>
 
-            <Card className="glass-card fade-up" style={{animationDelay: '0.4s'}} data-testid="card-compliance">
+            <Card className="glass-card" data-testid="card-compliance">
               <CardHeader className="text-center">
                 <CheckCircle className="h-12 w-12 text-accent mx-auto mb-4" />
                 <CardTitle className="text-2xl">Provider Approved</CardTitle>
@@ -148,7 +148,7 @@ app.post('/webhook/bitlabs', (req, res) => {
             </Card>
 
             {/* Device Fingerprinting */}
-            <Card className="glass-card fade-up" style={{animationDelay: '0.2s'}} data-testid="card-device-fingerprinting">
+            <Card className="glass-card fade-up" data-testid="card-device-fingerprinting">
               <CardHeader>
                 <CardTitle className="text-2xl flex items-center gap-3">
                   <Users className="h-6 w-6 text-primary" />
@@ -222,7 +222,7 @@ class DeviceFingerprint {
             </Card>
 
             {/* Behavioral Analysis */}
-            <Card className="glass-card fade-up" style={{animationDelay: '0.4s'}} data-testid="card-behavioral-analysis">
+            <Card className="glass-card fade-up" data-testid="card-behavioral-analysis">
               <CardHeader>
                 <CardTitle className="text-2xl flex items-center gap-3">
                   <Clock className="h-6 w-6 text-primary" />
@@ -311,7 +311,7 @@ class BehaviorAnalyzer {
             </Card>
 
             {/* IP & Network Security */}
-            <Card className="glass-card fade-up" style={{animationDelay: '0.6s'}} data-testid="card-ip-security">
+            <Card className="glass-card fade-up" data-testid="card-ip-security">
               <CardHeader>
                 <CardTitle className="text-2xl flex items-center gap-3">
                   <Server className="h-6 w-6 text-primary" />
@@ -424,7 +424,7 @@ class IPSecurityLayer {
               </CardContent>
             </Card>
 
-            <Card className="glass-card text-center fade-up" style={{animationDelay: '0.2s'}} data-testid="card-response-time">
+            <Card className="glass-card text-center fade-up" data-testid="card-response-time">
               <CardContent className="pt-6">
                 <div className="text-4xl font-bold text-success mb-2">&lt;50ms</div>
                 <div className="text-xl font-semibold mb-2">Response Time</div>
@@ -432,7 +432,7 @@ class IPSecurityLayer {
               </CardContent>
             </Card>
 
-            <Card className="glass-card text-center fade-up" style={{animationDelay: '0.4s'}} data-testid="card-blocked-attempts">
+            <Card className="glass-card text-center fade-up" data-testid="card-blocked-attempts">
               <CardContent className="pt-6">
                 <div className="text-4xl font-bold text-accent mb-2">2.3M+</div>
                 <div className="text-xl font-semibold mb-2">Blocked Attempts</div>
@@ -440,7 +440,7 @@ class IPSecurityLayer {
               </CardContent>
             </Card>
 
-            <Card className="glass-card text-center fade-up" style={{animationDelay: '0.6s'}} data-testid="card-uptime">
+            <Card className="glass-card text-center fade-up" data-testid="card-uptime">
               <CardContent className="pt-6">
                 <div className="text-4xl font-bold text-warm mb-2">99.9%</div>
                 <div className="text-xl font-semibold mb-2">System Uptime</div>
