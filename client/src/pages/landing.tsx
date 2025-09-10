@@ -98,68 +98,93 @@ export default function Landing() {
         <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             
-            {/* Social Proof Above Fold */}
-            <div className="flex items-center justify-center gap-2 mb-8 text-sm text-muted-foreground">
-              <div className="flex -space-x-2">
-                <div className="w-8 h-8 bg-primary/20 rounded-full border-2 border-background"></div>
-                <div className="w-8 h-8 bg-success/20 rounded-full border-2 border-background"></div>
-                <div className="w-8 h-8 bg-accent/20 rounded-full border-2 border-background"></div>
+            {/* Enhanced Social Proof Above Fold */}
+            <div className="flex items-center justify-center gap-4 mb-10">
+              <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm rounded-full px-6 py-3 border border-primary/20 shadow-lg">
+                <div className="flex -space-x-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/70 rounded-full border-3 border-white shadow-md flex items-center justify-center">
+                    <Users className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="w-10 h-10 bg-gradient-to-br from-success to-success/70 rounded-full border-3 border-white shadow-md flex items-center justify-center">
+                    <TrendingUp className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="w-10 h-10 bg-gradient-to-br from-jewel-purple to-jewel-purple/70 rounded-full border-3 border-white shadow-md flex items-center justify-center">
+                    <Star className="w-5 h-5 text-white" />
+                  </div>
+                </div>
+                <div className="text-left">
+                  <div className="font-bold text-foreground text-lg">847K+ Users</div>
+                  <div className="text-sm text-muted-foreground">Earning daily</div>
+                </div>
               </div>
-              <span>Trusted by <span className="font-semibold text-foreground">50,000+</span> users</span>
+              <div className="hidden md:flex items-center gap-2 bg-success/10 backdrop-blur-sm rounded-full px-4 py-2 border border-success/20">
+                <div className="w-3 h-3 bg-success rounded-full animate-pulse"></div>
+                <span className="text-success font-semibold text-sm">$8.2M+ paid out</span>
+              </div>
             </div>
 
-            {/* Clear Value Proposition */}
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-balance leading-tight">
-              Earn <span className="gradient-primary bg-clip-text text-transparent">real money</span>
-              <br />from simple tasks
+            {/* Bold 2025 Typography - Oversized & Dramatic */}
+            <h1 className="text-5xl md:text-8xl lg:text-9xl font-black mb-8 text-balance leading-[0.85] tracking-tight">
+              <span className="block text-foreground font-serif">EARN</span>
+              <span className="block bg-gradient-to-r from-primary via-jewel-purple to-electric-blue bg-clip-text text-transparent font-serif relative">
+                REAL MONEY
+                <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-primary to-jewel-purple rounded-full"></div>
+              </span>
+              <span className="block text-muted-foreground text-3xl md:text-4xl lg:text-5xl font-sans font-light mt-4">from simple tasks</span>
             </h1>
             
-            <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto text-balance">
-              Complete surveys and tasks from trusted providers. Get paid instantly to PayPal or gift cards.
+            <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed font-medium">
+              Join the largest rewards platform. Complete <span className="text-foreground font-semibold">surveys</span>, <span className="text-foreground font-semibold">tasks</span>, and <span className="text-foreground font-semibold">offers</span> from trusted partners.
+              <br className="hidden md:block" />
+              Get paid instantly to <span className="text-primary font-semibold">PayPal</span> or <span className="text-primary font-semibold">gift cards</span>.
             </p>
 
-            {/* Three Key Benefits */}
-            <div className="grid md:grid-cols-3 gap-6 mb-12 max-w-3xl mx-auto">
-              <div className="flex items-center gap-3 p-4 rounded-lg bg-card/50 border border-border/50">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Zap className="w-5 h-5 text-primary" />
-                </div>
-                <div className="text-left">
-                  <div className="font-medium">Instant Payouts</div>
-                  <div className="text-sm text-muted-foreground">2-minute withdrawals</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-4 rounded-lg bg-card/50 border border-border/50">
-                <div className="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center">
-                  <CheckCircle className="w-5 h-5 text-success" />
-                </div>
-                <div className="text-left">
-                  <div className="font-medium">Easy Tasks</div>
-                  <div className="text-sm text-muted-foreground">No skills required</div>
+            {/* Modern Benefit Cards - Bento Box Layout */}
+            <div className="grid md:grid-cols-3 gap-8 mb-16 max-w-5xl mx-auto">
+              <div className="group relative bg-white/90 backdrop-blur-lg rounded-3xl p-8 border border-primary/20 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="relative z-10 text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-jewel-purple to-electric-blue flex items-center justify-center mb-6 mx-auto">
+                    <Zap className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="font-bold text-xl text-foreground mb-3">Instant Payouts</h3>
+                  <p className="text-muted-foreground text-base leading-relaxed">Cash out to PayPal or choose from 100+ gift cards. No minimums, no waiting.</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 p-4 rounded-lg bg-card/50 border border-border/50">
-                <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                  <Star className="w-5 h-5 text-accent" />
+              <div className="group relative bg-white/90 backdrop-blur-lg rounded-3xl p-8 border border-success/20 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+                <div className="absolute inset-0 bg-gradient-to-br from-success/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="relative z-10 text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-success to-sage-green flex items-center justify-center mb-6 mx-auto">
+                    <Shield className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="font-bold text-xl text-foreground mb-3">100% Secure</h3>
+                  <p className="text-muted-foreground text-base leading-relaxed">Bank-level security with fraud protection. Your data is always safe with us.</p>
                 </div>
-                <div className="text-left">
-                  <div className="font-medium">Top Rated</div>
-                  <div className="text-sm text-muted-foreground">4.9/5 user rating</div>
+              </div>
+              <div className="group relative bg-white/90 backdrop-blur-lg rounded-3xl p-8 border border-terracotta/20 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+                <div className="absolute inset-0 bg-gradient-to-br from-terracotta/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="relative z-10 text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-terracotta to-primary flex items-center justify-center mb-6 mx-auto">
+                    <Smartphone className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="font-bold text-xl text-foreground mb-3">Mobile First</h3>
+                  <p className="text-muted-foreground text-base leading-relaxed">Earn anywhere, anytime. Our mobile app makes earning rewards effortless.</p>
                 </div>
               </div>
             </div>
             
-            {/* Single Primary CTA */}
-            <div className="mb-8">
+            {/* Primary CTA with Electric Purple - 2025 Trends */}
+            <div className="mb-12">
               <Button 
                 size="lg" 
-                className="bg-primary hover:bg-primary/90 text-primary-foreground px-12 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                className="bg-gradient-to-r from-jewel-purple to-electric-blue hover:from-jewel-purple/90 hover:to-electric-blue/90 text-white px-16 py-8 text-xl font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 hover:-translate-y-1 hover:scale-105 group"
                 onClick={() => document.getElementById('auth-section')?.scrollIntoView({ behavior: 'smooth' })}
                 data-testid="button-get-started"
               >
-                Start Earning Free Money <ArrowRight className="ml-2 h-5 w-5" />
+                Start Earning Free Money 
+                <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform duration-200" />
               </Button>
-              <p className="text-sm text-muted-foreground mt-3">No credit card required • Takes 30 seconds</p>
+              <p className="text-base text-muted-foreground mt-4 font-medium">✨ No credit card required • ⚡ Takes 30 seconds • 🎁 $5 signup bonus</p>
             </div>
 
             {/* Payout Proof */}

@@ -15,8 +15,8 @@
   --popover: hsl(0, 0%, 100%);
   --popover-foreground: hsl(24, 10%, 15%);
   
-  /* Primary: Rich Purple-Blue Gradient Base */
-  --primary: hsl(252, 83%, 64%);
+  /* Primary: Mocha Mousse - Pantone 2025 Color of the Year */
+  --primary: hsl(25, 24%, 64%);
   --primary-foreground: hsl(0, 0%, 100%);
   
   /* Secondary: Warm Neutral */
@@ -27,18 +27,20 @@
   --success: hsl(142, 76%, 58%);
   --success-foreground: hsl(0, 0%, 100%);
   
-  /* Mocha Mousse - Pantone 2025 Color of the Year */
-  --mocha: hsl(25, 24%, 64%);
-  --mocha-foreground: hsl(0, 0%, 100%);
+  /* Electric Purple - High Energy CTA */
+  --electric: hsl(252, 83%, 64%);
+  --electric-foreground: hsl(0, 0%, 100%);
   
   /* Accent: Coral Energy */
   --accent: hsl(16, 82%, 64%);
   --accent-foreground: hsl(0, 0%, 100%);
   
-  /* Neon Accents for Modern Touch */
-  --neon-yellow: hsl(54, 100%, 62%);
-  --neon-blue: hsl(189, 100%, 58%);
-  --electric-purple: hsl(271, 91%, 65%);
+  /* 2025 Trend Colors */
+  --sage-green: hsl(142, 35%, 45%);
+  --terracotta: hsl(16, 82%, 64%);
+  --butter-yellow: hsl(54, 85%, 75%);
+  --jewel-purple: hsl(271, 91%, 65%);
+  --electric-blue: hsl(189, 100%, 58%);
   
   --muted: hsl(30, 10%, 88%);
   --muted-foreground: hsl(24, 5%, 45%);
@@ -140,8 +142,8 @@
   --popover: hsl(224, 15%, 12%);
   --popover-foreground: hsl(30, 15%, 92%);
   
-  /* Primary: Electric Purple for Dark Mode */
-  --primary: hsl(271, 91%, 65%);
+  /* Primary: Mocha in Dark Mode */
+  --primary: hsl(25, 30%, 45%);
   --primary-foreground: hsl(0, 0%, 100%);
   
   --secondary: hsl(224, 15%, 16%);
@@ -149,9 +151,9 @@
   --success: hsl(142, 76%, 58%);
   --success-foreground: hsl(0, 0%, 100%);
   
-  /* Mocha in Dark Mode */
-  --mocha: hsl(25, 30%, 45%);
-  --mocha-foreground: hsl(0, 0%, 100%);
+  /* Electric Purple for CTAs in Dark */
+  --electric: hsl(271, 91%, 75%);
+  --electric-foreground: hsl(224, 15%, 8%);
   
   /* Neon Accents for Dark */
   --accent: hsl(189, 100%, 58%);
@@ -471,6 +473,15 @@
   animation: pointsGlow 3s ease-in-out infinite alternate;
   backdrop-filter: var(--backdrop-blur);
 }
+
+/* 2025 Trend Color Utilities */
+.text-jewel-purple { color: hsl(271, 91%, 65%); }
+.text-electric-blue { color: hsl(189, 100%, 58%); }
+.text-sage-green { color: hsl(142, 35%, 45%); }
+.text-terracotta { color: hsl(16, 82%, 64%); }
+.bg-jewel-purple { background-color: hsl(271, 91%, 65%); }
+.bg-electric-blue { background-color: hsl(189, 100%, 58%); }
+.border-jewel-purple { border-color: hsl(271, 91%, 65%); }
 
 @keyframes pointsGlow {
   from { 
