@@ -6,33 +6,31 @@ import { Input } from "@/components/ui/input";
 export default function ModernFooter() {
   return (
     <footer className="relative bg-background border-t overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0 gradient-primary opacity-5"></div>
-      <div className="absolute -top-20 -left-20 w-80 h-80 bg-mocha/10 rounded-full blur-3xl"></div>
-      <div className="absolute -bottom-20 -right-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl"></div>
+      {/* Subtle Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/3 via-transparent to-accent/3"></div>
       
       <div className="container mx-auto px-6 py-16 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           
           {/* Brand & Newsletter */}
           <div className="lg:col-span-1">
-            <div className="animated-gradient text-white px-6 py-3 rounded-2xl font-bold text-2xl mb-6 inline-block">
+            <div className="gradient-primary bg-clip-text text-transparent font-bold text-2xl mb-6">
               RewardsPay
             </div>
             <p className="text-muted-foreground mb-6 text-lg leading-relaxed">
-              Earn points through surveys, offers, and ads. Redeem for PayPal cash and gift cards.
+              Earn rewards by completing tasks from our integrated provider networks. Fast, fair, and reliable.
             </p>
             
             {/* Newsletter Signup */}
-            <div className="glass-card p-4 rounded-xl">
+            <div className="bg-card border border-border/50 p-4 rounded-lg">
               <h4 className="font-semibold mb-3 text-lg">Stay Updated</h4>
               <div className="flex gap-2">
                 <Input 
                   placeholder="Your email" 
-                  className="bg-white/5 border-white/10 text-white placeholder:text-white/60"
+                  className="bg-background border-border"
                   data-testid="input-newsletter-email"
                 />
-                <Button className="gradient-primary" data-testid="button-newsletter-subscribe">
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" data-testid="button-newsletter-subscribe">
                   <Mail className="h-4 w-4" />
                 </Button>
               </div>
@@ -76,15 +74,15 @@ export default function ModernFooter() {
             </ul>
           </div>
 
-          {/* For Providers */}
+          {/* For Researchers & Brands */}
           <div>
-            <h3 className="font-bold text-xl mb-6 gradient-warm bg-clip-text text-transparent">For Providers</h3>
+            <h3 className="font-bold text-xl mb-6 gradient-warm bg-clip-text text-transparent">Researchers & Brands</h3>
             <ul className="space-y-4">
               <li>
                 <Link href="/partnerships">
                   <button className="text-muted-foreground hover:text-primary transition-colors text-lg flex items-center gap-2" data-testid="link-partnerships">
                     <Building className="h-5 w-5" />
-                    Partner With Us
+                    Access Participants
                   </button>
                 </Link>
               </li>
@@ -160,22 +158,29 @@ export default function ModernFooter() {
           </div>
         </div>
 
+        {/* Provider Disclaimer */}
+        <div className="bg-muted/20 border border-border/30 rounded-lg p-4 mb-8">
+          <p className="text-sm text-muted-foreground text-center">
+            <strong>Provider Disclaimer:</strong> RewardsPay operates as a participant recruitment platform powered by CPX Research, BitLabs, and other integrated survey networks. We facilitate connections between researchers and participants but do not directly provide survey content.
+          </p>
+        </div>
+
         {/* Bottom Bar */}
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-muted-foreground text-lg">
-            © 2025 RewardsPay. All rights reserved.
+            © 2025 RewardsPay. Powered by CPX Research and partner networks.
           </div>
           
-          {/* Trust Indicators for Providers */}
-          <div className="flex items-center gap-6">
-            <div className="glass-card px-4 py-2 rounded-lg">
-              <span className="text-success font-bold text-sm">SSL Secured</span>
+          {/* Trust Indicators */}
+          <div className="flex items-center gap-4">
+            <div className="bg-card border border-border/50 px-3 py-1 rounded-md">
+              <span className="text-success font-medium text-xs">SSL Secured</span>
             </div>
-            <div className="glass-card px-4 py-2 rounded-lg">
-              <span className="text-primary font-bold text-sm">99.9% Uptime</span>
+            <div className="bg-card border border-border/50 px-3 py-1 rounded-md">
+              <span className="text-primary font-medium text-xs">GDPR Compliant</span>
             </div>
-            <div className="glass-card px-4 py-2 rounded-lg">
-              <span className="text-accent font-bold text-sm">GDPR Compliant</span>
+            <div className="bg-card border border-border/50 px-3 py-1 rounded-md">
+              <span className="text-accent font-medium text-xs">SOC 2</span>
             </div>
           </div>
         </div>

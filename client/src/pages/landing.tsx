@@ -67,9 +67,17 @@ export default function Landing() {
           <div className="hidden md:flex items-center gap-4">
             <Link href="/partnerships">
               <Button variant="ghost" className="text-muted-foreground hover:text-foreground" data-testid="link-partnerships">
-                For Businesses
+                For Researchers
               </Button>
             </Link>
+            <Button 
+              variant="ghost" 
+              className="text-muted-foreground hover:text-foreground"
+              onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
+              data-testid="button-how-it-works"
+            >
+              How it Works
+            </Button>
             <Button 
               variant="outline" 
               className="border-primary/20 hover:border-primary text-primary hover:bg-primary/5"
@@ -107,7 +115,7 @@ export default function Landing() {
             </h1>
             
             <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto text-balance">
-              Complete surveys, watch ads, and claim offers. Get paid instantly to PayPal or gift cards.
+              Complete surveys and tasks from trusted providers. Get paid instantly to PayPal or gift cards.
             </p>
 
             {/* Three Key Benefits */}
@@ -236,11 +244,11 @@ export default function Landing() {
               </h2>
               
               <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-                RewardsPay connects engaged users with quality businesses, creating value for everyone involved.
+                RewardsPay connects engaged users with researchers and brands through trusted survey networks, creating value for everyone involved.
               </p>
               
               {/* Benefits for Users */}
-              <div className="glass-card p-6 mb-6">
+              <div className="bg-card border border-border/50 rounded-lg p-6 mb-6">
                 <h3 className="text-2xl font-bold text-primary mb-4">👤 For Users</h3>
                 <ul className="space-y-3">
                   <li className="flex items-center gap-3">
@@ -258,21 +266,21 @@ export default function Landing() {
                 </ul>
               </div>
               
-              {/* Benefits for Providers */}
-              <div className="glass-card p-6 mb-8">
-                <h3 className="text-2xl font-bold text-warm mb-4">🏢 For Providers</h3>
+              {/* Benefits for Researchers */}
+              <div className="bg-card border border-border/50 rounded-lg p-6 mb-8">
+                <h3 className="text-2xl font-bold text-success mb-4">🔬 For Researchers</h3>
                 <ul className="space-y-3">
                   <li className="flex items-center gap-3">
                     <CheckCircle className="h-5 w-5 text-success" />
-                    <span className="text-lg">Quality engaged user base (500K+)</span>
+                    <span className="text-lg">Quality participant recruitment (50K+ active users)</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <CheckCircle className="h-5 w-5 text-success" />
-                    <span className="text-lg">Easy integration & API access</span>
+                    <span className="text-lg">Powered by CPX Research network</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <CheckCircle className="h-5 w-5 text-success" />
-                    <span className="text-lg">No approval barriers (CPX Research ready)</span>
+                    <span className="text-lg">Fast, reliable data collection</span>
                   </li>
                 </ul>
               </div>
@@ -291,11 +299,11 @@ export default function Landing() {
                   <Button 
                     size="lg" 
                     variant="outline"
-                    className="glass-card text-lg px-8 py-4 h-auto hover-3d"
-                    data-testid="button-become-partner"
+                    className="border-primary/20 hover:border-primary text-lg px-8 py-4 h-auto"
+                    data-testid="button-for-researchers"
                   >
                     <Users className="mr-3 h-5 w-5" />
-                    Become a Partner
+                    For Researchers
                   </Button>
                 </Link>
               </div>
@@ -312,7 +320,7 @@ export default function Landing() {
               Easily earn from our pool of high-paying tasks
             </h2>
             <p className="text-xl text-muted-foreground mb-8">
-              Complete surveys, watch ads, and claim offers from trusted partners in minutes, not hours.
+              Complete surveys and tasks from our trusted provider networks in minutes, not hours.
             </p>
             <Button size="lg" className="text-lg px-8 py-3 h-auto">
               Start earning now
