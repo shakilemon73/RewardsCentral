@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Gift, Star, Award, CheckCircle, Loader2, Zap, Clock, Users, ArrowRight } from "lucide-react";
+import { Link } from "wouter";
 
 export default function Landing() {
   const [email, setEmail] = useState("");
@@ -60,6 +61,11 @@ export default function Landing() {
             RewardsPay
           </div>
           <div className="hidden md:flex space-x-4">
+            <Link href="/partnerships">
+              <Button variant="ghost" data-testid="button-partnerships">
+                For Businesses
+              </Button>
+            </Link>
             <Button variant="outline" onClick={() => document.getElementById('auth-section')?.scrollIntoView({ behavior: 'smooth' })}>
               Sign In
             </Button>
@@ -234,142 +240,196 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Dual Value Proposition */}
+      {/* Two-Sided Platform */}
       <section className="py-20">
         <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+              A platform that works for everyone
+            </h2>
+            <p className="text-xl text-muted-foreground">
+              Connecting engaged users with businesses that need their attention
+            </p>
+          </div>
+          
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             {/* For Users */}
             <div className="text-center lg:text-left">
-              <h2 className="text-4xl font-bold text-foreground mb-6">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                <Users className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="text-3xl font-bold text-foreground mb-4">For Users</h3>
+              <h4 className="text-xl font-semibold text-foreground mb-4">
                 Get paid to earn rewards - on your terms.
-              </h2>
-              <p className="text-xl text-muted-foreground mb-8">
+              </h4>
+              <p className="text-lg text-muted-foreground mb-8">
                 Earn cash by taking part in interesting tasks from anywhere, whenever you want.
               </p>
-              <Button size="lg" className="text-lg px-8 py-3 h-auto mb-8">
-                Start earning
-              </Button>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                 <div>
-                  <h4 className="font-semibold text-foreground mb-2">Fair</h4>
-                  <p className="text-sm text-muted-foreground">Get paid fairly with transparent rewards and frequent bonuses.</p>
+                  <h5 className="font-semibold text-foreground mb-2">Fair</h5>
+                  <p className="text-sm text-muted-foreground">Get paid fairly with transparent rewards</p>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-foreground mb-2">Flexible</h4>
-                  <p className="text-sm text-muted-foreground">Choose the tasks you want. Work whenever, wherever you want.</p>
+                  <h5 className="font-semibold text-foreground mb-2">Flexible</h5>
+                  <p className="text-sm text-muted-foreground">Choose tasks that interest you</p>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-foreground mb-2">Fun</h4>
-                  <p className="text-sm text-muted-foreground">Explore, contribute to, and learn from all kinds of interesting tasks.</p>
+                  <h5 className="font-semibold text-foreground mb-2">Fast</h5>
+                  <p className="text-sm text-muted-foreground">Get paid within minutes</p>
                 </div>
               </div>
+              
+              <Button size="lg" className="text-lg px-8 py-3 h-auto">
+                Start earning now
+              </Button>
             </div>
 
-            {/* Authentication Card */}
-            <div id="auth-section">
-              <Card className="w-full max-w-md mx-auto">
-                <CardHeader>
-                  <CardTitle className="text-center text-2xl">Get Started Today</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Tabs defaultValue="signin" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2">
-                      <TabsTrigger value="signin">Sign In</TabsTrigger>
-                      <TabsTrigger value="signup">Sign Up</TabsTrigger>
-                    </TabsList>
-                    
-                    <TabsContent value="signin">
-                      <form onSubmit={handleSignIn} className="space-y-4">
-                        <div>
-                          <Label htmlFor="signin-email">Email</Label>
-                          <Input
-                            id="signin-email"
-                            type="email"
-                            placeholder="Enter your email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            data-testid="input-signin-email"
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="signin-password">Password</Label>
-                          <Input
-                            id="signin-password"
-                            type="password"
-                            placeholder="Enter your password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            data-testid="input-signin-password"
-                          />
-                        </div>
-                        <Button 
-                          type="submit" 
-                          className="w-full" 
-                          disabled={isSigningIn}
-                          data-testid="button-signin"
-                        >
-                          {isSigningIn ? (
-                            <>
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                              Signing In...
-                            </>
-                          ) : (
-                            "Sign In"
-                          )}
-                        </Button>
-                      </form>
-                    </TabsContent>
-                    
-                    <TabsContent value="signup">
-                      <form onSubmit={handleSignUp} className="space-y-4">
-                        <div>
-                          <Label htmlFor="signup-email">Email</Label>
-                          <Input
-                            id="signup-email"
-                            type="email"
-                            placeholder="Enter your email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            data-testid="input-signup-email"
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="signup-password">Password</Label>
-                          <Input
-                            id="signup-password"
-                            type="password"
-                            placeholder="Create a password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            data-testid="input-signup-password"
-                          />
-                        </div>
-                        <Button 
-                          type="submit" 
-                          className="w-full" 
-                          disabled={isSigningUp}
-                          data-testid="button-signup"
-                        >
-                          {isSigningUp ? (
-                            <>
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                              Creating Account...
-                            </>
-                          ) : (
-                            "Create Account"
-                          )}
-                        </Button>
-                      </form>
-                    </TabsContent>
-                  </Tabs>
-                </CardContent>
-              </Card>
+            {/* For Businesses */}
+            <div className="text-center lg:text-left">
+              <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mb-6">
+                <Users className="h-8 w-8 text-success" />
+              </div>
+              <h3 className="text-3xl font-bold text-foreground mb-4">For Businesses</h3>
+              <h4 className="text-xl font-semibold text-foreground mb-4">
+                Reach 50,000+ engaged users instantly.
+              </h4>
+              <p className="text-lg text-muted-foreground mb-8">
+                Connect with our active community for surveys, advertising, and customer acquisition campaigns.
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div>
+                  <h5 className="font-semibold text-foreground mb-2">Quality</h5>
+                  <p className="text-sm text-muted-foreground">High-engagement user base</p>
+                </div>
+                <div>
+                  <h5 className="font-semibold text-foreground mb-2">Scale</h5>
+                  <p className="text-sm text-muted-foreground">Reach thousands instantly</p>
+                </div>
+                <div>
+                  <h5 className="font-semibold text-foreground mb-2">Results</h5>
+                  <p className="text-sm text-muted-foreground">Measurable ROI and insights</p>
+                </div>
+              </div>
+              
+              <Link href="/partnerships">
+                <Button size="lg" className="text-lg px-8 py-3 h-auto" variant="outline">
+                  Partner with us <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* User Registration Section */}
+      <section id="auth-section" className="bg-muted/30 py-20">
+        <div className="container mx-auto px-4">
+          <div className="max-w-md mx-auto">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-center text-2xl">Get Started Today</CardTitle>
+                <p className="text-center text-muted-foreground">Join thousands of users earning money</p>
+              </CardHeader>
+              <CardContent>
+                <Tabs defaultValue="signin" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="signin">Sign In</TabsTrigger>
+                    <TabsTrigger value="signup">Sign Up</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="signin">
+                    <form onSubmit={handleSignIn} className="space-y-4">
+                      <div>
+                        <Label htmlFor="signin-email">Email</Label>
+                        <Input
+                          id="signin-email"
+                          type="email"
+                          placeholder="Enter your email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                          data-testid="input-signin-email"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="signin-password">Password</Label>
+                        <Input
+                          id="signin-password"
+                          type="password"
+                          placeholder="Enter your password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          required
+                          data-testid="input-signin-password"
+                        />
+                      </div>
+                      <Button 
+                        type="submit" 
+                        className="w-full" 
+                        disabled={isSigningIn}
+                        data-testid="button-signin"
+                      >
+                        {isSigningIn ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Signing In...
+                          </>
+                        ) : (
+                          "Sign In"
+                        )}
+                      </Button>
+                    </form>
+                  </TabsContent>
+                  
+                  <TabsContent value="signup">
+                    <form onSubmit={handleSignUp} className="space-y-4">
+                      <div>
+                        <Label htmlFor="signup-email">Email</Label>
+                        <Input
+                          id="signup-email"
+                          type="email"
+                          placeholder="Enter your email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                          data-testid="input-signup-email"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="signup-password">Password</Label>
+                        <Input
+                          id="signup-password"
+                          type="password"
+                          placeholder="Create a password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          required
+                          data-testid="input-signup-password"
+                        />
+                      </div>
+                      <Button 
+                        type="submit" 
+                        className="w-full" 
+                        disabled={isSigningUp}
+                        data-testid="button-signup"
+                      >
+                        {isSigningUp ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Creating Account...
+                          </>
+                        ) : (
+                          "Create Account"
+                        )}
+                      </Button>
+                    </form>
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>

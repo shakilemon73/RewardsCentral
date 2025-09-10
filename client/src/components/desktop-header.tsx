@@ -23,7 +23,7 @@ export default function DesktopHeader() {
           </span>
         </div>
         <Button variant="outline" onClick={handleLogout} data-testid="button-logout">
-          <span>{user?.firstName || user?.email || 'User'}</span>
+          <span>{user?.first_name || user?.email || 'User'}</span>
         </Button>
       </div>
     </header>

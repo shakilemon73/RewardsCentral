@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useIsMobile } from "@/hooks/use-mobile";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
+import Partnerships from "@/pages/partnerships";
 import Home from "@/pages/home";
 import Tasks from "@/pages/tasks";
 import Rewards from "@/pages/rewards";
@@ -35,11 +36,12 @@ function Router() {
     );
   }
 
-  // If not authenticated, only show landing
+  // If not authenticated, show public pages
   if (!isAuthenticated) {
     return (
       <Switch>
         <Route path="/" component={Landing} />
+        <Route path="/partnerships" component={Partnerships} />
         <Route component={Landing} />
       </Switch>
     );
@@ -55,6 +57,7 @@ function Router() {
           <main className="flex-1 overflow-y-auto p-6">
             <Switch>
               <Route path="/" component={Home} />
+              <Route path="/partnerships" component={Partnerships} />
               <Route path="/tasks" component={Tasks} />
               <Route path="/rewards" component={Rewards} />
               <Route path="/profile" component={Profile} />
@@ -70,6 +73,7 @@ function Router() {
         <main className="pb-16">
           <Switch>
             <Route path="/" component={Home} />
+            <Route path="/partnerships" component={Partnerships} />
             <Route path="/tasks" component={Tasks} />
             <Route path="/rewards" component={Rewards} />
             <Route path="/profile" component={Profile} />
