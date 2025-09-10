@@ -29,19 +29,20 @@ export default function Partnerships() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="gradient-bg text-white px-4 py-2 rounded-lg font-bold text-xl">
+      {/* Header - Modern Glassmorphism */}
+      <header className="sticky top-0 z-50 glass-card border-0 backdrop-blur-lg">
+        <div className="container mx-auto px-6 py-6 flex items-center justify-between">
+          <div className="animated-gradient text-white px-6 py-3 rounded-2xl font-bold text-2xl hover-3d cursor-pointer">
             RewardsPay
           </div>
-          <div className="hidden md:flex space-x-4">
+          <div className="hidden md:flex items-center space-x-6">
             <Link href="/">
-              <Button variant="outline" data-testid="button-home">
+              <Button variant="ghost" className="hover:bg-white/10 hover:backdrop-blur-sm text-lg px-6" data-testid="button-home">
                 Home
               </Button>
             </Link>
             <Button 
+              className="gradient-primary button-glow shadow-lg hover:shadow-2xl text-lg px-6"
               onClick={() => document.getElementById('partnership-form')?.scrollIntoView({ behavior: 'smooth' })}
               data-testid="button-contact"
             >
@@ -51,179 +52,204 @@ export default function Partnerships() {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="container mx-auto px-4 py-20 text-center">
-        <div className="max-w-4xl mx-auto">
-          <Badge variant="secondary" className="mb-6">
-            Partnership Opportunities
-          </Badge>
-          <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
-            Partner with
-            <br />
-            <span className="bg-gradient-to-r from-primary to-success bg-clip-text text-transparent">
-              RewardsPay
-            </span>
-          </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto">
-            Connect with our engaged community of 50,000+ active users. 
-            Drive customer acquisition, brand awareness, and market research through our trusted platform.
-          </p>
-          
-          <div className="flex flex-col md:flex-row gap-4 justify-center">
-            <Button 
-              size="lg" 
-              className="text-lg px-8 py-3 h-auto"
-              onClick={() => document.getElementById('partnership-form')?.scrollIntoView({ behavior: 'smooth' })}
-              data-testid="button-apply-partnership"
-            >
-              Apply for Partnership <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            <Button 
-              variant="outline" 
-              size="lg" 
-              className="text-lg px-8 py-3 h-auto"
-              onClick={() => document.getElementById('platform-metrics')?.scrollIntoView({ behavior: 'smooth' })}
-              data-testid="button-view-metrics"
-            >
-              View Platform Metrics
-            </Button>
+      {/* Hero Section - Modern Business-Focused Design */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0 gradient-warm opacity-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-background/90 via-background/50 to-background/90"></div>
+        
+        {/* Floating Elements */}
+        <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-mocha/20 rounded-full blur-xl float"></div>
+        <div className="absolute top-3/4 right-1/4 w-24 h-24 bg-accent/20 rounded-full blur-xl float" style={{animationDelay: '2s'}}></div>
+        <div className="absolute bottom-1/4 left-1/3 w-28 h-28 bg-success/20 rounded-full blur-xl float" style={{animationDelay: '4s'}}></div>
+        
+        <div className="container mx-auto px-6 py-32 text-center relative z-10">
+          <div className="max-w-6xl mx-auto">
+            <div className="fade-up">
+              <Badge className="gradient-warm px-6 py-3 text-white text-lg font-semibold rounded-2xl mb-8 shadow-lg">
+                Partnership Opportunities
+              </Badge>
+            </div>
+            
+            <div className="fade-up" style={{animationDelay: '0.2s'}}>
+              <h1 className="text-6xl md:text-8xl font-bold mb-8 leading-none">
+                <span className="text-foreground">Partner with</span>
+                <br />
+                <span className="text-shimmer">RewardsPay</span>
+              </h1>
+            </div>
+            
+            <div className="fade-up" style={{animationDelay: '0.4s'}}>
+              <p className="text-2xl md:text-3xl text-muted-foreground mb-16 max-w-4xl mx-auto font-light">
+                Connect with our engaged community of{' '}
+                <span className="font-semibold gradient-primary bg-clip-text text-transparent">50,000+</span>{' '}
+                active users. Drive customer acquisition, brand awareness, and market research through our trusted platform.
+              </p>
+            </div>
+            
+            <div className="fade-up flex flex-col md:flex-row gap-6 justify-center" style={{animationDelay: '0.6s'}}>
+              <Button 
+                size="lg" 
+                className="gradient-primary button-glow text-xl px-10 py-6 h-auto rounded-2xl hover-3d shadow-2xl"
+                onClick={() => document.getElementById('partnership-form')?.scrollIntoView({ behavior: 'smooth' })}
+                data-testid="button-apply-partnership"
+              >
+                Apply for Partnership <ArrowRight className="ml-3 h-6 w-6" />
+              </Button>
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="glass-card border-primary/30 hover:border-primary/60 text-xl px-10 py-6 h-auto rounded-2xl hover-3d"
+                onClick={() => document.getElementById('platform-metrics')?.scrollIntoView({ behavior: 'smooth' })}
+                data-testid="button-view-metrics"
+              >
+                View Platform Metrics
+              </Button>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Platform Metrics */}
-      <section id="platform-metrics" className="bg-muted/30 py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-              Reach our engaged community
+      {/* Platform Metrics - Modern Business Cards */}
+      <section id="platform-metrics" className="relative py-32 overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute inset-0 gradient-neon opacity-5"></div>
+        <div className="absolute top-0 left-0 w-96 h-96 bg-mocha/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl"></div>
+        
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="text-center mb-20 fade-up">
+            <h2 className="text-5xl md:text-7xl font-bold mb-8 leading-tight">
+              <span className="text-shimmer">Reach our engaged</span>
+              <br />
+              <span className="gradient-primary bg-clip-text text-transparent">community</span>
             </h2>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto font-light">
               Access high-quality users who actively participate in reward-earning activities
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-16">
-            <div className="text-center" data-testid="metric-active-users">
-              <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="h-10 w-10 text-primary" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-20 max-w-6xl mx-auto">
+            <div className="fade-up glass-card p-8 text-center hover-3d card-hover" data-testid="metric-active-users">
+              <div className="w-20 h-20 gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-6 float">
+                <Users className="h-10 w-10 text-white" />
               </div>
-              <div className="text-4xl font-bold text-primary mb-2">50K+</div>
-              <div className="text-sm text-muted-foreground">Active Monthly Users</div>
+              <div className="text-4xl md:text-5xl font-bold text-primary mb-3 text-shimmer">50K+</div>
+              <div className="text-base text-muted-foreground">Active Monthly Users</div>
             </div>
             
-            <div className="text-center" data-testid="metric-engagement">
-              <div className="w-20 h-20 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <TrendingUp className="h-10 w-10 text-success" />
+            <div className="fade-up glass-card p-8 text-center hover-3d card-hover" style={{animationDelay: '0.1s'}} data-testid="metric-engagement">
+              <div className="w-20 h-20 gradient-warm rounded-2xl flex items-center justify-center mx-auto mb-6 float" style={{animationDelay: '2s'}}>
+                <TrendingUp className="h-10 w-10 text-white" />
               </div>
-              <div className="text-4xl font-bold text-success mb-2">85%</div>
-              <div className="text-sm text-muted-foreground">User Engagement Rate</div>
+              <div className="text-4xl md:text-5xl font-bold text-success mb-3">85%</div>
+              <div className="text-base text-muted-foreground">User Engagement Rate</div>
             </div>
             
-            <div className="text-center" data-testid="metric-completion">
-              <div className="w-20 h-20 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Target className="h-10 w-10 text-accent" />
+            <div className="fade-up glass-card p-8 text-center hover-3d card-hover" style={{animationDelay: '0.2s'}} data-testid="metric-completion">
+              <div className="w-20 h-20 gradient-neon rounded-2xl flex items-center justify-center mx-auto mb-6 float" style={{animationDelay: '4s'}}>
+                <Target className="h-10 w-10 text-white" />
               </div>
-              <div className="text-4xl font-bold text-accent mb-2">92%</div>
-              <div className="text-sm text-muted-foreground">Task Completion Rate</div>
+              <div className="text-4xl md:text-5xl font-bold text-accent mb-3">92%</div>
+              <div className="text-base text-muted-foreground">Task Completion Rate</div>
             </div>
             
-            <div className="text-center" data-testid="metric-satisfaction">
-              <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Star className="h-10 w-10 text-primary" />
+            <div className="fade-up glass-card p-8 text-center hover-3d card-hover" style={{animationDelay: '0.3s'}} data-testid="metric-satisfaction">
+              <div className="w-20 h-20 gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-6 float" style={{animationDelay: '1s'}}>
+                <Star className="h-10 w-10 text-white" />
               </div>
-              <div className="text-4xl font-bold text-primary mb-2">4.8★</div>
-              <div className="text-sm text-muted-foreground">Partner Satisfaction</div>
+              <div className="text-4xl md:text-5xl font-bold text-primary mb-3">4.8★</div>
+              <div className="text-base text-muted-foreground">Partner Satisfaction</div>
             </div>
           </div>
 
-          {/* Demographics */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <Card data-testid="card-age-demographics">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Age Demographics</CardTitle>
+          {/* Demographics - Modern Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Card className="fade-up glass-card border-0 shadow-xl hover-3d card-hover" data-testid="card-age-demographics">
+              <CardHeader className="pb-6">
+                <CardTitle className="text-2xl font-bold gradient-primary bg-clip-text text-transparent">Age Demographics</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-sm">18-24</span>
-                    <span className="text-sm font-medium">25%</span>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-base font-medium">18-24</span>
+                    <span className="text-base font-bold text-primary">25%</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm">25-34</span>
-                    <span className="text-sm font-medium">35%</span>
+                  <div className="flex justify-between items-center">
+                    <span className="text-base font-medium">25-34</span>
+                    <span className="text-base font-bold text-success">35%</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm">35-44</span>
-                    <span className="text-sm font-medium">22%</span>
+                  <div className="flex justify-between items-center">
+                    <span className="text-base font-medium">35-44</span>
+                    <span className="text-base font-bold text-accent">22%</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm">45+</span>
-                    <span className="text-sm font-medium">18%</span>
+                  <div className="flex justify-between items-center">
+                    <span className="text-base font-medium">45+</span>
+                    <span className="text-base font-bold text-mocha">18%</span>
                   </div>
                 </div>
               </CardContent>
             </Card>
             
-            <Card data-testid="card-geographic-reach">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Geographic Reach</CardTitle>
+            <Card className="fade-up glass-card border-0 shadow-xl hover-3d card-hover" style={{animationDelay: '0.1s'}} data-testid="card-geographic-reach">
+              <CardHeader className="pb-6">
+                <CardTitle className="text-2xl font-bold gradient-warm bg-clip-text text-transparent">Geographic Reach</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-sm">North America</span>
-                    <span className="text-sm font-medium">45%</span>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-base font-medium">North America</span>
+                    <span className="text-base font-bold text-primary">45%</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm">Europe</span>
-                    <span className="text-sm font-medium">30%</span>
+                  <div className="flex justify-between items-center">
+                    <span className="text-base font-medium">Europe</span>
+                    <span className="text-base font-bold text-success">30%</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm">Asia-Pacific</span>
-                    <span className="text-sm font-medium">20%</span>
+                  <div className="flex justify-between items-center">
+                    <span className="text-base font-medium">Asia-Pacific</span>
+                    <span className="text-base font-bold text-accent">20%</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm">Other</span>
-                    <span className="text-sm font-medium">5%</span>
+                  <div className="flex justify-between items-center">
+                    <span className="text-base font-medium">Other</span>
+                    <span className="text-base font-bold text-mocha">5%</span>
                   </div>
                 </div>
               </CardContent>
             </Card>
             
-            <Card data-testid="card-interests">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Top Interests</CardTitle>
+            <Card className="fade-up glass-card border-0 shadow-xl hover-3d card-hover" style={{animationDelay: '0.2s'}} data-testid="card-interests">
+              <CardHeader className="pb-6">
+                <CardTitle className="text-2xl font-bold gradient-neon bg-clip-text text-transparent">Top Interests</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
-                  <Badge variant="secondary" className="mr-2 mb-2">Technology</Badge>
-                  <Badge variant="secondary" className="mr-2 mb-2">Shopping</Badge>
-                  <Badge variant="secondary" className="mr-2 mb-2">Finance</Badge>
-                  <Badge variant="secondary" className="mr-2 mb-2">Health</Badge>
-                  <Badge variant="secondary" className="mr-2 mb-2">Travel</Badge>
-                  <Badge variant="secondary" className="mr-2 mb-2">Food</Badge>
+                <div className="flex flex-wrap gap-3">
+                  <Badge className="gradient-primary px-4 py-2 text-white text-sm font-medium rounded-xl">Technology</Badge>
+                  <Badge className="gradient-warm px-4 py-2 text-white text-sm font-medium rounded-xl">Shopping</Badge>
+                  <Badge className="gradient-neon px-4 py-2 text-white text-sm font-medium rounded-xl">Finance</Badge>
+                  <Badge variant="secondary" className="glass-card px-4 py-2 text-sm font-medium rounded-xl">Health</Badge>
+                  <Badge variant="secondary" className="glass-card px-4 py-2 text-sm font-medium rounded-xl">Travel</Badge>
+                  <Badge variant="secondary" className="glass-card px-4 py-2 text-sm font-medium rounded-xl">Food</Badge>
                 </div>
               </CardContent>
             </Card>
             
-            <Card data-testid="card-device-usage">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Device Usage</CardTitle>
+            <Card className="fade-up glass-card border-0 shadow-xl hover-3d card-hover" style={{animationDelay: '0.3s'}} data-testid="card-device-usage">
+              <CardHeader className="pb-6">
+                <CardTitle className="text-2xl font-bold gradient-mocha bg-clip-text text-transparent">Device Usage</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-sm">Mobile</span>
-                    <span className="text-sm font-medium">70%</span>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-base font-medium">Mobile</span>
+                    <span className="text-base font-bold text-primary">70%</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm">Desktop</span>
-                    <span className="text-sm font-medium">25%</span>
+                  <div className="flex justify-between items-center">
+                    <span className="text-base font-medium">Desktop</span>
+                    <span className="text-base font-bold text-success">25%</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm">Tablet</span>
-                    <span className="text-sm font-medium">5%</span>
+                  <div className="flex justify-between items-center">
+                    <span className="text-base font-medium">Tablet</span>
+                    <span className="text-base font-bold text-accent">5%</span>
                   </div>
                 </div>
               </CardContent>
@@ -232,97 +258,112 @@ export default function Partnerships() {
         </div>
       </section>
 
-      {/* Partnership Types */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-              Partnership Opportunities
+      {/* Partnership Types - Modern Business Cards */}
+      <section className="relative py-32 overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute inset-0 gradient-primary opacity-5"></div>
+        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-mocha/10 rounded-full blur-3xl"></div>
+        
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="text-center mb-20 fade-up">
+            <h2 className="text-5xl md:text-7xl font-bold mb-8 leading-tight">
+              <span className="text-shimmer">Partnership</span>
+              <br />
+              <span className="gradient-primary bg-clip-text text-transparent">Opportunities</span>
             </h2>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto font-light">
               Choose the partnership model that best fits your business objectives
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="relative" data-testid="card-survey-research">
-              <CardHeader>
-                <BarChart3 className="h-12 w-12 text-primary mb-4" />
-                <CardTitle className="text-2xl">Survey & Research</CardTitle>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <Card className="fade-up glass-card border-0 shadow-xl hover-3d card-hover relative overflow-hidden" data-testid="card-survey-research">
+              <div className="absolute -top-10 -right-10 w-32 h-32 gradient-primary rounded-full blur-2xl opacity-20"></div>
+              <CardHeader className="relative z-10 pb-6">
+                <div className="w-16 h-16 gradient-primary rounded-2xl flex items-center justify-center mb-6 float">
+                  <BarChart3 className="h-8 w-8 text-white" />
+                </div>
+                <CardTitle className="text-3xl font-bold gradient-primary bg-clip-text text-transparent">Survey & Research</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">
+              <CardContent className="relative z-10">
+                <p className="text-muted-foreground mb-6 text-lg leading-relaxed">
                   Access our user base for market research, product feedback, and consumer insights.
                 </p>
-                <ul className="space-y-2 mb-6">
+                <ul className="space-y-3 mb-8">
                   <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                    <span className="text-sm">Custom survey design</span>
+                    <CheckCircle className="h-5 w-5 text-success mr-3" />
+                    <span className="text-base">Custom survey design</span>
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                    <span className="text-sm">Demographic targeting</span>
+                    <CheckCircle className="h-5 w-5 text-success mr-3" />
+                    <span className="text-base">Demographic targeting</span>
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                    <span className="text-sm">Real-time results</span>
+                    <CheckCircle className="h-5 w-5 text-success mr-3" />
+                    <span className="text-base">Real-time results</span>
                   </li>
                 </ul>
-                <Badge>Starting at $0.50/response</Badge>
+                <Badge className="gradient-primary px-4 py-2 text-white text-base font-semibold rounded-xl">Starting at $0.50/response</Badge>
               </CardContent>
             </Card>
             
-            <Card className="relative" data-testid="card-advertising">
-              <CardHeader>
-                <Target className="h-12 w-12 text-success mb-4" />
-                <CardTitle className="text-2xl">Advertising & Offers</CardTitle>
+            <Card className="fade-up glass-card border-0 shadow-xl hover-3d card-hover relative overflow-hidden" style={{animationDelay: '0.2s'}} data-testid="card-advertising">
+              <div className="absolute -top-10 -right-10 w-32 h-32 gradient-warm rounded-full blur-2xl opacity-20"></div>
+              <CardHeader className="relative z-10 pb-6">
+                <div className="w-16 h-16 gradient-warm rounded-2xl flex items-center justify-center mb-6 float" style={{animationDelay: '2s'}}>
+                  <Target className="h-8 w-8 text-white" />
+                </div>
+                <CardTitle className="text-3xl font-bold gradient-warm bg-clip-text text-transparent">Advertising & Offers</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">
+              <CardContent className="relative z-10">
+                <p className="text-muted-foreground mb-6 text-lg leading-relaxed">
                   Promote your products and services to highly engaged users through rewarded advertising.
                 </p>
-                <ul className="space-y-2 mb-6">
+                <ul className="space-y-3 mb-8">
                   <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                    <span className="text-sm">Video advertisements</span>
+                    <CheckCircle className="h-5 w-5 text-success mr-3" />
+                    <span className="text-base">Video advertisements</span>
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                    <span className="text-sm">App install campaigns</span>
+                    <CheckCircle className="h-5 w-5 text-success mr-3" />
+                    <span className="text-base">App install campaigns</span>
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                    <span className="text-sm">Lead generation</span>
+                    <CheckCircle className="h-5 w-5 text-success mr-3" />
+                    <span className="text-base">Lead generation</span>
                   </li>
                 </ul>
-                <Badge>Performance-based pricing</Badge>
+                <Badge className="gradient-warm px-4 py-2 text-white text-base font-semibold rounded-xl">Performance-based pricing</Badge>
               </CardContent>
             </Card>
             
-            <Card className="relative" data-testid="card-brand-partnerships">
-              <CardHeader>
-                <Handshake className="h-12 w-12 text-accent mb-4" />
-                <CardTitle className="text-2xl">Brand Partnerships</CardTitle>
+            <Card className="fade-up glass-card border-0 shadow-xl hover-3d card-hover relative overflow-hidden" style={{animationDelay: '0.4s'}} data-testid="card-brand-partnerships">
+              <div className="absolute -top-10 -right-10 w-32 h-32 gradient-neon rounded-full blur-2xl opacity-20"></div>
+              <CardHeader className="relative z-10 pb-6">
+                <div className="w-16 h-16 gradient-neon rounded-2xl flex items-center justify-center mb-6 float" style={{animationDelay: '4s'}}>
+                  <Handshake className="h-8 w-8 text-white" />
+                </div>
+                <CardTitle className="text-3xl font-bold gradient-neon bg-clip-text text-transparent">Brand Partnerships</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">
+              <CardContent className="relative z-10">
+                <p className="text-muted-foreground mb-6 text-lg leading-relaxed">
                   Long-term strategic partnerships for ongoing customer acquisition and retention.
                 </p>
-                <ul className="space-y-2 mb-6">
+                <ul className="space-y-3 mb-8">
                   <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                    <span className="text-sm">Custom integration</span>
+                    <CheckCircle className="h-5 w-5 text-success mr-3" />
+                    <span className="text-base">Custom integration</span>
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                    <span className="text-sm">White-label solutions</span>
+                    <CheckCircle className="h-5 w-5 text-success mr-3" />
+                    <span className="text-base">White-label solutions</span>
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                    <span className="text-sm">Dedicated support</span>
+                    <CheckCircle className="h-5 w-5 text-success mr-3" />
+                    <span className="text-base">Dedicated support</span>
                   </li>
                 </ul>
-                <Badge>Custom pricing</Badge>
+                <Badge className="gradient-neon px-4 py-2 text-white text-base font-semibold rounded-xl">Custom pricing</Badge>
               </CardContent>
             </Card>
           </div>
