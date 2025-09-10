@@ -89,22 +89,36 @@ export default function ModernFooter() {
                 </Link>
               </li>
               <li>
-                <a href="mailto:partnerships@rewardspay.com" className="text-muted-foreground hover:text-primary transition-colors text-lg flex items-center gap-2" data-testid="link-partner-contact">
-                  <BarChart3 className="h-5 w-5" />
-                  Platform Metrics
-                </a>
+                <Link href="/user-metrics">
+                  <button className="text-muted-foreground hover:text-primary transition-colors text-lg flex items-center gap-2" data-testid="link-user-metrics">
+                    <BarChart3 className="h-5 w-5" />
+                    User Metrics & Analytics
+                  </button>
+                </Link>
               </li>
               <li>
-                <a href="/api-docs" className="text-muted-foreground hover:text-primary transition-colors text-lg flex items-center gap-2" data-testid="link-api-docs">
-                  <FileText className="h-5 w-5" />
-                  API Documentation
-                </a>
+                <Link href="/fraud-detection">
+                  <button className="text-muted-foreground hover:text-primary transition-colors text-lg flex items-center gap-2" data-testid="link-fraud-detection">
+                    <Shield className="h-5 w-5" />
+                    Fraud Detection System
+                  </button>
+                </Link>
               </li>
               <li>
-                <a href="mailto:integration@rewardspay.com" className="text-muted-foreground hover:text-primary transition-colors text-lg flex items-center gap-2" data-testid="link-integration-support">
-                  <MessageCircle className="h-5 w-5" />
-                  Integration Support
-                </a>
+                <Link href="/gdpr-compliance">
+                  <button className="text-muted-foreground hover:text-primary transition-colors text-lg flex items-center gap-2" data-testid="link-gdpr-compliance">
+                    <FileText className="h-5 w-5" />
+                    GDPR Compliance
+                  </button>
+                </Link>
+              </li>
+              <li>
+                <Link href="/postback-implementation">
+                  <button className="text-muted-foreground hover:text-primary transition-colors text-lg flex items-center gap-2" data-testid="link-postback-implementation">
+                    <MessageCircle className="h-5 w-5" />
+                    Postback Implementation
+                  </button>
+                </Link>
               </li>
             </ul>
           </div>

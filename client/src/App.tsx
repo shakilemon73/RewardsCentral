@@ -6,6 +6,10 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Partnerships from "@/pages/partnerships";
+import FraudDetection from "@/pages/fraud-detection";
+import GDPRCompliance from "@/pages/gdpr-compliance";
+import PostbackImplementation from "@/pages/postback-implementation";
+import UserMetrics from "@/pages/user-metrics";
 import Home from "@/pages/home";
 import Tasks from "@/pages/tasks";
 import Rewards from "@/pages/rewards";
@@ -42,6 +46,10 @@ function Router() {
       <Switch>
         <Route path="/" component={Landing} />
         <Route path="/partnerships" component={Partnerships} />
+        <Route path="/fraud-detection" component={FraudDetection} />
+        <Route path="/gdpr-compliance" component={GDPRCompliance} />
+        <Route path="/postback-implementation" component={PostbackImplementation} />
+        <Route path="/user-metrics" component={UserMetrics} />
         <Route component={Landing} />
       </Switch>
     );
@@ -58,6 +66,10 @@ function Router() {
             <Switch>
               <Route path="/" component={Home} />
               <Route path="/partnerships" component={Partnerships} />
+              <Route path="/fraud-detection" component={FraudDetection} />
+              <Route path="/gdpr-compliance" component={GDPRCompliance} />
+              <Route path="/postback-implementation" component={PostbackImplementation} />
+              <Route path="/user-metrics" component={UserMetrics} />
               <Route path="/tasks" component={Tasks} />
               <Route path="/rewards" component={Rewards} />
               <Route path="/profile" component={Profile} />
@@ -74,6 +86,10 @@ function Router() {
           <Switch>
             <Route path="/" component={Home} />
             <Route path="/partnerships" component={Partnerships} />
+            <Route path="/fraud-detection" component={FraudDetection} />
+            <Route path="/gdpr-compliance" component={GDPRCompliance} />
+            <Route path="/postback-implementation" component={PostbackImplementation} />
+            <Route path="/user-metrics" component={UserMetrics} />
             <Route path="/tasks" component={Tasks} />
             <Route path="/rewards" component={Rewards} />
             <Route path="/profile" component={Profile} />
