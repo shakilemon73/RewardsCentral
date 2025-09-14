@@ -115,6 +115,70 @@
   --tracking-tight: -0.025em;
   --tracking-wide: 0.05em;
   --spacing: 0.25rem;
+
+  /* Motion Tokens - Norman's Feedback Principles */
+  --motion-instant: 0ms;
+  --motion-fast: 150ms;
+  --motion-normal: 200ms;
+  --motion-slow: 300ms;
+  --motion-slower: 500ms;
+
+  /* Easing Functions */
+  --ease-linear: cubic-bezier(0, 0, 1, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-back: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  /* Animation Distances */
+  --distance-sm: 4px;
+  --distance-md: 8px;
+  --distance-lg: 16px;
+  --distance-xl: 24px;
+
+  /* Feedback State Colors */
+  --info: hsl(221, 83%, 53%);
+  --info-foreground: hsl(0, 0%, 100%);
+  --info-light: hsl(221, 83%, 95%);
+  --info-border: hsl(221, 83%, 80%);
+  
+  --warning: hsl(45, 93%, 47%);
+  --warning-foreground: hsl(45, 30%, 10%);
+  --warning-light: hsl(45, 93%, 95%);
+  --warning-border: hsl(45, 93%, 80%);
+  
+  --error: hsl(0, 85%, 60%);
+  --error-foreground: hsl(0, 0%, 100%);
+  --error-light: hsl(0, 85%, 95%);
+  --error-border: hsl(0, 85%, 80%);
+
+  /* State Tokens - Interaction States */
+  --state-hover-opacity: 0.8;
+  --state-active-opacity: 0.7;
+  --state-disabled-opacity: 0.4;
+  --state-focus-width: 2px;
+  --state-focus-offset: 2px;
+
+  /* Interactive Element Sizes - Touch Targets */
+  --touch-target-min: 44px;
+  --button-padding-sm: 8px 12px;
+  --button-padding-md: 12px 20px;
+  --button-padding-lg: 16px 28px;
+
+  /* Data Visualization Extended Palette */
+  --data-positive: hsl(142, 76%, 58%);
+  --data-negative: hsl(0, 85%, 60%);
+  --data-neutral: hsl(240, 4%, 46%);
+  --data-primary: hsl(221, 83%, 53%);
+  --data-secondary: hsl(252, 83%, 64%);
+  --data-tertiary: hsl(16, 82%, 64%);
+  
+  /* Trust Signal Colors */
+  --trust-verified: hsl(142, 76%, 58%);
+  --trust-secure: hsl(221, 83%, 53%);
+  --trust-certified: hsl(271, 91%, 65%);
+  --trust-warning: hsl(45, 93%, 47%);
 }
 
 .dark {
@@ -172,6 +236,36 @@
   --sidebar-accent-foreground: hsl(271, 91%, 65%);
   --sidebar-border: hsl(224, 15%, 18%);
   --sidebar-ring: hsl(271, 91%, 65%);
+
+  /* Dark Mode Feedback States */
+  --info: hsl(221, 83%, 63%);
+  --info-foreground: hsl(0, 0%, 100%);
+  --info-light: hsl(221, 83%, 15%);
+  --info-border: hsl(221, 83%, 30%);
+  
+  --warning: hsl(45, 93%, 57%);
+  --warning-foreground: hsl(45, 30%, 5%);
+  --warning-light: hsl(45, 93%, 15%);
+  --warning-border: hsl(45, 93%, 30%);
+  
+  --error: hsl(0, 85%, 70%);
+  --error-foreground: hsl(0, 0%, 100%);
+  --error-light: hsl(0, 85%, 15%);
+  --error-border: hsl(0, 85%, 35%);
+
+  /* Dark Mode Data Visualization */
+  --data-positive: hsl(142, 76%, 68%);
+  --data-negative: hsl(0, 85%, 70%);
+  --data-neutral: hsl(240, 4%, 56%);
+  --data-primary: hsl(221, 83%, 63%);
+  --data-secondary: hsl(252, 83%, 74%);
+  --data-tertiary: hsl(16, 82%, 74%);
+  
+  /* Dark Mode Trust Signals */
+  --trust-verified: hsl(142, 76%, 68%);
+  --trust-secure: hsl(221, 83%, 63%);
+  --trust-certified: hsl(271, 91%, 75%);
+  --trust-warning: hsl(45, 93%, 57%);
   
   /* Glassmorphism for Dark Mode */
   --glass-bg: rgba(255, 255, 255, 0.05);
@@ -249,8 +343,8 @@
 
   /* Focus Styles */
   *:focus-visible {
-    outline: 2px solid var(--ring);
-    outline-offset: 2px;
+    outline: var(--state-focus-width) solid var(--ring);
+    outline-offset: var(--state-focus-offset);
     border-radius: var(--radius);
   }
 

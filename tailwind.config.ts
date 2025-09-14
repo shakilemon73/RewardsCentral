@@ -48,6 +48,41 @@ export default {
         border: "var(--border)",
         input: "var(--input)",
         ring: "var(--ring)",
+        // Enhanced feedback states
+        info: {
+          DEFAULT: "var(--info)",
+          foreground: "var(--info-foreground)",
+          light: "var(--info-light)",
+          border: "var(--info-border)",
+        },
+        warning: {
+          DEFAULT: "var(--warning)",
+          foreground: "var(--warning-foreground)",
+          light: "var(--warning-light)",
+          border: "var(--warning-border)",
+        },
+        error: {
+          DEFAULT: "var(--error)",
+          foreground: "var(--error-foreground)",
+          light: "var(--error-light)",
+          border: "var(--error-border)",
+        },
+        // Data visualization colors
+        data: {
+          positive: "var(--data-positive)",
+          negative: "var(--data-negative)",
+          neutral: "var(--data-neutral)",
+          primary: "var(--data-primary)",
+          secondary: "var(--data-secondary)",
+          tertiary: "var(--data-tertiary)",
+        },
+        // Trust signal colors
+        trust: {
+          verified: "var(--trust-verified)",
+          secure: "var(--trust-secure)",
+          certified: "var(--trust-certified)",
+          warning: "var(--trust-warning)",
+        },
         chart: {
           "1": "var(--chart-1)",
           "2": "var(--chart-2)",
@@ -70,6 +105,42 @@ export default {
         sans: ["var(--font-sans)"],
         serif: ["var(--font-serif)"],
         mono: ["var(--font-mono)"],
+      },
+      // Motion design tokens
+      transitionDuration: {
+        instant: "var(--motion-instant)",
+        fast: "var(--motion-fast)",
+        normal: "var(--motion-normal)",
+        slow: "var(--motion-slow)",
+        slower: "var(--motion-slower)",
+      },
+      transitionTimingFunction: {
+        linear: "var(--ease-linear)",
+        in: "var(--ease-in)",
+        out: "var(--ease-out)",
+        'in-out': "var(--ease-in-out)",
+        back: "var(--ease-back)",
+        bounce: "var(--ease-bounce)",
+      },
+      // Touch target and interaction sizes
+      spacing: {
+        'touch-min': "var(--touch-target-min)",
+        'distance-sm': "var(--distance-sm)",
+        'distance-md': "var(--distance-md)",
+        'distance-lg': "var(--distance-lg)",
+        'distance-xl': "var(--distance-xl)",
+      },
+      // State tokens for interactions
+      opacity: {
+        'state-hover': "var(--state-hover-opacity)",
+        'state-active': "var(--state-active-opacity)",
+        'state-disabled': "var(--state-disabled-opacity)",
+      },
+      ringWidth: {
+        'focus': "var(--state-focus-width)",
+      },
+      ringOffsetWidth: {
+        'focus': "var(--state-focus-offset)",
       },
       keyframes: {
         "accordion-down": {
