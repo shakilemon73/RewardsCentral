@@ -150,8 +150,19 @@ export const supabaseHelpers = {
     country_code: string;
     zip_code: string;
     phone_number: string;
+    education_level: string;
+    employment_status: string;
+    occupation_category: string;
+    household_income: string;
+    marital_status: string;
+    children_count: string;
     preferred_survey_length: string;
     interests: string[];
+    health_interests: string[];
+    shopping_habits: string;
+    technology_usage: string;
+    travel_frequency: string;
+    categories_of_interest: string[];
   }>) => {
     const { data, error } = await supabase
       .from("users")

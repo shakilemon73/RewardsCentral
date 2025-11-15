@@ -13,6 +13,7 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   updatePassword: (newPassword: string) => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -237,6 +238,28 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  // Refresh user data from database
+  const refreshUser = async () => {
+    if (!user?.id) return;
+
+    try {
+      const { data: userData, error: fetchError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (fetchError) {
+        console.error('Error refreshing user:', fetchError);
+        return;
+      }
+
+      setUser(userData);
+    } catch (err) {
+      console.error('Error in refreshUser:', err);
+    }
+  };
+
   const value: AuthContextType = {
     user,
     session,
@@ -248,6 +271,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     signOut,
     resetPassword,
     updatePassword,
+    refreshUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
