@@ -6,7 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { 
   Shield, CheckCircle, AlertTriangle, Users, Eye, Clock, Server, 
   Zap, Lock, Target, BarChart3, Activity, Globe, Cpu, Database,
-  TrendingUp, Award, Smartphone, Fingerprint, Binary
+  TrendingUp, Award, Smartphone, Fingerprint, Binary, CreditCard
 } from "lucide-react";
 import { Link } from "wouter";
 
