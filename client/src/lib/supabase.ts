@@ -1,12 +1,17 @@
 import { createClient } from '@supabase/supabase-js'
 
-// Hardcode the values since environment variables aren't loading properly
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://tzhbpfesfyhhlfpukwkb.supabase.co'
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR6aGJwZmVzZnloaGxmcHVrd2tiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY1NzEzNTAsImV4cCI6MjA3MjE0NzM1MH0.SmpcxbIGRFEJef4a4uJudjsI-B3qjJPSFl7sXYTnQnE'
+// Get Supabase credentials from Replit Secrets (environment variables)
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-// Debug log to verify values are loaded
-console.log('Supabase URL:', supabaseUrl)
-console.log('Supabase Key length:', supabaseAnonKey.length)
+// Validate that secrets are configured
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('❌ Supabase credentials are missing!')
+  console.error('Please ensure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are set in Replit Secrets')
+  throw new Error('Supabase configuration missing. Check Replit Secrets.')
+}
+
+console.log('✅ Supabase connected:', supabaseUrl)
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
