@@ -1,30 +1,151 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useLocation } from "wouter";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Slider } from "@/components/ui/slider";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Progress } from "@/components/ui/progress";
 import { 
   Gift, Star, Award, CheckCircle, Loader2, Zap, Clock, Users, ArrowRight, 
-  Shield, TrendingUp, CreditCard, Smartphone, Eye, Play, Moon, Sun,
-  DollarSign, Target, Calendar, Trophy, Rocket
+  Shield, TrendingUp, CreditCard, Smartphone, Eye, EyeOff, Play, Moon, Sun,
+  DollarSign, Target, Calendar, Trophy, Rocket, Check, X
 } from "lucide-react";
 import { Link } from "wouter";
 
+// Sign In Schema
+const signInSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+type SignInFormData = z.infer<typeof signInSchema>;
+
+// Sign Up Schema with password strength validation
+const signUpSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number"),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
+type SignUpFormData = z.infer<typeof signUpSchema>;
+
+// Forgot Password Schema
+const forgotPasswordSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+});
+
+type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
+
+// Password strength calculator
+function calculatePasswordStrength(password: string): {
+  score: number;
+  label: string;
+  color: string;
+} {
+  let score = 0;
+  
+  if (password.length >= 8) score += 25;
+  if (password.length >= 12) score += 25;
+  if (/[A-Z]/.test(password)) score += 25;
+  if (/[a-z]/.test(password)) score += 25;
+  if (/[0-9]/.test(password)) score += 25;
+  if (/[^A-Za-z0-9]/.test(password)) score += 25;
+  
+  score = Math.min(100, score);
+  
+  if (score < 50) return { score, label: "Weak", color: "text-destructive" };
+  if (score < 75) return { score, label: "Fair", color: "text-warning" };
+  if (score < 90) return { score, label: "Good", color: "text-data-secondary" };
+  return { score, label: "Strong", color: "text-data-positive" };
+}
+
 export default function Landing() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [surveysPerDay, setSurveysPerDay] = useState([3]);
   const [tasksPerWeek, setTasksPerWeek] = useState([10]);
   const [animatedEarnings, setAnimatedEarnings] = useState(0);
-  const { signIn, signUp, isSigningIn, isSigningUp } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isSigningIn, setIsSigningIn] = useState(false);
+  const [isSigningUp, setIsSigningUp] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
+  
+  const { signIn, signUp, resetPassword, isAuthenticated } = useAuth();
   const { theme, setTheme } = useTheme();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      setLocation("/");
+    }
+  }, [isAuthenticated, setLocation]);
+
+  // Sign In Form
+  const signInForm = useForm<SignInFormData>({
+    resolver: zodResolver(signInSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  // Sign Up Form
+  const signUpForm = useForm<SignUpFormData>({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
+  // Forgot Password Form
+  const forgotPasswordForm = useForm<ForgotPasswordFormData>({
+    resolver: zodResolver(forgotPasswordSchema),
+    defaultValues: {
+      email: "",
+    },
+  });
+
+  // Watch password for strength indicator
+  const watchedPassword = signUpForm.watch("password");
+  const passwordStrength = watchedPassword ? calculatePasswordStrength(watchedPassword) : null;
 
   // Calculate potential monthly earnings with enhanced algorithm
   const calculateEarnings = () => {
@@ -59,44 +180,83 @@ export default function Landing() {
     return () => clearInterval(timer);
   }, [surveysPerDay, tasksPerWeek]);
 
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Handle Sign In
+  const onSignIn = async (data: SignInFormData) => {
+    setIsSigningIn(true);
+    
     try {
-      await signIn({ email, password });
+      await signIn(data.email, data.password);
       toast({
         title: "Welcome back!",
         description: "Successfully signed in to your account.",
       });
+      setLocation("/");
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Unable to connect. Please check your internet connection.";
+      const errorMessage = error instanceof Error ? error.message : "Sign in failed";
       toast({
         title: "Sign In Failed",
         description: errorMessage,
         variant: "destructive",
       });
+    } finally {
+      setIsSigningIn(false);
     }
   };
 
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Handle Sign Up
+  const onSignUp = async (data: SignUpFormData) => {
+    setIsSigningUp(true);
+    
     try {
-      await signUp({ email, password });
+      await signUp(data.email, data.password);
       toast({
         title: "Account Created!",
-        description: "Please check your email to verify your account.",
+        description: "Please check your email to verify your account. If you don't see the email, you can sign in immediately.",
       });
+      
+      // Switch to sign in tab
+      setTimeout(() => {
+        signUpForm.reset();
+      }, 1000);
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Sign up failed";
       toast({
-        title: "Sign Up Failed", 
-        description: error instanceof Error ? error.message : "Failed to create account. Please try again.",
+        title: "Sign Up Failed",
+        description: errorMessage,
         variant: "destructive",
       });
+    } finally {
+      setIsSigningUp(false);
+    }
+  };
+
+  // Handle Forgot Password
+  const onForgotPassword = async (data: ForgotPasswordFormData) => {
+    setIsResettingPassword(true);
+    
+    try {
+      await resetPassword(data.email);
+      toast({
+        title: "Password Reset Email Sent",
+        description: "Check your email for a link to reset your password.",
+      });
+      setForgotPasswordOpen(false);
+      forgotPasswordForm.reset();
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Password reset failed";
+      toast({
+        title: "Password Reset Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setIsResettingPassword(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-background/80">
-      {/* Revolutionary Header with Theme Toggle */}
+      {/* Header */}
       <header className="sticky top-0 z-50 glass-card border-b">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="no-underline">
@@ -108,33 +268,15 @@ export default function Landing() {
             </div>
           </Link>
           
-          <nav className="hidden md:flex items-center gap-6">
-            <Button variant="ghost" className="text-muted-foreground hover:text-primary transition-colors duration-fast">
-              How it Works
-            </Button>
-            <Button variant="ghost" className="text-muted-foreground hover:text-primary transition-colors duration-fast">
-              Reviews
-            </Button>
-            <Button variant="ghost" className="text-muted-foreground hover:text-primary transition-colors duration-fast">
-              Partners
-            </Button>
+          <div className="flex items-center gap-3">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setTheme(theme === "light" ? "dark" : "light")}
               className="hover:scale-110 transition-transform duration-fast"
-              data-testid="theme-toggle"
+              data-testid="button-theme-toggle"
             >
               {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
-            </Button>
-          </nav>
-
-          <div className="flex items-center gap-3">
-            <Button variant="outline" className="hidden sm:inline-flex border-primary/20 hover:border-primary text-primary hover:bg-primary/5">
-              Sign In
-            </Button>
-            <Button className="button-glow bg-primary hover:bg-primary/90 text-primary-foreground">
-              Start Earning
             </Button>
           </div>
         </div>
@@ -146,14 +288,12 @@ export default function Landing() {
         <div className="absolute inset-0">
           <div className="absolute top-20 left-10 w-72 h-72 gradient-primary opacity-10 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute bottom-20 right-10 w-96 h-96 gradient-warm opacity-10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full gradient-neon opacity-5 blur-3xl"></div>
         </div>
 
         <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16 fade-up">
-              {/* Trust Badge */}
-              <Badge className="mb-6 text-lg px-6 py-3 bg-trust-verified/10 text-trust-verified border-trust-verified/20 hover:scale-105 transition-transform duration-fast" data-testid="trust-badge">
+              <Badge className="mb-6 text-lg px-6 py-3 bg-trust-verified/10 text-trust-verified border-trust-verified/20" data-testid="badge-verified">
                 <Shield className="h-4 w-4 mr-2" />
                 Verified & Secure Platform
               </Badge>
@@ -191,8 +331,8 @@ export default function Landing() {
               </div>
             </div>
 
-            {/* Interactive Earnings Calculator - Revolutionary Design */}
-            <Card className="glass-card max-w-4xl mx-auto mb-16 hover:scale-105 transition-all duration-slow shadow-2xl" data-testid="earnings-calculator">
+            {/* Earnings Calculator */}
+            <Card className="glass-card max-w-4xl mx-auto mb-16 shadow-2xl" data-testid="card-earnings-calculator">
               <CardHeader className="text-center pb-6">
                 <CardTitle className="text-3xl font-bold mb-4">
                   <span className="gradient-primary bg-clip-text text-transparent">Your Earning Potential</span>
@@ -203,7 +343,6 @@ export default function Landing() {
               </CardHeader>
 
               <CardContent className="space-y-8">
-                {/* Surveys Per Day Slider */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <Label className="text-lg font-semibold text-foreground">Daily Surveys</Label>
@@ -218,15 +357,10 @@ export default function Landing() {
                     min={1}
                     step={1}
                     className="w-full"
-                    data-testid="surveys-slider"
+                    data-testid="slider-surveys"
                   />
-                  <div className="flex justify-between text-sm text-muted-foreground">
-                    <span>1 survey</span>
-                    <span>10+ surveys</span>
-                  </div>
                 </div>
 
-                {/* Tasks Per Week Slider */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <Label className="text-lg font-semibold text-foreground">Weekly Tasks</Label>
@@ -241,39 +375,19 @@ export default function Landing() {
                     min={5}
                     step={1}
                     className="w-full"
-                    data-testid="tasks-slider"
+                    data-testid="slider-tasks"
                   />
-                  <div className="flex justify-between text-sm text-muted-foreground">
-                    <span>5 tasks</span>
-                    <span>25+ tasks</span>
-                  </div>
                 </div>
 
-                {/* Animated Earnings Display */}
-                <div className="text-center p-8 gradient-primary rounded-2xl relative overflow-hidden">
-                  <div className="relative z-10">
-                    <p className="text-white/80 text-lg mb-2">Your potential monthly earnings:</p>
-                    <div className="text-6xl font-bold text-white mb-2" data-testid="animated-earnings">
-                      ${animatedEarnings}
-                    </div>
-                    <p className="text-white/80">
-                      Based on {surveysPerDay[0]} daily surveys and {tasksPerWeek[0]} weekly tasks
-                      {surveysPerDay[0] >= 5 && <span className="block text-yellow-200 font-semibold">+ 15% streak bonus!</span>}
-                    </p>
+                <div className="text-center p-8 gradient-primary rounded-2xl">
+                  <p className="text-white/80 text-lg mb-2">Your potential monthly earnings:</p>
+                  <div className="text-6xl font-bold text-white mb-2" data-testid="text-earnings-amount">
+                    ${animatedEarnings}
                   </div>
-                  <div className="absolute inset-0 bg-white/5 backdrop-blur-sm"></div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 pt-6">
-                  <Button size="lg" className="flex-1 h-14 text-lg button-glow bg-primary hover:bg-primary/90" data-testid="start-earning-cta">
-                    <Rocket className="mr-2 h-5 w-5" />
-                    Start Earning Now
-                  </Button>
-                  <Button variant="outline" size="lg" className="flex-1 h-14 text-lg border-primary/20 hover:border-primary text-primary hover:bg-primary/5">
-                    <Play className="mr-2 h-5 w-5" />
-                    Watch How It Works
-                  </Button>
+                  <p className="text-white/80">
+                    Based on {surveysPerDay[0]} daily surveys and {tasksPerWeek[0]} weekly tasks
+                    {surveysPerDay[0] >= 5 && <span className="block text-yellow-200 font-semibold">+ 15% streak bonus!</span>}
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -327,110 +441,293 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Sign Up Section */}
+      {/* Authentication Forms */}
       <section className="py-24">
         <div className="container mx-auto px-6">
           <div className="max-w-md mx-auto">
             <Card className="glass-card shadow-2xl">
               <CardHeader className="text-center">
-                <CardTitle className="text-2xl font-bold">Join RewardsPay Today</CardTitle>
-                <p className="text-muted-foreground">Start earning money in under 2 minutes</p>
+                <CardTitle className="text-2xl font-bold">Get Started</CardTitle>
+                <CardDescription>Sign in or create an account to start earning</CardDescription>
               </CardHeader>
 
               <CardContent>
-                <Tabs defaultValue="signup" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2 mb-6">
-                    <TabsTrigger value="signup" data-testid="tab-signup">Sign Up</TabsTrigger>
+                <Tabs defaultValue="signin" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2" data-testid="tabs-auth">
                     <TabsTrigger value="signin" data-testid="tab-signin">Sign In</TabsTrigger>
+                    <TabsTrigger value="signup" data-testid="tab-signup">Sign Up</TabsTrigger>
                   </TabsList>
 
-                  <TabsContent value="signup">
-                    <form onSubmit={handleSignUp} className="space-y-4">
-                      <div>
-                        <Label htmlFor="signup-email">Email</Label>
-                        <Input
-                          id="signup-email"
-                          type="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          required
-                          className="mt-1"
-                          data-testid="signup-email-input"
+                  {/* Sign In Tab */}
+                  <TabsContent value="signin" className="space-y-4">
+                    <Form {...signInForm}>
+                      <form onSubmit={signInForm.handleSubmit(onSignIn)} className="space-y-4">
+                        <FormField
+                          control={signInForm.control}
+                          name="email"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Email</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  placeholder="you@example.com" 
+                                  type="email"
+                                  data-testid="input-signin-email"
+                                  {...field} 
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
                         />
-                      </div>
-                      <div>
-                        <Label htmlFor="signup-password">Password</Label>
-                        <Input
-                          id="signup-password"
-                          type="password"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          required
-                          className="mt-1"
-                          data-testid="signup-password-input"
+
+                        <FormField
+                          control={signInForm.control}
+                          name="password"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Password</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <Input 
+                                    placeholder="••••••••" 
+                                    type={showPassword ? "text" : "password"}
+                                    data-testid="input-signin-password"
+                                    {...field} 
+                                  />
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="absolute right-0 top-0 h-full px-3"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    data-testid="button-toggle-signin-password"
+                                  >
+                                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                  </Button>
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
                         />
-                      </div>
-                      <Button type="submit" className="w-full button-glow" disabled={isSigningUp} data-testid="signup-button">
-                        {isSigningUp ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Creating Account...
-                          </>
-                        ) : (
-                          'Create Account & Start Earning'
-                        )}
-                      </Button>
-                    </form>
+
+                        <div className="flex justify-end">
+                          <Dialog open={forgotPasswordOpen} onOpenChange={setForgotPasswordOpen}>
+                            <DialogTrigger asChild>
+                              <Button
+                                type="button"
+                                variant="link"
+                                className="px-0"
+                                data-testid="button-forgot-password"
+                              >
+                                Forgot Password?
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent data-testid="dialog-forgot-password">
+                              <DialogHeader>
+                                <DialogTitle>Reset Password</DialogTitle>
+                                <DialogDescription>
+                                  Enter your email address and we'll send you a link to reset your password.
+                                </DialogDescription>
+                              </DialogHeader>
+                              
+                              <Form {...forgotPasswordForm}>
+                                <form onSubmit={forgotPasswordForm.handleSubmit(onForgotPassword)} className="space-y-4">
+                                  <FormField
+                                    control={forgotPasswordForm.control}
+                                    name="email"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Email</FormLabel>
+                                        <FormControl>
+                                          <Input 
+                                            placeholder="you@example.com" 
+                                            type="email"
+                                            data-testid="input-reset-email"
+                                            {...field} 
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+
+                                  <DialogFooter>
+                                    <Button
+                                      type="submit"
+                                      disabled={isResettingPassword}
+                                      data-testid="button-send-reset-email"
+                                    >
+                                      {isResettingPassword && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                      Send Reset Link
+                                    </Button>
+                                  </DialogFooter>
+                                </form>
+                              </Form>
+                            </DialogContent>
+                          </Dialog>
+                        </div>
+
+                        <Button
+                          type="submit"
+                          className="w-full"
+                          disabled={isSigningIn}
+                          data-testid="button-signin-submit"
+                        >
+                          {isSigningIn && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                          Sign In
+                        </Button>
+                      </form>
+                    </Form>
                   </TabsContent>
 
-                  <TabsContent value="signin">
-                    <form onSubmit={handleSignIn} className="space-y-4">
-                      <div>
-                        <Label htmlFor="signin-email">Email</Label>
-                        <Input
-                          id="signin-email"
-                          type="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          required
-                          className="mt-1"
-                          data-testid="signin-email-input"
+                  {/* Sign Up Tab */}
+                  <TabsContent value="signup" className="space-y-4">
+                    <Form {...signUpForm}>
+                      <form onSubmit={signUpForm.handleSubmit(onSignUp)} className="space-y-4">
+                        <FormField
+                          control={signUpForm.control}
+                          name="email"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Email</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  placeholder="you@example.com" 
+                                  type="email"
+                                  data-testid="input-signup-email"
+                                  {...field} 
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
                         />
-                      </div>
-                      <div>
-                        <Label htmlFor="signin-password">Password</Label>
-                        <Input
-                          id="signin-password"
-                          type="password"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          required
-                          className="mt-1"
-                          data-testid="signin-password-input"
+
+                        <FormField
+                          control={signUpForm.control}
+                          name="password"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Password</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <Input 
+                                    placeholder="••••••••" 
+                                    type={showPassword ? "text" : "password"}
+                                    data-testid="input-signup-password"
+                                    {...field} 
+                                  />
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="absolute right-0 top-0 h-full px-3"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    data-testid="button-toggle-signup-password"
+                                  >
+                                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                  </Button>
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                              
+                              {/* Password Strength Indicator */}
+                              {passwordStrength && (
+                                <div className="space-y-2 mt-2" data-testid="password-strength-indicator">
+                                  <div className="flex items-center justify-between text-sm">
+                                    <span className="text-muted-foreground">Password Strength:</span>
+                                    <span className={`font-semibold ${passwordStrength.color}`}>
+                                      {passwordStrength.label}
+                                    </span>
+                                  </div>
+                                  <Progress value={passwordStrength.score} className="h-2" />
+                                  
+                                  <div className="space-y-1 text-xs text-muted-foreground">
+                                    <div className="flex items-center gap-2">
+                                      {watchedPassword.length >= 8 ? (
+                                        <Check className="h-3 w-3 text-data-positive" />
+                                      ) : (
+                                        <X className="h-3 w-3 text-muted-foreground" />
+                                      )}
+                                      <span>At least 8 characters</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      {/[A-Z]/.test(watchedPassword) ? (
+                                        <Check className="h-3 w-3 text-data-positive" />
+                                      ) : (
+                                        <X className="h-3 w-3 text-muted-foreground" />
+                                      )}
+                                      <span>One uppercase letter</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      {/[a-z]/.test(watchedPassword) ? (
+                                        <Check className="h-3 w-3 text-data-positive" />
+                                      ) : (
+                                        <X className="h-3 w-3 text-muted-foreground" />
+                                      )}
+                                      <span>One lowercase letter</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      {/[0-9]/.test(watchedPassword) ? (
+                                        <Check className="h-3 w-3 text-data-positive" />
+                                      ) : (
+                                        <X className="h-3 w-3 text-muted-foreground" />
+                                      )}
+                                      <span>One number</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </FormItem>
+                          )}
                         />
-                      </div>
-                      <Button type="submit" className="w-full button-glow" disabled={isSigningIn} data-testid="signin-button">
-                        {isSigningIn ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Signing In...
-                          </>
-                        ) : (
-                          'Sign In to Your Account'
-                        )}
-                      </Button>
-                    </form>
+
+                        <FormField
+                          control={signUpForm.control}
+                          name="confirmPassword"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Confirm Password</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <Input 
+                                    placeholder="••••••••" 
+                                    type={showConfirmPassword ? "text" : "password"}
+                                    data-testid="input-signup-confirm-password"
+                                    {...field} 
+                                  />
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="absolute right-0 top-0 h-full px-3"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    data-testid="button-toggle-confirm-password"
+                                  >
+                                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                  </Button>
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <Button
+                          type="submit"
+                          className="w-full"
+                          disabled={isSigningUp}
+                          data-testid="button-signup-submit"
+                        >
+                          {isSigningUp && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                          Create Account
+                        </Button>
+                      </form>
+                    </Form>
                   </TabsContent>
                 </Tabs>
-
-                <div className="mt-6 text-center text-sm text-muted-foreground">
-                  <p>Join over 2.3 million users already earning money</p>
-                  <div className="flex justify-center gap-4 mt-2">
-                    <span className="text-trust-verified">✓ Free to join</span>
-                    <span className="text-trust-verified">✓ Instant payouts</span>
-                    <span className="text-trust-verified">✓ No fees</span>
-                  </div>
-                </div>
               </CardContent>
             </Card>
           </div>

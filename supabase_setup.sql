@@ -236,3 +236,23 @@ BEGIN
   );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+-- API Configurations table (optional - for advanced survey provider configuration)
+CREATE TABLE IF NOT EXISTS api_configurations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  provider_name VARCHAR NOT NULL UNIQUE,
+  api_key VARCHAR NOT NULL,
+  app_id VARCHAR,
+  secret_key VARCHAR,
+  is_enabled BOOLEAN DEFAULT true,
+  is_sandbox BOOLEAN DEFAULT false,
+  endpoints JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable RLS for API configurations
+ALTER TABLE api_configurations ENABLE ROW LEVEL SECURITY;
+
+-- Only service role can access API configurations (contains sensitive keys)
+CREATE POLICY "Service role can access api configurations" ON api_configurations 
+  USING (auth.role() = 'service_role');

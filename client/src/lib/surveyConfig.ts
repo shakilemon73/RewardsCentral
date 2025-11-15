@@ -48,13 +48,37 @@ class SurveyConfigManager {
         .select('*')
         .eq('is_enabled', true);
 
-      if (error) throw error;
+      if (error) {
+        // Check for specific error types
+        if (error.code === '42P01') {
+          // Table doesn't exist (PostgreSQL error code)
+          console.info('ℹ️ API configurations table not found - using fallback configuration');
+          console.info('To use database-managed API keys, create the api_configurations table in your Supabase database');
+        } else if (error.message?.includes('JWT') || error.message?.includes('API key')) {
+          // Authentication error
+          console.warn('⚠️ Supabase authentication error:', error.message);
+        } else {
+          // Other errors
+          console.warn('⚠️ Failed to load API configurations from database:', error.message);
+        }
+        throw error;
+      }
 
       this.configCache = this.buildConfigFromDatabase(configs || []);
       this.lastFetch = Date.now();
       console.log('✅ Survey provider configurations loaded from database');
-    } catch (error) {
-      console.warn('Failed to load configs from database:', error);
+    } catch (error: any) {
+      // Use fallback configuration when database is unavailable
+      const errorMessage = error?.message || String(error);
+      
+      if (error?.code === '42P01' || errorMessage.includes('relation') || errorMessage.includes('does not exist')) {
+        console.info('📋 Using default API configuration (database table not configured)');
+      } else if (errorMessage.includes('JWT') || errorMessage.includes('API key')) {
+        console.warn('🔑 Supabase authentication issue - check your API keys');
+      } else {
+        console.warn('⚠️ Database connection issue - using fallback configuration');
+      }
+      
       this.configCache = this.getFallbackConfig();
     } finally {
       this.isLoading = false;

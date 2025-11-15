@@ -3,10 +3,12 @@ import { useEffect, useRef } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
+import { AuthProvider } from "@/providers/AuthProvider";
 import { useAuth } from "@/hooks/useAuth";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
+import PasswordReset from "@/pages/password-reset";
 import Partnerships from "@/pages/partnerships";
 import FraudDetection from "@/pages/fraud-detection";
 import GDPRCompliance from "@/pages/gdpr-compliance";
@@ -22,12 +24,11 @@ import DesktopHeader from "@/components/desktop-header";
 import DesktopSidebar from "@/components/desktop-sidebar";
 
 function Router() {
-  const { isAuthenticated, isLoading, user, session } = useAuth();
-  const isMobile = useIsMobile();
-  const [location] = useLocation();
+  const { isAuthenticated, isLoading } = useAuth();
+  const [location, setLocation] = useLocation();
   const mainRef = useRef<HTMLElement>(null);
 
-  // Reset scroll position when navigating to new page (both window and main container)
+  // Reset scroll position when navigating to new page
   useEffect(() => {
     window.scrollTo(0, 0);
     if (mainRef.current) {
@@ -35,37 +36,61 @@ function Router() {
     }
   }, [location]);
 
-  // Check if we're on a protected route
-  const protectedRoutes = ["/tasks", "/rewards", "/profile", "/survey-callback"];
-  const isProtectedRoute = protectedRoutes.includes(location) || (location !== "/" && location !== "");
+  // Redirect unauthenticated users trying to access protected routes
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      const publicRoutes = ["/landing", "/password-reset", "/partnerships", "/fraud-detection", "/gdpr-compliance", "/postback-implementation", "/user-metrics"];
+      const isPublicRoute = publicRoutes.includes(location);
+      
+      if (!isPublicRoute) {
+        setLocation('/landing');
+      }
+    }
+  }, [isLoading, isAuthenticated, location, setLocation]);
 
-  // Show loading state during authentication check
+  // Show loading state while checking authentication
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p>Loading...</p>
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <div className="max-w-7xl w-full mx-auto space-y-6">
+          <div className="h-12 w-64 bg-muted animate-pulse rounded-md" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="h-32 w-full bg-muted animate-pulse rounded-md" />
+            <div className="h-32 w-full bg-muted animate-pulse rounded-md" />
+            <div className="h-32 w-full bg-muted animate-pulse rounded-md" />
+          </div>
+          <div className="h-96 w-full bg-muted animate-pulse rounded-md" />
         </div>
       </div>
     );
   }
 
-  // If not authenticated, show public pages
-  if (!isAuthenticated) {
+  // Public routes that don't require authentication
+  const publicRoutes = ["/landing", "/password-reset", "/partnerships", "/fraud-detection", "/gdpr-compliance", "/postback-implementation", "/user-metrics"];
+  const isPublicRoute = publicRoutes.includes(location);
+
+  // If not authenticated and not on a public route, redirect happens in useEffect above
+  if (!isAuthenticated && !isPublicRoute) {
+    return null;
+  }
+
+  // Public routes accessible even when authenticated
+  if (isPublicRoute) {
     return (
       <Switch>
-        <Route path="/" component={Landing} />
+        <Route path="/landing" component={Landing} />
+        <Route path="/password-reset" component={PasswordReset} />
         <Route path="/partnerships" component={Partnerships} />
         <Route path="/fraud-detection" component={FraudDetection} />
         <Route path="/gdpr-compliance" component={GDPRCompliance} />
         <Route path="/postback-implementation" component={PostbackImplementation} />
         <Route path="/user-metrics" component={UserMetrics} />
-        <Route component={Landing} />
+        <Route component={NotFound} />
       </Switch>
     );
   }
 
+  // Authenticated layout with desktop and mobile views
   return (
     <div className="min-h-screen bg-background">
       {/* Desktop Layout */}
@@ -75,16 +100,31 @@ function Router() {
           <DesktopSidebar />
           <main ref={mainRef} className="flex-1 overflow-y-auto p-6">
             <Switch>
-              <Route path="/" component={Home} />
-              <Route path="/partnerships" component={Partnerships} />
-              <Route path="/fraud-detection" component={FraudDetection} />
-              <Route path="/gdpr-compliance" component={GDPRCompliance} />
-              <Route path="/postback-implementation" component={PostbackImplementation} />
-              <Route path="/user-metrics" component={UserMetrics} />
-              <Route path="/tasks" component={Tasks} />
-              <Route path="/rewards" component={Rewards} />
-              <Route path="/profile" component={Profile} />
-              <Route path="/survey-callback" component={SurveyCallback} />
+              <Route path="/">
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              </Route>
+              <Route path="/tasks">
+                <ProtectedRoute>
+                  <Tasks />
+                </ProtectedRoute>
+              </Route>
+              <Route path="/rewards">
+                <ProtectedRoute>
+                  <Rewards />
+                </ProtectedRoute>
+              </Route>
+              <Route path="/profile">
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              </Route>
+              <Route path="/survey-callback">
+                <ProtectedRoute>
+                  <SurveyCallback />
+                </ProtectedRoute>
+              </Route>
               <Route component={NotFound} />
             </Switch>
           </main>
@@ -95,16 +135,31 @@ function Router() {
       <div className="lg:hidden">
         <main className="pb-16">
           <Switch>
-            <Route path="/" component={Home} />
-            <Route path="/partnerships" component={Partnerships} />
-            <Route path="/fraud-detection" component={FraudDetection} />
-            <Route path="/gdpr-compliance" component={GDPRCompliance} />
-            <Route path="/postback-implementation" component={PostbackImplementation} />
-            <Route path="/user-metrics" component={UserMetrics} />
-            <Route path="/tasks" component={Tasks} />
-            <Route path="/rewards" component={Rewards} />
-            <Route path="/profile" component={Profile} />
-            <Route path="/survey-callback" component={SurveyCallback} />
+            <Route path="/">
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            </Route>
+            <Route path="/tasks">
+              <ProtectedRoute>
+                <Tasks />
+              </ProtectedRoute>
+            </Route>
+            <Route path="/rewards">
+              <ProtectedRoute>
+                <Rewards />
+              </ProtectedRoute>
+            </Route>
+            <Route path="/profile">
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            </Route>
+            <Route path="/survey-callback">
+              <ProtectedRoute>
+                <SurveyCallback />
+              </ProtectedRoute>
+            </Route>
             <Route component={NotFound} />
           </Switch>
         </main>
@@ -117,10 +172,12 @@ function Router() {
 function App() {
   return (
     <ThemeProvider defaultTheme="system">
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Router />
+        </TooltipProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }
